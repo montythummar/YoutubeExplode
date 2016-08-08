@@ -130,11 +130,11 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Figure out the file type
             string extension = "mp4";
-            if (SelectedStream.Type.Contains("webm"))
+            if (SelectedStream.Type.ContainsInvariant("webm"))
                 extension = "webm";
-            else if (SelectedStream.Type.Contains("3gpp"))
+            else if (SelectedStream.Type.ContainsInvariant("3gpp"))
                 extension = "3gpp";
-            else if (SelectedStream.Type.Contains("flv"))
+            else if (SelectedStream.Type.ContainsInvariant("flv"))
                 extension = "flv";
 
             // Select destination
