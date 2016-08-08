@@ -38,7 +38,8 @@
 
                     <TextBox x:Name="tbVideoID"
                              Grid.Column="0"
-                             Text="{Binding VideoID}" KeyDown="tbVideoID_KeyDown" />
+                             KeyDown="tbVideoID_KeyDown"
+                             Text="{Binding VideoID}" />
                     <Button x:Name="btnSubmit"
                             Grid.Column="1"
                             Command="{Binding SubmitCommand}"
@@ -47,7 +48,10 @@
             </StackPanel>
         </materialDesign:Card>
 
-        <materialDesign:Card Grid.Row="1" Visibility="{Binding VideoInfoVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+        <materialDesign:Card Grid.Row="1"
+                             Padding="0"
+                             Visibility="{Binding VideoInfoVisible,
+                                                  Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -69,15 +73,30 @@
                        Source="{Binding ThumbnailImageSource}" />
 
                 <UniformGrid Grid.Row="2"
-                             Margin="5"
+                             Background="{DynamicResource PrimaryHueLightBrush}"
                              Columns="4">
-                    <TextBlock HorizontalAlignment="Center" Text="{Binding VideoInfo.Author}" />
-                    <TextBlock HorizontalAlignment="Center" Text="{Binding VideoInfo.Length}" />
-                    <TextBlock HorizontalAlignment="Center" Text="{Binding VideoInfo.ViewCount, StringFormat=Views: \{0\}}" />
-                    <TextBlock HorizontalAlignment="Center" Text="{Binding VideoInfo.AvgRating, StringFormat=Rating: \{0:N2\}}" />
+                    <TextBlock Margin="5"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Text="{Binding VideoInfo.Author}" />
+                    <TextBlock Margin="5"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Text="{Binding VideoInfo.Length}" />
+                    <TextBlock Margin="5"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Text="{Binding VideoInfo.ViewCount,
+                                              StringFormat=Views: \{0\}}" />
+                    <TextBlock Margin="5"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Text="{Binding VideoInfo.AvgRating,
+                                              StringFormat=Rating: \{0:N2\}}" />
                 </UniformGrid>
 
-                <UniformGrid Grid.Row="3" Columns="2">
+                <UniformGrid Grid.Row="3"
+                             Columns="2">
                     <ComboBox Margin="5"
                               ItemsSource="{Binding VideoInfo.Streams}"
                               SelectedItem="{Binding SelectedStream}" />

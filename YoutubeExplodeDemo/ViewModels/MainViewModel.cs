@@ -7,6 +7,7 @@
 // ------------------------------------------------------------------ 
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -104,6 +105,12 @@ namespace YoutubeExplodeDemo.ViewModels
                 bmp.UriSource = new Uri(VideoInfo.ThumbnailURL, UriKind.Absolute);
                 bmp.EndInit();
                 ThumbnailImageSource = bmp;
+            }
+
+            // Selected stream
+            if (VideoInfo?.Streams != null && VideoInfo.Streams.Any())
+            {
+                SelectedStream = VideoInfo.Streams.First();
             }
         }
 
