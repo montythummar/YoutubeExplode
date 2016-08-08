@@ -128,8 +128,23 @@ namespace YoutubeExplodeDemo.ViewModels
             string id = VideoInfo.ID;
             string title = VideoInfo.Title;
 
+            // Figure out the file type
+            string extension = "mp4";
+            if (SelectedStream.Type.Contains("webm"))
+                extension = "webm";
+            else if (SelectedStream.Type.Contains("3gpp"))
+                extension = "3gpp";
+            else if (SelectedStream.Type.Contains("flv"))
+                extension = "flv";
+
             // Select destination
-            var sfd = new SaveFileDialog();
+            var sfd = new SaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = extension,
+                FileName = $"youtube_export_{id}.{extension}",
+                Filter = $"{extension.ToUpperInvariant()} Video Files|*.{extension}"
+            };
             if (!sfd.ShowDialog().GetValueOrDefault())
                 return;
             string filePath = sfd.FileName;
