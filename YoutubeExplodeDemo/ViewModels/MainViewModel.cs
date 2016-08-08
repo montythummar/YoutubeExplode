@@ -7,6 +7,7 @@
 // ------------------------------------------------------------------ 
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,16 +15,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using Microsoft.Win32;
 using NegativeLayer.Extensions;
 using YoutubeExplode;
 using YoutubeExplode.Models;
+using YoutubeExplodeDemo.Services;
 
 namespace YoutubeExplodeDemo.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private string _videoID;
+        private readonly FileDownloaderService _downloader;
 
+        private string _videoID;
         public string VideoID
         {
             get { return _videoID; }
@@ -31,7 +35,6 @@ namespace YoutubeExplodeDemo.ViewModels
         }
 
         private VideoInfo _videoInfo;
-
         public VideoInfo VideoInfo
         {
             get { return _videoInfo; }
@@ -43,17 +46,15 @@ namespace YoutubeExplodeDemo.ViewModels
         }
 
         private ImageSource _thumbnailImageSource;
-
         public ImageSource ThumbnailImageSource
         {
             get { return _thumbnailImageSource; }
-            set { Set(ref _thumbnailImageSource, value); }
+            private set { Set(ref _thumbnailImageSource, value); }
         }
 
         public bool VideoInfoVisible => VideoInfo != null;
 
         private VideoStreamEndpoint _selectedStream;
-
         public VideoStreamEndpoint SelectedStream
         {
             get { return _selectedStream; }
@@ -64,11 +65,13 @@ namespace YoutubeExplodeDemo.ViewModels
         public RelayCommand SubmitCommand { get; }
         public RelayCommand DownloadVideoCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(FileDownloaderService downloader)
         {
+            _downloader = downloader;
+
             // Commands
             SubmitCommand = new RelayCommand(Submit);
-            DownloadVideoCommand = new RelayCommand(DownloadVideo, () => SelectedStream != null);
+            DownloadVideoCommand = new RelayCommand(DownloadVideo);
         }
 
         private async void Submit()
@@ -115,8 +118,28 @@ namespace YoutubeExplodeDemo.ViewModels
             }
         }
 
-        private void DownloadVideo()
+        private async void DownloadVideo()
         {
+            // Check params
+            if (SelectedStream == null) return;
+            if (VideoInfo == null) return;
+
+            // Copy id and title
+            string id = VideoInfo.ID;
+            string title = VideoInfo.Title;
+
+            // Select destination
+            var sfd = new SaveFileDialog();
+            if (!sfd.ShowDialog().GetValueOrDefault())
+                return;
+            string filePath = sfd.FileName;
+
+            // Download
+            await Task.Run(() => _downloader.DownloadFile(SelectedStream.URL, filePath));
+
+            // Notify
+            if (Dialogs.PromptYesNo($"Video (ID = {id}, Title = {title}) downloaded!{Environment.NewLine}Do you want to open it?"))
+                Process.Start(filePath);
         }
     }
 }

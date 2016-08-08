@@ -1,5 +1,14 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿// ------------------------------------------------------------------ 
+//  Solution: <YoutubeExplode>
+//  Project: <YoutubeExplodeDemo>
+//  File: <Locator.cs>
+//  Created By: Alexey Golub
+//  Date: 08/08/2016
+// ------------------------------------------------------------------ 
+
+using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using YoutubeExplodeDemo.Services;
 using YoutubeExplodeDemo.ViewModels;
 
 namespace YoutubeExplodeDemo
@@ -10,6 +19,7 @@ namespace YoutubeExplodeDemo
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
+            SimpleIoc.Default.Register<FileDownloaderService>();
             SimpleIoc.Default.Register<MainViewModel>();
         }
 

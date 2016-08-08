@@ -80,7 +80,7 @@ namespace YoutubeExplode
                 string quality = Regex.Match(stream, @"quality=(.+?)\b").Groups[1].Value;
 
                 int urlPos = stream.IndexOf("url=", StringComparison.Ordinal);
-                string url = stream.Substring(urlPos + 3).Replace(" ", "%20");
+                string url = stream.Substring(urlPos + 4).Replace(" ", "%20");
 
                 // Add stream
                 streams.Add(new VideoStreamEndpoint
