@@ -16,13 +16,6 @@ namespace YoutubeExplode
 {
     internal static class Parser
     {
-        private static string DoubleURLDecode(string input)
-        {
-            input = HttpUtility.UrlDecode(input);
-            input = HttpUtility.UrlDecode(input);
-            return input;
-        }
-
         public static VideoInfo ParseVideoInfo(string rawInfo)
         {
             // Check arguments
@@ -37,7 +30,8 @@ namespace YoutubeExplode
             foreach (string rawRow in rawRows)
             {
                 // Decode
-                string row = DoubleURLDecode(rawRow);
+                string row = HttpUtility.UrlDecode(rawRow);
+                if (row == null) continue;
 
                 // Look for the equals sign
                 int equalsPos = row.IndexOf('=');
@@ -75,12 +69,18 @@ namespace YoutubeExplode
             string streamsRaw = dic.GetValueOrDefault("url_encoded_fmt_stream_map");
             if (string.IsNullOrWhiteSpace(streamsRaw)) return result;
             var streams = new List<VideoStreamEndpoint>();
-            foreach (var streamRaw in streamsRaw.Split(new[] {",url="}, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var streamRaw in streamsRaw.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries))
             {
+                // Decode
+                string stream = HttpUtility.UrlDecode(streamRaw);
+                if (stream == null) continue;
+
                 // Extract data
-                string type = Regex.Match(streamRaw, @"type=(.*);").Groups[1].Value;
-                string quality = Regex.Match(streamRaw, @"quality=(.*)\b").Groups[1].Value;
-                string url = streamRaw.Replace("url=", "").Replace(" ", "%20");
+                string type = Regex.Match(stream, @"type=(.+?);").Groups[1].Value;
+                string quality = Regex.Match(stream, @"quality=(.+?)\b").Groups[1].Value;
+
+                int urlPos = stream.IndexOf("url=", StringComparison.Ordinal);
+                string url = stream.Substring(urlPos + 3).Replace(" ", "%20");
 
                 // Add stream
                 streams.Add(new VideoStreamEndpoint

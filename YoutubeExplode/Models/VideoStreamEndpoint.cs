@@ -29,13 +29,5 @@ namespace YoutubeExplode.Models
         public string Quality { get; internal set; }
 
         internal VideoStreamEndpoint() { }
-
-        /// <summary>
-        /// Gets a string representation of this object
-        /// </summary>
-        public override string ToString()
-        {
-            return $"{Type} | {Quality}";
-        }
     }
 }
