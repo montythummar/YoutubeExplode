@@ -35,7 +35,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Get full information about a video by its ID
         /// </summary>
-        /// <returns>Object of type <see cref="VideoInfo"/></returns>
+        /// <returns>Object of type <see cref="VideoInfo"/> with the information on the given video</returns>
         public static VideoInfo GetVideoInfo(string videoID)
         {
             // Check arguments

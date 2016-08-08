@@ -1,4 +1,12 @@
-﻿using System.Windows;
+﻿// ------------------------------------------------------------------ 
+//  Solution: <YoutubeExplode>
+//  Project: <YoutubeExplodeDemo>
+//  File: <Dialogs.cs>
+//  Created By: Alexey Golub
+//  Date: 08/08/2016
+// ------------------------------------------------------------------ 
+
+using System.Windows;
 using GalaSoft.MvvmLight.Threading;
 
 namespace YoutubeExplodeDemo.ViewModels

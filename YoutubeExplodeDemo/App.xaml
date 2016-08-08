@@ -4,26 +4,49 @@
              xmlns:alpariAssistant="clr-namespace:YoutubeExplodeDemo"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ignore="http://www.galasoft.ch/ignore"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:wpf="clr-namespace:YoutubeExplodeDemo.WPF"
-             StartupUri="View/MainWindow.xaml"
+             StartupUri="Views/MainWindow.xaml"
              mc:Ignorable="d ignore">
 
     <Application.Resources>
-        <Style TargetType="Image">
-            <Setter Property="StretchDirection" Value="DownOnly" />
-            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.5" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <wpf:InvertBoolConverter x:Key="InvertBoolConverter" />
-        <wpf:ColorToBrushConverter x:Key="ColorToBrushConverter" />
-        <wpf:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="#555C5C" />
+            <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush" Color="White" />
+            <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="#343838" />
+            <SolidColorBrush x:Key="PrimaryHueMidForegroundBrush" Color="Snow" />
+            <SolidColorBrush x:Key="PrimaryHueDarkBrush" Color="#141414" />
+            <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush" Color="Gray" />
+            <SolidColorBrush x:Key="SecondaryAccentBrush" Color="#FFF59D" />
+            <SolidColorBrush x:Key="SecondaryAccentForegroundBrush" Color="#F9A825" />
 
-        <alpariAssistant:Locator x:Key="Locator" d:IsDataSource="True" />
+            <Style TargetType="materialDesign:Card">
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+            </Style>
+
+            <Style TargetType="Image">
+                <Setter Property="StretchDirection" Value="DownOnly" />
+                <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <wpf:InvertBoolConverter x:Key="InvertBoolConverter" />
+            <wpf:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+            <wpf:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+            <alpariAssistant:Locator x:Key="Locator" d:IsDataSource="True" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

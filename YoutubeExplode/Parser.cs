@@ -16,24 +16,29 @@ namespace YoutubeExplode
 {
     internal static class Parser
     {
+        private static string DoubleURLDecode(string input)
+        {
+            input = HttpUtility.UrlDecode(input);
+            input = HttpUtility.UrlDecode(input);
+            return input;
+        }
+
         public static VideoInfo ParseVideoInfo(string rawInfo)
         {
             // Check arguments
             if (string.IsNullOrWhiteSpace(rawInfo))
                 return null;
 
-            // Double URL decode everything
-            rawInfo = HttpUtility.UrlDecode(rawInfo);
-            rawInfo = HttpUtility.UrlDecode(rawInfo);
-            if (rawInfo == null) return null;
-
             // Split the raw info into rows
-            var rows = rawInfo.Split(new[] {"&"}, StringSplitOptions.RemoveEmptyEntries);
+            var rawRows = rawInfo.Split(new[] {"&"}, StringSplitOptions.RemoveEmptyEntries);
 
             // Split the rows further into a dictionary
             var dic = new Dictionary<string, string>();
-            foreach (string row in rows)
+            foreach (string rawRow in rawRows)
             {
+                // Decode
+                string row = DoubleURLDecode(rawRow);
+
                 // Look for the equals sign
                 int equalsPos = row.IndexOf('=');
                 if (equalsPos < 0) continue;
@@ -43,8 +48,12 @@ namespace YoutubeExplode
                 string value = row.Substring(equalsPos + 1);
 
                 // Add to dictionary
-                dic.Add(key, value);
+                dic[key] = value;
             }
+
+            // Check for error
+            if (dic.GetValueOrDefault("status") == "fail")
+                throw new Exception($"Youtube returned an error: {dic.GetValueOrDefault("reason")}");
 
             // Prepare the returned object by setting basic values
             var result = new VideoInfo
@@ -69,8 +78,8 @@ namespace YoutubeExplode
             foreach (var streamRaw in streamsRaw.Split(new[] {",url="}, StringSplitOptions.RemoveEmptyEntries))
             {
                 // Extract data
-                string type = Regex.Match(streamRaw, @"type=(.*)(?:;)").Value;
-                string quality = Regex.Match(streamRaw, @"quality=(.*)(?:\b|&)").Value;
+                string type = Regex.Match(streamRaw, @"type=(.*);").Groups[1].Value;
+                string quality = Regex.Match(streamRaw, @"quality=(.*)\b").Groups[1].Value;
                 string url = streamRaw.Replace("url=", "").Replace(" ", "%20");
 
                 // Add stream
