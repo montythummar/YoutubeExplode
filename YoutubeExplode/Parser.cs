@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Web;
 using YoutubeExplode.Models;
 
@@ -16,17 +15,15 @@ namespace YoutubeExplode
 {
     internal static class Parser
     {
-        public static VideoInfo ParseVideoInfo(string rawInfo)
+        private static Dictionary<string, string> SplitParameters(string parametersRaw)
         {
-            // Check arguments
-            if (string.IsNullOrWhiteSpace(rawInfo))
-                return null;
-
-            // Split the raw info into rows
-            var rawRows = rawInfo.Split(new[] {"&"}, StringSplitOptions.RemoveEmptyEntries);
-
             // Split the rows further into a dictionary
             var dic = new Dictionary<string, string>();
+
+            // Split the raw info into rows
+            var rawRows = parametersRaw.Split("&");
+
+            // Loop and fill dictionary
             foreach (string rawRow in rawRows)
             {
                 // Decode
@@ -45,6 +42,18 @@ namespace YoutubeExplode
                 dic[key] = value;
             }
 
+            return dic;
+        }
+
+        public static VideoInfo ParseVideoInfo(string infoRaw)
+        {
+            // Check arguments
+            if (string.IsNullOrWhiteSpace(infoRaw))
+                return null;
+
+            // Get parameters
+            var dic = SplitParameters(infoRaw);
+
             // Check for error
             if (dic.GetValueOrDefault("status") == "fail")
                 throw new Exception($"Youtube returned an error: {dic.GetValueOrDefault("reason")}");
@@ -53,14 +62,11 @@ namespace YoutubeExplode
             var result = new VideoInfo
             {
                 ID = dic.GetValueOrDefault("video_id"),
-
                 Title = dic.GetValueOrDefault("title"),
                 Author = dic.GetValueOrDefault("author"),
                 ThumbnailURL = dic.GetValueOrDefault("iurl"),
                 Length = TimeSpan.FromSeconds(dic.GetValueOrDefault("length_seconds").ParseDoubleOrDefault()),
-
                 IsListed = dic.GetValueOrDefault("is_listed").ParseIntOrDefault() == 1,
-
                 ViewCount = dic.GetValueOrDefault("view_count").ParseIntOrDefault(),
                 AvgRating = dic.GetValueOrDefault("avg_rating").ParseDoubleOrDefault()
             };
@@ -69,18 +75,20 @@ namespace YoutubeExplode
             string streamsRaw = dic.GetValueOrDefault("url_encoded_fmt_stream_map");
             if (string.IsNullOrWhiteSpace(streamsRaw)) return result;
             var streams = new List<VideoStreamEndpoint>();
-            foreach (var streamRaw in streamsRaw.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var streamRaw in streamsRaw.Split(","))
             {
-                // Decode
-                string stream = HttpUtility.UrlDecode(streamRaw);
-                if (stream == null) continue;
+                var localDic = SplitParameters(streamRaw);
 
-                // Extract data
-                string type = Regex.Match(stream, @"type=(.+?);").Groups[1].Value;
-                string quality = Regex.Match(stream, @"quality=(.+?)\b").Groups[1].Value;
+                // Extract type
+                string type = localDic.GetValueOrDefault("type");
+                if (!string.IsNullOrWhiteSpace(type))
+                    type = type.Substring(0, type.IndexOf(';'));
 
-                int urlPos = stream.IndexOf("url=", StringComparison.Ordinal);
-                string url = stream.Substring(urlPos + 4).Replace(" ", "%20");
+                // Extract quality
+                string quality = localDic.GetValueOrDefault("quality");
+
+                // Extract url
+                string url = localDic.GetValueOrDefault("url");
 
                 // Add stream
                 streams.Add(new VideoStreamEndpoint

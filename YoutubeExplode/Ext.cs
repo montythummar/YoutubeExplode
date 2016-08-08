@@ -13,6 +13,11 @@ namespace YoutubeExplode
 {
     internal static class Ext
     {
+        public static string[] Split(this string input, params string[] separators)
+        {
+            return input.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public static Uri ToUri(this string uri)
         {
             return new UriBuilder(uri).Uri;
