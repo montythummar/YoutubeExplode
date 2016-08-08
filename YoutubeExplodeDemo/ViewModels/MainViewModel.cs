@@ -150,6 +150,7 @@ namespace YoutubeExplodeDemo.ViewModels
             string filePath = sfd.FileName;
 
             // Download
+            bool success = true;
             await Task.Run(() =>
             {
                 try
@@ -159,12 +160,13 @@ namespace YoutubeExplodeDemo.ViewModels
                 catch (Exception ex)
                 {
                     Dialogs.Error(ex.Message);
-                    return;
+                    success = false;
                 }
             });
 
             // Notify
-            if (Dialogs.PromptYesNo($"Video (ID = {id}) downloaded!{Environment.NewLine}Do you want to open it?"))
+            if (success &&
+                Dialogs.PromptYesNo($"Video (ID = {id}) downloaded!{Environment.NewLine}Do you want to open it?"))
                 Process.Start(filePath);
         }
     }
