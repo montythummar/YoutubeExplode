@@ -11,6 +11,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         DataContext="{Binding Main,
                               Source={StaticResource Locator}}"
+        FocusManager.FocusedElement="{Binding ElementName=tbxVideoID}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         TextElement.FontSize="13"
         TextElement.FontWeight="Regular"
@@ -36,14 +37,15 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="tbVideoID"
+                    <TextBox x:Name="tbxVideoID"
                              Grid.Column="0"
                              KeyDown="tbVideoID_KeyDown"
                              Text="{Binding VideoID}" />
                     <Button x:Name="btnSubmit"
                             Grid.Column="1"
                             Command="{Binding SubmitCommand}"
-                            Content="Go" />
+                            Content="Go"
+                            Focusable="False" />
                 </Grid>
             </StackPanel>
         </materialDesign:Card>
@@ -97,6 +99,7 @@
 
                 <UniformGrid Grid.Row="3" Columns="2">
                     <ComboBox Margin="5"
+                              Focusable="False"
                               ItemsSource="{Binding VideoInfo.Streams}"
                               SelectedItem="{Binding SelectedStream}">
                         <ComboBox.ItemTemplate>
@@ -116,7 +119,8 @@
                     </ComboBox>
                     <Button Margin="5"
                             Command="{Binding DownloadVideoCommand}"
-                            Content="Download" />
+                            Content="Download"
+                            Focusable="False" />
                 </UniformGrid>
             </Grid>
         </materialDesign:Card>
