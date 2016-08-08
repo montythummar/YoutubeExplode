@@ -44,8 +44,7 @@
                     <Button x:Name="btnSubmit"
                             Grid.Column="1"
                             Command="{Binding SubmitCommand}"
-                            Content="Go"
-                            Focusable="False" />
+                            Content="Go" />
                 </Grid>
             </StackPanel>
         </materialDesign:Card>
@@ -99,12 +98,11 @@
 
                 <UniformGrid Grid.Row="3" Columns="2">
                     <ComboBox Margin="5"
-                              Focusable="False"
                               ItemsSource="{Binding VideoInfo.Streams}"
                               SelectedItem="{Binding SelectedStream}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <UniformGrid HorizontalAlignment="Stretch" Columns="2">
+                                <UniformGrid HorizontalAlignment="Left" Columns="2">
                                     <WrapPanel Margin="0,0,5,0">
                                         <TextBlock Text="Type: " />
                                         <TextBlock FontWeight="SemiBold" Text="{Binding Type}" />
@@ -119,8 +117,7 @@
                     </ComboBox>
                     <Button Margin="5"
                             Command="{Binding DownloadVideoCommand}"
-                            Content="Download"
-                            Focusable="False" />
+                            Content="Download" />
                 </UniformGrid>
             </Grid>
         </materialDesign:Card>
