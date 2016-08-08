@@ -1,0 +1,29 @@
+﻿<Application x:Class="YoutubeExplodeDemo.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:alpariAssistant="clr-namespace:YoutubeExplodeDemo"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ignore="http://www.galasoft.ch/ignore"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:wpf="clr-namespace:YoutubeExplodeDemo.WPF"
+             StartupUri="View/MainWindow.xaml"
+             mc:Ignorable="d ignore">
+
+    <Application.Resources>
+        <Style TargetType="Image">
+            <Setter Property="StretchDirection" Value="DownOnly" />
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <wpf:InvertBoolConverter x:Key="InvertBoolConverter" />
+        <wpf:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+        <wpf:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <alpariAssistant:Locator x:Key="Locator" d:IsDataSource="True" />
+    </Application.Resources>
+</Application>
