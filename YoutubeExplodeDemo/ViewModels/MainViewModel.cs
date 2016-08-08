@@ -150,7 +150,18 @@ namespace YoutubeExplodeDemo.ViewModels
             string filePath = sfd.FileName;
 
             // Download
-            await Task.Run(() => _downloader.DownloadFile(SelectedStream.URL, filePath));
+            await Task.Run(() =>
+            {
+                try
+                {
+                    _downloader.DownloadFile(SelectedStream.URL, filePath);
+                }
+                catch (Exception ex)
+                {
+                    Dialogs.Error(ex.Message);
+                    return;
+                }
+            });
 
             // Notify
             if (Dialogs.PromptYesNo($"Video (ID = {id}) downloaded!{Environment.NewLine}Do you want to open it?"))
