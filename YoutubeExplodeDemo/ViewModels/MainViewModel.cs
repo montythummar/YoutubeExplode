@@ -93,6 +93,7 @@ namespace YoutubeExplodeDemo.ViewModels
                 }
                 catch (Exception ex)
                 {
+                    VideoInfo = null;
                     Dialogs.Error(ex.Message);
                 }
             });
