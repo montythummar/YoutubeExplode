@@ -26,5 +26,25 @@ namespace YoutubeExplode
                 return result;
             return defaultValue;
         }
+
+        public static double ParseDoubleOrDefault(this string str, double defaultValue = default(double))
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return defaultValue;
+            double result;
+            if (double.TryParse(str, out result))
+                return result;
+            return defaultValue;
+        }
+
+        public static int ParseIntOrDefault(this string str, int defaultValue = default(int))
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return defaultValue;
+            int result;
+            if (int.TryParse(str, out result))
+                return result;
+            return defaultValue;
+        }
     }
 }

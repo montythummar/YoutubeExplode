@@ -54,12 +54,12 @@ namespace YoutubeExplode
                 Title = dic.GetValueOrDefault("title"),
                 Author = dic.GetValueOrDefault("author"),
                 ThumbnailURL = dic.GetValueOrDefault("iurl"),
-                Length = TimeSpan.FromSeconds(double.Parse(dic.GetValueOrDefault("length_seconds"))),
+                Length = TimeSpan.FromSeconds(dic.GetValueOrDefault("length_seconds").ParseDoubleOrDefault()),
 
-                IsListed = int.Parse(dic.GetValueOrDefault("is_listed")) == 1,
+                IsListed = dic.GetValueOrDefault("is_listed").ParseIntOrDefault() == 1,
 
-                ViewCount = int.Parse(dic.GetValueOrDefault("view_count")),
-                AvgRating = double.Parse(dic.GetValueOrDefault("avg_rating"))
+                ViewCount = dic.GetValueOrDefault("view_count").ParseIntOrDefault(),
+                AvgRating = dic.GetValueOrDefault("avg_rating").ParseDoubleOrDefault()
             };
 
             // Get the streams
@@ -68,9 +68,12 @@ namespace YoutubeExplode
             var streams = new List<VideoStreamEndpoint>();
             foreach (var streamRaw in streamsRaw.Split(new[] {",url="}, StringSplitOptions.RemoveEmptyEntries))
             {
+                // Extract data
                 string type = Regex.Match(streamRaw, @"type=(.*)(?:;)").Value;
                 string quality = Regex.Match(streamRaw, @"quality=(.*)(?:\b|&)").Value;
                 string url = streamRaw.Replace("url=", "").Replace(" ", "%20");
+
+                // Add stream
                 streams.Add(new VideoStreamEndpoint
                 {
                     Type = type,
