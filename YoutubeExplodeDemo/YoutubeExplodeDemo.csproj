@@ -36,6 +36,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Extensions, Version=1.0.6059.23392, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NLExtensions.1.0.12\lib\net45\Extensions.dll</HintPath>
@@ -141,6 +144,9 @@
       <Project>{70e7df6a-bcfc-4818-ba0d-20f3e111345d}</Project>
       <Name>YoutubeExplode</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

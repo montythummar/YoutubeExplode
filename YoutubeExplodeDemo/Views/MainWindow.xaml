@@ -13,6 +13,7 @@
                               Source={StaticResource Locator}}"
         FocusManager.FocusedElement="{Binding ElementName=tbxVideoID}"
         FontFamily="{DynamicResource MaterialDesignFont}"
+        Icon="/YoutubeExplodeDemo;component/favicon.ico"
         TextElement.FontSize="13"
         TextElement.FontWeight="Regular"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
