@@ -153,7 +153,7 @@ namespace YoutubeExplodeDemo.ViewModels
             await Task.Run(() => _downloader.DownloadFile(SelectedStream.URL, filePath));
 
             // Notify
-            if (Dialogs.PromptYesNo($"Video (ID = {id}, Title = {title}) downloaded!{Environment.NewLine}Do you want to open it?"))
+            if (Dialogs.PromptYesNo($"Video (ID = {id}) downloaded!{Environment.NewLine}Do you want to open it?"))
                 Process.Start(filePath);
         }
     }
