@@ -67,7 +67,9 @@
                                HorizontalAlignment="Center"
                                FontSize="20"
                                Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
-                               Text="{Binding VideoInfo.Title}" />
+                               Text="{Binding VideoInfo.Title}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap" />
                 </Border>
 
                 <Image Grid.Row="1"
