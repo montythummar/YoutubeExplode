@@ -58,7 +58,29 @@ namespace YoutubeExplodeDemo.ViewModels
         public VideoStreamEndpoint SelectedStream
         {
             get { return _selectedStream; }
-            set { Set(ref _selectedStream, value); }
+            set
+            {
+                Set(ref _selectedStream, value);
+                DownloadVideoCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private double _downloadProgress;
+        public double DownloadProgress
+        {
+            get { return _downloadProgress;}
+            set { Set(ref _downloadProgress, value); }
+        }
+
+        private bool _isDownloading;
+        public bool IsDownloading
+        {
+            get { return _isDownloading; }
+            set
+            {
+                Set(ref _isDownloading, value);
+                DownloadVideoCommand.RaiseCanExecuteChanged();
+            }
         }
 
         // Commands
@@ -71,7 +93,10 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Commands
             SubmitCommand = new RelayCommand(Submit);
-            DownloadVideoCommand = new RelayCommand(DownloadVideo);
+            DownloadVideoCommand = new RelayCommand(DownloadVideo, () => SelectedStream != null && !IsDownloading);
+
+            // Events
+            _downloader.ProgressChanged += (sender, args) => DownloadProgress = _downloader.Progress;
         }
 
         private async void Submit()
@@ -87,7 +112,7 @@ namespace YoutubeExplodeDemo.ViewModels
                 {
                     // Get video id from url if necessary
                     string id = VideoID;
-                    var match = Regex.Match(VideoID, @"v=(.+?)\b");
+                    var match = Regex.Match(id, @"[?&]v=(.+?)\b");
                     if (match.Success)
                         id = match.Groups[1].Value;
 
@@ -124,9 +149,10 @@ namespace YoutubeExplodeDemo.ViewModels
             if (SelectedStream == null) return;
             if (VideoInfo == null) return;
 
-            // Copy id and title
+            IsDownloading = true;
+
+            // Copy id
             string id = VideoInfo.ID;
-            string title = VideoInfo.Title;
 
             // Figure out the file type
             string extension = "mp4";
@@ -168,6 +194,8 @@ namespace YoutubeExplodeDemo.ViewModels
             if (success &&
                 Dialogs.PromptYesNo($"Video (ID = {id}) downloaded!{Environment.NewLine}Do you want to open it?"))
                 Process.Start(filePath);
+
+            IsDownloading = false;
         }
     }
 }

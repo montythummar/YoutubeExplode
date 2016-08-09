@@ -15,6 +15,19 @@ namespace YoutubeExplodeDemo.Services
 {
     public class FileDownloaderService
     {
+        private double _progress;
+        public double Progress
+        {
+            get { return _progress; }
+            private set
+            {
+                _progress = value;
+                ProgressChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler ProgressChanged;
+
         private HttpWebRequest CreateGenericRequest(Uri uri)
         {
             var request = (HttpWebRequest) WebRequest.Create(uri);
@@ -22,32 +35,34 @@ namespace YoutubeExplodeDemo.Services
             return request;
         }
 
-        private MemoryStream PerformRequest(HttpWebRequest request)
+        private void PerformRequest(WebRequest request, Stream outputStream)
         {
-            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var response = request.GetResponse())
             using (var responseStream = response.GetResponseStream())
             {
-                if (responseStream == null) return null;
+                if (responseStream == null) return;
 
-                var outputStream = new MemoryStream();
+                // Get file size
+                int fileSize = int.Parse(response.Headers["Content-Length"]);
+
+                // Read the response and copy it to output stream
                 var buffer = new byte[1024];
                 int bytesRead;
                 do
                 {
                     bytesRead = responseStream.Read(buffer, 0, 1024);
                     outputStream.Write(buffer, 0, bytesRead);
+                    Progress += 1.0*bytesRead/fileSize;
                 } while (bytesRead > 0);
 
                 outputStream.Seek(0, SeekOrigin.Begin);
-                return outputStream;
             }
         }
 
         public void DownloadFile(string url, string destinationFilePath)
         {
-            using (var inputStream = PerformRequest(CreateGenericRequest(url.ToUri())))
-            using (var outputStream = new FileStream(destinationFilePath, FileMode.CreateNew))
-                inputStream.CopyTo(outputStream);
+            using (var outputStream = File.Create(destinationFilePath))
+                PerformRequest(CreateGenericRequest(url.ToUri()), outputStream);
         }
     }
 }

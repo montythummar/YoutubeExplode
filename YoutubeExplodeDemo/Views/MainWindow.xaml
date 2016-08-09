@@ -60,6 +60,7 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Background="{DynamicResource PrimaryHueMidBrush}">
@@ -118,10 +119,20 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Margin="5"
+                    <Button x:Name="btnDownload"
+                            Margin="5"
                             Command="{Binding DownloadVideoCommand}"
                             Content="Download" />
                 </UniformGrid>
+
+                <ProgressBar Grid.Row="4"
+                             Foreground="{DynamicResource SecondaryAccentForegroundBrush}"
+                             Maximum="1"
+                             Minimum="0"
+                             Visibility="{Binding IsDownloading,
+                                                  Converter={StaticResource BoolToVisibilityConverter},
+                                                  ConverterParameter=Visibility.Collapsed}"
+                             Value="{Binding DownloadProgress}" />
             </Grid>
         </materialDesign:Card>
     </Grid>
