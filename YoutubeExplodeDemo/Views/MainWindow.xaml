@@ -91,12 +91,12 @@
                                HorizontalAlignment="Center"
                                Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
                                Text="{Binding VideoInfo.ViewCount,
-                                              StringFormat=Views: \{0\}}" />
+                                              StringFormat=\{0\} views}" />
                     <TextBlock Margin="5"
                                HorizontalAlignment="Center"
                                Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
                                Text="{Binding VideoInfo.AvgRating,
-                                              StringFormat=Rating: \{0:N2\}}" />
+                                              StringFormat=\{0:N2\} ★}" />
                 </UniformGrid>
 
                 <UniformGrid Grid.Row="3" Columns="2">
