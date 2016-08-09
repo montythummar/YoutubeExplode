@@ -37,6 +37,7 @@ namespace YoutubeExplodeDemo.Services
 
         private void PerformRequest(WebRequest request, Stream outputStream)
         {
+            Progress = 0;
             using (var response = request.GetResponse())
             using (var responseStream = response.GetResponseStream())
             {
