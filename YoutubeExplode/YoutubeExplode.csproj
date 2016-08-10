@@ -37,6 +37,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Ext.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="Models\VideoInfo.cs" />

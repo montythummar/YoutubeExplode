@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web;
+using YoutubeExplode.Exceptions;
 using YoutubeExplode.Models;
 
 namespace YoutubeExplode
@@ -54,7 +55,7 @@ namespace YoutubeExplode
 
             // Check for error
             if (dic.GetValueOrDefault("status").Equals("fail", StringComparison.InvariantCultureIgnoreCase))
-                throw new Exception($"Youtube returned an error:{Environment.NewLine}{dic.GetValueOrDefault("reason")}");
+                throw new YoutubeErrorException(dic.GetValueOrDefault("reason"));
 
             // Set basic values (first layer)
             var result = new VideoInfo
