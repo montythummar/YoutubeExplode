@@ -13,10 +13,13 @@ Zero-dependency .NET library that parses out various public information on Youtu
  - Is Listed (bool)
  - View Count (int)
  - Average User Rating (double)
- - Streaming Endpoints (IEnumerable<VideoStreamEndpoint>)
-  - Type (string)
-  - Quality (string)
+ - Streaming Endpoints (IEnumerable\<VideoStreamEndpoint\>)
+  - TypeString (string)
+  - QualityString (string)
   - URL (string)
+  - Type (enum => [Unknown, MP4, WebM, ThirdGenerationPartnershipProject])
+  - Quality (enum => [Unknown, High, Medium, Low])
+  - FileExtension (string)
 
 **Usage:**
 

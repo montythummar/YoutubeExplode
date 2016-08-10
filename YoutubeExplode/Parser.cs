@@ -15,28 +15,26 @@ namespace YoutubeExplode
 {
     internal static class Parser
     {
-        private static Dictionary<string, string> SplitParameters(string parametersRaw)
+        private static Dictionary<string, string> GetParameters(string parametersRaw)
         {
-            // Split the rows further into a dictionary
             var dic = new Dictionary<string, string>();
-
-            // Split the raw info into rows
-            var rawRows = parametersRaw.Split("&");
-
-            // Loop and fill dictionary
-            foreach (string rawRow in rawRows)
+            var keyValuePairsRaw = parametersRaw.Split("&");
+            foreach (string keyValuePairRaw in keyValuePairsRaw)
             {
-                // Decode
-                string row = HttpUtility.UrlDecode(rawRow);
-                if (row == null) continue;
+                string keyValuePairRawDecoded = HttpUtility.UrlDecode(keyValuePairRaw);
+                if (string.IsNullOrWhiteSpace(keyValuePairRawDecoded))
+                    continue;
 
                 // Look for the equals sign
-                int equalsPos = row.IndexOf('=');
-                if (equalsPos < 0) continue;
+                int equalsPos = keyValuePairRawDecoded.IndexOf('=');
+                if (equalsPos <= 0)
+                    continue;
 
                 // Get the key and value
-                string key = row.Substring(0, equalsPos);
-                string value = row.Substring(equalsPos + 1);
+                string key = keyValuePairRawDecoded.Substring(0, equalsPos);
+                string value = equalsPos < keyValuePairRawDecoded.Length
+                    ? keyValuePairRawDecoded.Substring(equalsPos + 1)
+                    : string.Empty;
 
                 // Add to dictionary
                 dic[key] = value;
@@ -49,16 +47,16 @@ namespace YoutubeExplode
         {
             // Check arguments
             if (string.IsNullOrWhiteSpace(infoRaw))
-                return null;
+                throw new ArgumentException("infoRaw should not be null or empty", nameof(infoRaw));
 
             // Get parameters
-            var dic = SplitParameters(infoRaw);
+            var dic = GetParameters(infoRaw);
 
             // Check for error
-            if (dic.GetValueOrDefault("status") == "fail")
-                throw new Exception($"Youtube returned an error: {dic.GetValueOrDefault("reason")}");
+            if (dic.GetValueOrDefault("status").Equals("fail", StringComparison.InvariantCultureIgnoreCase))
+                throw new Exception($"Youtube returned an error:{Environment.NewLine}{dic.GetValueOrDefault("reason")}");
 
-            // Prepare the returned object by setting basic values
+            // Set basic values (first layer)
             var result = new VideoInfo
             {
                 ID = dic.GetValueOrDefault("video_id"),
@@ -77,25 +75,19 @@ namespace YoutubeExplode
             var streams = new List<VideoStreamEndpoint>();
             foreach (var streamRaw in streamsRaw.Split(","))
             {
-                var localDic = SplitParameters(streamRaw);
+                var streamsDic = GetParameters(streamRaw);
 
-                // Extract type
-                string type = localDic.GetValueOrDefault("type");
-                if (!string.IsNullOrWhiteSpace(type))
-                    type = type.Substring(0, type.IndexOf(';'));
-
-                // Extract quality
-                string quality = localDic.GetValueOrDefault("quality");
-
-                // Extract url
-                string url = localDic.GetValueOrDefault("url");
+                // Extract values
+                string type = streamsDic.GetValueOrDefault("type");
+                string quality = streamsDic.GetValueOrDefault("quality");
+                string url = streamsDic.GetValueOrDefault("url");
 
                 // Add stream
                 streams.Add(new VideoStreamEndpoint
                 {
-                    Type = type,
-                    Quality = quality,
-                    URL = url
+                    URL = url,
+                    TypeString = type,
+                    QualityString = quality
                 });
             }
             result.Streams = streams;

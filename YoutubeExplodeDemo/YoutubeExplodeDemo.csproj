@@ -100,7 +100,8 @@
     </Compile>
     <Compile Include="WPF\BoolToVisibilityConverter.cs" />
     <Compile Include="WPF\ColorToBrushConverter.cs" />
-    <Compile Include="WPF\InvertboolConverter.cs" />
+    <Compile Include="WPF\EnumToStringConverter.cs" />
+    <Compile Include="WPF\InvertBoolConverter.cs" />
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

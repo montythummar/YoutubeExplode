@@ -92,7 +92,7 @@
                                HorizontalAlignment="Center"
                                Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
                                Text="{Binding VideoInfo.ViewCount,
-                                              StringFormat=\{0\} views}" />
+                                              StringFormat=\{0:N0\} views}" />
                     <TextBlock Margin="5"
                                HorizontalAlignment="Center"
                                Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
@@ -100,30 +100,43 @@
                                               StringFormat=\{0:N2\} ★}" />
                 </UniformGrid>
 
-                <UniformGrid Grid.Row="3" Columns="2">
-                    <ComboBox Margin="5"
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0"
+                              Margin="5"
+                              Grid.IsSharedSizeScope="True"
                               ItemsSource="{Binding VideoInfo.Streams}"
                               SelectedItem="{Binding SelectedStream}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <UniformGrid HorizontalAlignment="Left" Columns="2">
-                                    <WrapPanel Margin="0,0,5,0">
+                                <Grid HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamTypeColumn" />
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamQualityColumn" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <WrapPanel Grid.Column="0" Margin="0,0,5,0">
                                         <TextBlock Text="Type: " />
-                                        <TextBlock FontWeight="SemiBold" Text="{Binding Type}" />
+                                        <TextBlock FontWeight="SemiBold" Text="{Binding FileExtension}" />
                                     </WrapPanel>
-                                    <WrapPanel>
+                                    <WrapPanel Grid.Column="1">
                                         <TextBlock Text="Quality: " />
-                                        <TextBlock FontWeight="SemiBold" Text="{Binding Quality}" />
+                                        <TextBlock FontWeight="SemiBold" Text="{Binding Quality, Converter={StaticResource EnumToStringConverter}}" />
                                     </WrapPanel>
-                                </UniformGrid>
+                                </Grid>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button x:Name="btnDownload"
+                            Grid.Column="1"
                             Margin="5"
                             Command="{Binding DownloadVideoCommand}"
                             Content="Download" />
-                </UniformGrid>
+                </Grid>
 
                 <ProgressBar Grid.Row="4"
                              Foreground="{DynamicResource SecondaryAccentForegroundBrush}"

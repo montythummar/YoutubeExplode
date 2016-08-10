@@ -32,9 +32,9 @@ namespace YoutubeExplode
         /// <summary>
         /// Creates a web request with current properties and given URL
         /// </summary>
-        private HttpWebRequest CreateGenericRequest(Uri uri)
+        private HttpWebRequest CreateGenericRequest(string url)
         {
-            var request = (HttpWebRequest) WebRequest.Create(uri);
+            var request = (HttpWebRequest) WebRequest.Create(url);
             request.UserAgent = UserAgent;
             request.Accept = Accept;
             request.AllowAutoRedirect = AllowRedirect;
@@ -68,9 +68,9 @@ namespace YoutubeExplode
         /// <summary>
         /// Download target to stream
         /// </summary>
-        public MemoryStream Download(Uri uri)
+        public MemoryStream Download(string url)
         {
-            var request = CreateGenericRequest(uri);
+            var request = CreateGenericRequest(url);
             request.Method = "GET";
 
             // Get response
@@ -80,9 +80,9 @@ namespace YoutubeExplode
         /// <summary>
         /// Get a page by URL and return its body
         /// </summary>
-        public string Get(Uri uri)
+        public string Get(string url)
         {
-            var request = CreateGenericRequest(uri);
+            var request = CreateGenericRequest(url);
             request.Method = "GET";
 
             // Get response
@@ -93,9 +93,9 @@ namespace YoutubeExplode
         /// <summary>
         /// Posts data to URL and returns response body
         /// </summary>
-        public string Post(Uri uri, IDictionary<string, string> parameters)
+        public string Post(string url, IDictionary<string, string> parameters)
         {
-            var request = CreateGenericRequest(uri);
+            var request = CreateGenericRequest(url);
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
 

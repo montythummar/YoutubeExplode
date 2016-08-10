@@ -1,4 +1,12 @@
-﻿using System;
+﻿// ------------------------------------------------------------------ 
+//  Solution: <YoutubeExplode>
+//  Project: <YoutubeExplodeDemo>
+//  File: <BoolToVisibilityConverter.cs>
+//  Created By: Alexey Golub
+//  Date: 08/08/2016
+// ------------------------------------------------------------------ 
+
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -12,8 +20,8 @@ namespace YoutubeExplodeDemo.WPF
             var visibility = Visibility.Hidden;
             var flag = false;
 
-            if (value is bool) flag = (bool)value;
-            if (parameter is Visibility) visibility = (Visibility)parameter;
+            if (value is bool) flag = (bool) value;
+            if (parameter is Visibility) visibility = (Visibility) parameter;
 
             return (flag ? Visibility.Visible : visibility);
         }
@@ -22,7 +30,7 @@ namespace YoutubeExplodeDemo.WPF
         {
             var visibility = Visibility.Hidden;
 
-            if (value is Visibility) visibility = (Visibility)value;
+            if (value is Visibility) visibility = (Visibility) value;
 
             return visibility == Visibility.Visible;
         }

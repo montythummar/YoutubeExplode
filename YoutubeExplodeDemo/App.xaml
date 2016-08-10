@@ -42,9 +42,10 @@
                 </Style.Triggers>
             </Style>
 
-            <wpf:InvertBoolConverter x:Key="InvertBoolConverter" />
-            <wpf:ColorToBrushConverter x:Key="ColorToBrushConverter" />
             <wpf:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <wpf:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+            <wpf:EnumToStringConverter x:Key="EnumToStringConverter" />
+            <wpf:InvertBoolConverter x:Key="InvertBoolConverter" />
 
             <alpariAssistant:Locator x:Key="Locator" d:IsDataSource="True" />
         </ResourceDictionary>

@@ -11,26 +11,12 @@ using YoutubeExplode.Models;
 
 namespace YoutubeExplode
 {
-    // TODO: Improve exceptions
-
     /// <summary>
     /// Entry point for YoutubeExplode library
     /// </summary>
     public static class Youtube
     {
         private static readonly HttpClient Client = new HttpClient();
-
-        private static string DownloadStringOrNull(string url)
-        {
-            try
-            {
-                return Client.Get(url.ToUri());
-            }
-            catch
-            {
-                return null;
-            }
-        }
 
         /// <summary>
         /// Get full information about a video by its ID
@@ -40,18 +26,18 @@ namespace YoutubeExplode
         {
             // Check arguments
             if (string.IsNullOrWhiteSpace(videoID))
-                throw new ArgumentNullException(nameof(videoID), "Video ID should not be null or empty");
+                throw new ArgumentException("Video ID should not be null or empty", nameof(videoID));
 
             // Grab info
             string url = $"http://youtube.com/get_video_info?video_id={videoID}";
-            string rawInfo = DownloadStringOrNull(url);
+            string rawInfo = Client.Get(url);
             if (string.IsNullOrWhiteSpace(rawInfo))
-                throw new Exception("Could not download video info");
+                throw new Exception($"Could not download video info for {videoID}");
 
             // Parse
             var result = Parser.ParseVideoInfo(rawInfo);
             if (result == null)
-                throw new Exception("Could not parse video info");
+                throw new Exception($"Could not parse video info for {videoID}");
 
             return result;
         }
