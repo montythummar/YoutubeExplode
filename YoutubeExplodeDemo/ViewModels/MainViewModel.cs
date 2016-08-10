@@ -164,7 +164,10 @@ namespace YoutubeExplodeDemo.ViewModels
                 Filter = $"{ext.ToUpperInvariant()} Video Files|*.{ext}|All files|*.*"
             };
             if (!sfd.ShowDialog().GetValueOrDefault())
+            {
+                IsDownloading = false;
                 return;
+            }
             string filePath = sfd.FileName;
 
             // Download
