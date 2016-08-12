@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------ 
 //  Solution: <YoutubeExplode>
 //  Project: <YoutubeExplode>
-//  File: <Youtube.cs>
+//  File: <YoutubeClient.cs>
 //  Created By: Alexey Golub
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
@@ -12,17 +12,17 @@ using YoutubeExplode.Models;
 namespace YoutubeExplode
 {
     /// <summary>
-    /// Entry point for YoutubeExplode library
+    /// YoutubeClient
     /// </summary>
-    public static class Youtube
+    public class YoutubeClient
     {
-        private static readonly HttpClient Client = new HttpClient();
+        private readonly HttpClient _client = new HttpClient();
 
         /// <summary>
         /// Get full information about a video by its ID
         /// </summary>
         /// <returns>Object of type <see cref="VideoInfo"/> with the information on the given video</returns>
-        public static VideoInfo GetVideoInfo(string videoID)
+        public VideoInfo GetVideoInfo(string videoID)
         {
             // Check arguments
             if (string.IsNullOrWhiteSpace(videoID))
@@ -30,7 +30,7 @@ namespace YoutubeExplode
 
             // Grab info
             string url = $"http://youtube.com/get_video_info?video_id={videoID}";
-            string rawInfo = Client.Get(url);
+            string rawInfo = _client.Get(url);
             if (string.IsNullOrWhiteSpace(rawInfo))
                 throw new Exception($"Could not download video info for {videoID}");
 

@@ -18,7 +18,7 @@ namespace YoutubeExplodeDemo.ViewModels
         /// </summary>
         public static void Error(string message)
         {
-            DispatcherHelper.CheckBeginInvokeOnUI(
+            DispatcherHelper.UIDispatcher.Invoke(
                 () => MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error));
         }
 

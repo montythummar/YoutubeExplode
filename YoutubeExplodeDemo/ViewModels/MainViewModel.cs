@@ -26,6 +26,7 @@ namespace YoutubeExplodeDemo.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private readonly FileDownloaderService _downloader;
+        private readonly YoutubeClient _client;
 
         private string _videoID;
         public string VideoID
@@ -90,6 +91,7 @@ namespace YoutubeExplodeDemo.ViewModels
         public MainViewModel(FileDownloaderService downloader)
         {
             _downloader = downloader;
+            _client = new YoutubeClient();
 
             // Commands
             SubmitCommand = new RelayCommand(Submit);
@@ -117,7 +119,7 @@ namespace YoutubeExplodeDemo.ViewModels
                         id = match.Groups[1].Value;
 
                     // Populate video info
-                    VideoInfo = Youtube.GetVideoInfo(id);
+                    VideoInfo = _client.GetVideoInfo(id);
                 }
                 catch (Exception ex)
                 {

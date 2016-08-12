@@ -31,7 +31,7 @@ using YoutubeExplode;
 ...
 
 // Get info
-var videoInfo = Youtube.GetVideoInfo("bx_KorIwABQ");
+var videoInfo = new YoutubeClient().GetVideoInfo("bx_KorIwABQ");
 
 // Output some of it to console
 Console.WriteLine($"Title: {videoInfo.Title}");

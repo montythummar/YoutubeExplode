@@ -45,7 +45,7 @@
     <Compile Include="Models\VideoStreamQuality.cs" />
     <Compile Include="Models\VideoStreamType.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="Youtube.cs" />
+    <Compile Include="YoutubeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
