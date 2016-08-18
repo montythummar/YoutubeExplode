@@ -6,8 +6,6 @@
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
 
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using YoutubeExplodeDemo.ViewModels;
 
@@ -24,8 +22,6 @@ namespace YoutubeExplodeDemo.Views
         private void tbVideoID_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
-            var tBox = (TextBox) sender;
-            BindingOperations.GetBindingExpression(tBox, TextBox.TextProperty)?.UpdateSource();
             ((MainViewModel) DataContext).SubmitCommand.Execute(null);
         }
     }

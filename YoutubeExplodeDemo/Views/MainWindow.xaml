@@ -41,7 +41,8 @@
                     <TextBox x:Name="tbxVideoID"
                              Grid.Column="0"
                              KeyDown="tbVideoID_KeyDown"
-                             Text="{Binding VideoID}" />
+                             Text="{Binding VideoID,
+                                            UpdateSourceTrigger=PropertyChanged}" />
                     <Button x:Name="btnSubmit"
                             Grid.Column="1"
                             Command="{Binding SubmitCommand}"

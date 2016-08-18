@@ -114,7 +114,7 @@ namespace YoutubeExplodeDemo.ViewModels
                 {
                     // Get video id from url if necessary
                     string id = VideoID;
-                    var match = Regex.Match(id, @"[?&]v=(.+?)\b");
+                    var match = Regex.Match(id, @"[?&]v=(.+?)(?:&|$)");
                     if (match.Success)
                         id = match.Groups[1].Value;
 
