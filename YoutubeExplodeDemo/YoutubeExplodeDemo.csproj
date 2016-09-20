@@ -40,8 +40,8 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Extensions, Version=1.0.6059.23392, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLExtensions.1.0.12\lib\net45\Extensions.dll</HintPath>
+    <Reference Include="Extensions, Version=1.0.6086.33184, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLExtensions.1.0.18\lib\net45\Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
@@ -81,6 +81,10 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WPFExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLWPFExtensions.1.0.3\lib\net45\WPFExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -98,10 +102,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WPF\BoolToVisibilityConverter.cs" />
-    <Compile Include="WPF\ColorToBrushConverter.cs" />
-    <Compile Include="WPF\EnumToStringConverter.cs" />
-    <Compile Include="WPF\InvertBoolConverter.cs" />
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
