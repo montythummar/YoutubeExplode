@@ -92,11 +92,12 @@
                         Margin="15,5,15,5"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
+                        IsMoveToPointEnabled="True"
                         LargeChange="0.1"
                         Maximum="1"
                         Minimum="0"
-                        SmallChange="0.05"
-                        PreviewMouseLeftButtonUp="VideoPositionSlider_PreviewMouseLeftButtonUp" />
+                        PreviewMouseLeftButtonUp="VideoPositionSlider_PreviewMouseLeftButtonUp"
+                        SmallChange="0.05" />
 
                 <UniformGrid Grid.Row="3"
                              HorizontalAlignment="Center"
@@ -104,7 +105,7 @@
                     <Button x:Name="PlayButton"
                             Margin="5"
                             Click="PlayButton_OnClick">
-                        <Path Data="M0,0 L8,8 L0,16Z"
+                        <Path Data="M0,0 L12,8 L0,16Z"
                               Fill="{DynamicResource PrimaryHueMidForegroundBrush}"
                               Stroke="{DynamicResource PrimaryHueMidForegroundBrush}"
                               StrokeThickness="1" />
@@ -115,7 +116,7 @@
                         <Path Data="M0,0 L0,16 M8,0 L8,16"
                               Fill="{DynamicResource PrimaryHueMidForegroundBrush}"
                               Stroke="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              StrokeThickness="3" />
+                              StrokeThickness="4" />
                     </Button>
                     <Button x:Name="StopButton"
                             Margin="5"
