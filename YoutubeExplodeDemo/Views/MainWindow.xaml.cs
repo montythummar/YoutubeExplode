@@ -23,6 +23,12 @@ namespace YoutubeExplodeDemo.Views
             InitializeComponent();
             Closing += (s, e) => Locator.Cleanup();
 
+            ((MainViewModel) DataContext).PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(MainViewModel.SelectedStream))
+                    Stop();
+            };
+
             // Sorry WPF gods but MediaElement sucks
             _positionTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(0.5)};
             _positionTimer.Tick += (sender, args) =>
@@ -30,7 +36,28 @@ namespace YoutubeExplodeDemo.Views
                 if (!VideoMediaElement.NaturalDuration.HasTimeSpan) return;
                 VideoPositionSlider.Value = VideoMediaElement.Position.TotalMilliseconds/
                                             VideoMediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                if (VideoMediaElement.Position >= VideoMediaElement.NaturalDuration)
+                    Stop();
             };
+        }
+
+        private void Play()
+        {
+            VideoMediaElement.Play();
+            _positionTimer.Start();
+        }
+
+        private void Pause()
+        {
+            VideoMediaElement.Pause();
+            _positionTimer.Start();
+        }
+
+        private void Stop()
+        {
+            VideoMediaElement.Stop();
+            _positionTimer.Stop();
+            VideoPositionSlider.Value = 0;
         }
 
         private void tbVideoID_KeyDown(object sender, KeyEventArgs e)
@@ -41,25 +68,22 @@ namespace YoutubeExplodeDemo.Views
 
         private void PlayButton_OnClick(object sender, RoutedEventArgs e)
         {
-            VideoMediaElement.Play();
-            _positionTimer.Start();
+            Play();
         }
 
         private void PauseButton_OnClick(object sender, RoutedEventArgs e)
         {
-            VideoMediaElement.Pause();
-            _positionTimer.Start();
+            Pause();
         }
 
         private void StopButton_OnClick(object sender, RoutedEventArgs e)
         {
-            VideoMediaElement.Stop();
-            _positionTimer.Stop();
-            VideoPositionSlider.Value = 0;
+            Stop();
         }
 
         private void VideoPositionSlider_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
+            if (!VideoMediaElement.NaturalDuration.HasTimeSpan) return;
             var newPos =
                 TimeSpan.FromMilliseconds(VideoPositionSlider.Value*VideoMediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
             VideoMediaElement.Position = newPos;

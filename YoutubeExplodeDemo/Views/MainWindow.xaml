@@ -108,7 +108,7 @@
                              HorizontalAlignment="Center"
                              Rows="1">
                     <Button x:Name="PlayButton"
-                            Margin="5"
+                            Margin="2"
                             Click="PlayButton_OnClick"
                             Padding="5">
                         <materialDesign:PackIcon Width="24"
@@ -116,7 +116,7 @@
                                                  Kind="Play" />
                     </Button>
                     <Button x:Name="PauseButton"
-                            Margin="5"
+                            Margin="2"
                             Click="PauseButton_OnClick"
                             Padding="5">
                         <materialDesign:PackIcon Width="24"
@@ -124,7 +124,7 @@
                                                  Kind="Pause" />
                     </Button>
                     <Button x:Name="StopButton"
-                            Margin="5"
+                            Margin="2"
                             Click="StopButton_OnClick"
                             Padding="5">
                         <materialDesign:PackIcon Width="24"
