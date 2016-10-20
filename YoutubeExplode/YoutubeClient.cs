@@ -16,6 +16,11 @@ namespace YoutubeExplode
     /// </summary>
     public class YoutubeClient
     {
+        /// <summary>
+        /// Default instance of YoutubeClient
+        /// </summary>
+        public static YoutubeClient Default { get; } = new YoutubeClient();
+
         private readonly HttpClient _client = new HttpClient();
 
         /// <summary>
