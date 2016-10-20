@@ -16,7 +16,7 @@
         Icon="/YoutubeExplodeDemo;component/favicon.ico"
         TextElement.FontSize="13"
         TextElement.FontWeight="Regular"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.Foreground="{DynamicResource SecondaryTextBrush}"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
         WindowStartupLocation="CenterScreen"
@@ -28,9 +28,9 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <materialDesign:Card Grid.Row="0">
+        <materialDesign:Card Grid.Row="0" Padding="5">
             <StackPanel>
-                <TextBlock FontWeight="SemiBold" Text="Youtube Video ID or URL:" />
+                <TextBlock Text="Youtube Video ID or URL:" />
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -46,7 +46,12 @@
                     <Button x:Name="SubmitButton"
                             Grid.Column="1"
                             Command="{Binding SubmitCommand}"
-                            Content="Go" />
+                            Padding="5">
+                        <materialDesign:PackIcon Width="24"
+                                                 Height="24"
+                                                 Kind="ArrowRight"
+                                                 ToolTip="Get Video Info" />
+                    </Button>
                 </Grid>
             </StackPanel>
         </materialDesign:Card>
@@ -104,50 +109,50 @@
                              Rows="1">
                     <Button x:Name="PlayButton"
                             Margin="5"
-                            Click="PlayButton_OnClick">
-                        <Path Data="M0,0 L12,8 L0,16Z"
-                              Fill="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              Stroke="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              StrokeThickness="1" />
+                            Click="PlayButton_OnClick"
+                            Padding="5">
+                        <materialDesign:PackIcon Width="24"
+                                                 Height="24"
+                                                 Kind="Play" />
                     </Button>
                     <Button x:Name="PauseButton"
                             Margin="5"
-                            Click="PauseButton_OnClick">
-                        <Path Data="M0,0 L0,16 M8,0 L8,16"
-                              Fill="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              Stroke="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              StrokeThickness="4" />
+                            Click="PauseButton_OnClick"
+                            Padding="5">
+                        <materialDesign:PackIcon Width="24"
+                                                 Height="24"
+                                                 Kind="Pause" />
                     </Button>
                     <Button x:Name="StopButton"
                             Margin="5"
-                            Click="StopButton_OnClick">
-                        <Path Data="M0,0 L0,16 L16,16 L16,0Z"
-                              Fill="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              Stroke="{DynamicResource PrimaryHueMidForegroundBrush}"
-                              StrokeThickness="1" />
+                            Click="StopButton_OnClick"
+                            Padding="5">
+                        <materialDesign:PackIcon Width="24"
+                                                 Height="24"
+                                                 Kind="Stop" />
                     </Button>
 
                 </UniformGrid>
 
                 <UniformGrid Grid.Row="4"
-                             Background="{DynamicResource PrimaryHueLightBrush}"
+                             Background="{DynamicResource PrimaryHueDarkBrush}"
                              Rows="1">
                     <TextBlock Margin="5"
                                HorizontalAlignment="Center"
-                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
                                Text="{Binding VideoInfo.Author}" />
                     <TextBlock Margin="5"
                                HorizontalAlignment="Center"
-                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
                                Text="{Binding VideoInfo.Length}" />
                     <TextBlock Margin="5"
                                HorizontalAlignment="Center"
-                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
                                Text="{Binding VideoInfo.ViewCount,
                                               StringFormat=\{0:N0\} views}" />
                     <TextBlock Margin="5"
                                HorizontalAlignment="Center"
-                               Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+                               Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
                                Text="{Binding VideoInfo.AvgRating,
                                               StringFormat=\{0:N2\} ★}" />
                 </UniformGrid>
@@ -172,12 +177,12 @@
                                     </Grid.ColumnDefinitions>
 
                                     <WrapPanel Grid.Column="0" Margin="0,0,5,0">
-                                        <TextBlock Text="Type: " />
-                                        <TextBlock FontWeight="SemiBold" Text="{Binding FileExtension}" />
+                                        <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Type: " />
+                                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileExtension}" />
                                     </WrapPanel>
                                     <WrapPanel Grid.Column="1">
-                                        <TextBlock Text="Quality: " />
-                                        <TextBlock FontWeight="SemiBold" Text="{Binding Quality, Converter={StaticResource EnumToStringConverter}}" />
+                                        <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Quality: " />
+                                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality}" />
                                     </WrapPanel>
                                 </Grid>
                             </DataTemplate>
@@ -187,11 +192,16 @@
                             Grid.Column="1"
                             Margin="5"
                             Command="{Binding DownloadVideoCommand}"
-                            Content="Download" />
+                            Padding="5"
+                            ToolTip="Download">
+                        <materialDesign:PackIcon Width="24"
+                                                 Height="24"
+                                                 Kind="Download" />
+                    </Button>
                 </Grid>
 
                 <ProgressBar Grid.Row="6"
-                             Foreground="{DynamicResource SecondaryAccentForegroundBrush}"
+                             Foreground="{DynamicResource SecondaryAccentBrush}"
                              Maximum="1"
                              Minimum="0"
                              Visibility="{Binding IsDownloading,
