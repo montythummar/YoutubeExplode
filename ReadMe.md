@@ -45,4 +45,4 @@ Process.Start(videoInfo.Streams.First().URL);
 
 **Screenshots:**
 
-![](http://www.tyrrrz.me/projects/images/ytexplode_1.jpg)
+![](http://www.tyrrrz.me/projects/images/ytexplode_1.png)
