@@ -17,6 +17,7 @@ namespace YoutubeExplodeDemo.Views
     public partial class MainWindow
     {
         private readonly DispatcherTimer _positionTimer;
+        private bool _isPlaying;
 
         public MainWindow()
         {
@@ -25,7 +26,7 @@ namespace YoutubeExplodeDemo.Views
 
             ((MainViewModel) DataContext).PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(MainViewModel.SelectedStream))
+                if (args.PropertyName == nameof(MainViewModel.SelectedStream) && _isPlaying)
                     Stop();
             };
 
@@ -45,19 +46,22 @@ namespace YoutubeExplodeDemo.Views
         {
             VideoMediaElement.Play();
             _positionTimer.Start();
+            _isPlaying = true;
         }
 
         private void Pause()
         {
             VideoMediaElement.Pause();
-            _positionTimer.Start();
+            _positionTimer.Stop();
         }
 
         private void Stop()
         {
+            VideoMediaElement.Position = TimeSpan.Zero;
             VideoMediaElement.Stop();
             _positionTimer.Stop();
             VideoPositionSlider.Value = 0;
+            _isPlaying = false;
         }
 
         private void tbVideoID_KeyDown(object sender, KeyEventArgs e)
