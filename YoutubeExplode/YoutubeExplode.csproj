@@ -39,7 +39,6 @@
   <ItemGroup>
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Ext.cs" />
-    <Compile Include="HttpClient.cs" />
     <Compile Include="Models\VideoInfo.cs" />
     <Compile Include="Models\VideoStreamEndpoint.cs" />
     <Compile Include="Models\VideoStreamQuality.cs" />

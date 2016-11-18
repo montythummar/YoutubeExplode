@@ -7,6 +7,7 @@
 // ------------------------------------------------------------------ 
 
 using System;
+using System.Net;
 using YoutubeExplode.Models;
 
 namespace YoutubeExplode
@@ -17,11 +18,40 @@ namespace YoutubeExplode
     public class YoutubeClient
     {
         /// <summary>
+        /// Delegate that handles GET requests and returns the content of the page as a string
+        /// </summary>
+        /// <param name="url">URL of the request</param>
+        /// <returns>The page HTML content as string</returns>
+        public delegate string PerformGetRequestDelegate(string url);
+
+        /// <summary>
         /// Default instance of YoutubeClient
         /// </summary>
         public static YoutubeClient Default { get; } = new YoutubeClient();
 
-        private readonly HttpClient _client = new HttpClient();
+        private static string PerformGetRequestDefault(string url)
+        {
+            try
+            {
+                using (var client = new WebClient())
+                    return client.DownloadString(url);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delegate that handles GET request for the client
+        /// </summary>
+        public PerformGetRequestDelegate GetRequestDelegate { get; set; }
+
+        /// <inheritdoc />
+        public YoutubeClient()
+        {
+            GetRequestDelegate = PerformGetRequestDefault;
+        }
 
         /// <summary>
         /// Get full information about a video by its ID
@@ -35,7 +65,7 @@ namespace YoutubeExplode
 
             // Grab info
             string url = $"http://youtube.com/get_video_info?video_id={videoID}";
-            string rawInfo = _client.Get(url);
+            string rawInfo = GetRequestDelegate(url);
             if (string.IsNullOrWhiteSpace(rawInfo))
                 throw new Exception($"Could not download video info for {videoID}");
 
