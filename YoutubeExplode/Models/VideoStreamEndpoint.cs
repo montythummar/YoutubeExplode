@@ -6,8 +6,6 @@
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
 
-using System;
-
 namespace YoutubeExplode.Models
 {
     /// <summary>
@@ -19,17 +17,17 @@ namespace YoutubeExplode.Models
         {
             if (string.IsNullOrWhiteSpace(typeString)) return VideoStreamType.Unknown;
 
-            if (typeString.IndexOf("video/mp4", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (typeString.ContainsInvariant("video/mp4"))
                 return VideoStreamType.MP4;
-            if (typeString.IndexOf("video/webm", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (typeString.ContainsInvariant("video/webm"))
                 return VideoStreamType.WebM;
-            if (typeString.IndexOf("video/3gpp", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (typeString.ContainsInvariant("video/3gpp"))
                 return VideoStreamType.ThirdGenerationPartnershipProject;
-            if (typeString.IndexOf("audio/mp4", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (typeString.ContainsInvariant("audio/mp4"))
                 return VideoStreamType.AudioOnlyMP4;
-            if (typeString.IndexOf("audio/webm", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (typeString.ContainsInvariant("audio/webm"))
                 return VideoStreamType.AudioOnlyWebM;
-            if (typeString.IndexOf("audio/3gpp", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (typeString.ContainsInvariant("audio/3gpp"))
                 return VideoStreamType.AudioOnlyThirdGenerationPartnershipProject;
 
             return VideoStreamType.Unknown;
@@ -39,23 +37,23 @@ namespace YoutubeExplode.Models
         {
             if (string.IsNullOrWhiteSpace(qualityString)) return VideoStreamQuality.Unknown;
 
-            if (qualityString.IndexOf("1080p", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("1080p"))
                 return VideoStreamQuality.High1080;
-            if (qualityString.IndexOf("720p", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("720p"))
                 return VideoStreamQuality.High720;
-            if (qualityString.IndexOf("hd", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("hd"))
                 return VideoStreamQuality.High;
-            if (qualityString.IndexOf("480p", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("480p"))
                 return VideoStreamQuality.Medium480;
-            if (qualityString.IndexOf("360p", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("360p"))
                 return VideoStreamQuality.Medium360;
-            if (qualityString.IndexOf("medium", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("medium"))
                 return VideoStreamQuality.Medium;
-            if (qualityString.IndexOf("240p", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("240p"))
                 return VideoStreamQuality.Low240;
-            if (qualityString.IndexOf("144p", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("144p"))
                 return VideoStreamQuality.Low144;
-            if (qualityString.IndexOf("small", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (qualityString.ContainsInvariant("small"))
                 return VideoStreamQuality.Low;
 
             return VideoStreamQuality.Unknown;

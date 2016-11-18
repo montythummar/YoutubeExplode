@@ -54,7 +54,7 @@ namespace YoutubeExplode
             var dic = GetParameters(infoRaw);
 
             // Check for error
-            if (dic.GetValueOrDefault("status").Equals("fail", StringComparison.InvariantCultureIgnoreCase))
+            if (dic.GetValueOrDefault("status").EqualsInvariant("fail"))
                 throw new YoutubeErrorException(dic.GetValueOrDefault("reason"));
 
             // Set basic values (first layer)
@@ -73,11 +73,11 @@ namespace YoutubeExplode
                 IsRatingAllowed = dic.GetValueOrDefault("allow_ratings").ParseIntOrDefault() == 1,
                 IsMuted = dic.GetValueOrDefault("muted").ParseIntOrDefault() == 1,
                 IsEmbedingAllowed = dic.GetValueOrDefault("allow_embed").ParseIntOrDefault() == 1,
-                HasClosedCaptions = dic.GetValueOrDefault("has_cc").Equals("true", StringComparison.InvariantCultureIgnoreCase),
+                HasClosedCaptions = dic.GetValueOrDefault("has_cc").EqualsInvariant("true"),
                 ViewCount = dic.GetValueOrDefault("view_count").ParseIntOrDefault(),
                 AvgRating = dic.GetValueOrDefault("avg_rating").ParseDoubleOrDefault(),
                 Keywords = dic.GetValueOrDefault("keywords")?.Split(","),
-                UseCipherSignature = dic.GetValueOrDefault("use_cipher_signature").Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                UseCipherSignature = dic.GetValueOrDefault("use_cipher_signature").EqualsInvariant("true")
             };
 
             // Get the streams

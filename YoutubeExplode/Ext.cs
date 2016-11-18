@@ -51,5 +51,17 @@ namespace YoutubeExplode
                 return result;
             return defaultValue;
         }
+
+        public static bool EqualsInvariant(this string str, string other)
+        {
+            if (str == null)
+                return other == null;
+            return str.Equals(other, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static bool ContainsInvariant(this string str, string other)
+        {
+            return str?.IndexOf(other, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        }
     }
 }
