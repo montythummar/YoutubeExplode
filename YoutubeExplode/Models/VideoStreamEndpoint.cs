@@ -39,7 +39,7 @@ namespace YoutubeExplode.Models
 
             if (qualityString.ContainsInvariant("1080p"))
                 return VideoStreamQuality.High1080;
-            if (qualityString.ContainsInvariant("720p"))
+            if (qualityString.ContainsInvariant("720p") || qualityString.ContainsInvariant("hd720"))
                 return VideoStreamQuality.High720;
             if (qualityString.ContainsInvariant("hd"))
                 return VideoStreamQuality.High;
