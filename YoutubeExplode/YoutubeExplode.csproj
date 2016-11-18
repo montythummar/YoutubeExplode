@@ -36,6 +36,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Decipherer.cs" />
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Ext.cs" />
     <Compile Include="Models\VideoInfo.cs" />

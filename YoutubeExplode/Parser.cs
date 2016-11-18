@@ -52,9 +52,12 @@ namespace YoutubeExplode
                 var streamsDic = GetParameters(streamRaw);
 
                 // Extract values
+                string sig = streamsDic.GetValueOrDefault("signature") ??
+                             streamsDic.GetValueOrDefault("sig") ??
+                             streamsDic.GetValueOrDefault("s");
+                string url = streamsDic.GetValueOrDefault("url");
                 string type = streamsDic.GetValueOrDefault("type");
                 string quality = streamsDic.GetValueOrDefault("quality_label") ?? streamsDic.GetValueOrDefault("quality");
-                string url = streamsDic.GetValueOrDefault("url");
                 string resolution = streamsDic.GetValueOrDefault("size");
                 int bitrate = streamsDic.GetValueOrDefault("bitrate").ParseIntOrDefault();
                 double fps = streamsDic.GetValueOrDefault("fps").ParseDoubleOrDefault();
@@ -62,6 +65,7 @@ namespace YoutubeExplode
                 // Add stream
                 yield return new VideoStreamEndpoint
                 {
+                    Signature = sig,
                     URL = url,
                     TypeString = type,
                     QualityString = quality,
@@ -76,7 +80,7 @@ namespace YoutubeExplode
         {
             // Check arguments
             if (string.IsNullOrWhiteSpace(infoRaw))
-                throw new ArgumentException("infoRaw should not be null or empty", nameof(infoRaw));
+                throw new ArgumentNullException(nameof(infoRaw));
 
             // Get parameters
             var dic = GetParameters(infoRaw);
@@ -105,7 +109,7 @@ namespace YoutubeExplode
                 ViewCount = dic.GetValueOrDefault("view_count").ParseIntOrDefault(),
                 AvgRating = dic.GetValueOrDefault("avg_rating").ParseDoubleOrDefault(),
                 Keywords = dic.GetValueOrDefault("keywords")?.Split(","),
-                UseCipherSignature = dic.GetValueOrDefault("use_cipher_signature").EqualsInvariant("true")
+                NeedsDeciphering = dic.GetValueOrDefault("use_cipher_signature").EqualsInvariant("true")
             };
 
             // Get the streams

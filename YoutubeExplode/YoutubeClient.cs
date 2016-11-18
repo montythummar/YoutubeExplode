@@ -25,7 +25,10 @@ namespace YoutubeExplode
         /// <returns>The page HTML content as string</returns>
         public delegate string PerformGetRequestDelegate(string url);
 
-        private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
+        private static readonly Regex VideoUrlToIDRegex = new Regex("[?&]v=(.+?)(?:&|$)",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static readonly Regex PlayerJavascriptSourceRegex = new Regex("\"js\"\\s?:\\s?\"(.+?)\"",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
@@ -60,25 +63,58 @@ namespace YoutubeExplode
         /// <summary>
         /// Get full information about a video by its ID
         /// </summary>
+        /// <param name="videoID">The ID of the video</param>
+        /// <param name="decipherIfNeeded">When set to true, videos with encrypted signatures will be automatically deciphered. This requires extra HTTP requests and some computational time. If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="Decipher"/> method. Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamEndpoint"/> by URL</param>
         /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
-        public VideoInfo GetVideoInfo(string videoID)
+        public VideoInfo GetVideoInfo(string videoID, bool decipherIfNeeded = true)
         {
-            // Check arguments
             if (string.IsNullOrWhiteSpace(videoID))
                 throw new ArgumentException("Video ID should not be null or empty", nameof(videoID));
 
             // Grab info
             string url = $"http://youtube.com/get_video_info?video_id={videoID}";
-            string rawInfo = GetRequestDelegate(url);
-            if (string.IsNullOrWhiteSpace(rawInfo))
-                throw new Exception($"Could not download video info for {videoID}");
+            string response = GetRequestDelegate(url);
+            if (string.IsNullOrWhiteSpace(response))
+                throw new Exception($"Could not get video info for {videoID}");
 
             // Parse
-            var result = Parser.ParseVideoInfo(rawInfo);
+            var result = Parser.ParseVideoInfo(response);
             if (result == null)
                 throw new Exception($"Could not parse video info for {videoID}");
 
+            // Decipher
+            if (result.NeedsDeciphering && decipherIfNeeded)
+                Decipher(result);
+
             return result;
+        }
+
+        /// <summary>
+        /// Deciphers the streams (if required)
+        /// </summary>
+        public void Decipher(VideoInfo videoInfo)
+        {
+            if (!videoInfo.NeedsDeciphering)
+                throw new ArgumentException("Given video info does not require to be deciphered", nameof(videoInfo));
+
+            // Get the javascript source URL
+            string url = $"http://youtube.com/watch?v={videoInfo.ID}";
+            string response = GetRequestDelegate(url);
+            if (string.IsNullOrWhiteSpace(response))
+                throw new Exception($"Could not get video page for {videoInfo.ID}");
+
+            // Look for the required string
+            var match = PlayerJavascriptSourceRegex.Match(response);
+            if (!match.Success)
+                throw new Exception($"Could not parse video page for {videoInfo.ID}");
+            string jsUrl = match.Groups[1].Value.Replace("\\", string.Empty);
+            jsUrl = jsUrl.ToUri("http://youtube.com").AbsoluteUri;
+
+            // Get the js
+            response = GetRequestDelegate(jsUrl);
+
+            // Decipher
+            Decipherer.Decipher(videoInfo, response);
         }
 
         /// <summary>
@@ -99,12 +135,11 @@ namespace YoutubeExplode
         /// <returns>Whether the execution was successful or not</returns>
         public bool TryParseVideoID(string videoURL, out string videoID)
         {
-            videoID = null;
+            videoID = default(string);
             var match = VideoUrlToIDRegex.Match(videoURL);
-            if (!match.Success)
-                return false;
-            videoID = match.Groups[1].Value;
-            return true;
+            if (match.Success)
+                videoID = match.Groups[1].Value;
+            return match.Success;
         }
     }
 }

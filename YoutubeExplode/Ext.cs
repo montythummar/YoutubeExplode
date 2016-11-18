@@ -23,6 +23,11 @@ namespace YoutubeExplode
             return new UriBuilder(uri).Uri;
         }
 
+        public static Uri ToUri(this string uri, string baseUri)
+        {
+            return new Uri(ToUri(baseUri), uri);
+        }
+
         public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key,
             TValue defaultValue = default(TValue))
         {

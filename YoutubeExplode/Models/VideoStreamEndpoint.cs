@@ -77,6 +77,11 @@ namespace YoutubeExplode.Models
         private VideoStreamType _type;
 
         /// <summary>
+        /// Video signature
+        /// </summary>
+        internal string Signature { get; set; }
+
+        /// <summary>
         /// URL of the stream
         /// </summary>
         public string URL { get; internal set; }

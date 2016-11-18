@@ -103,7 +103,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Does this video use an encrypted signature?
         /// </summary>
-        internal bool UseCipherSignature { get; set; }
+        public bool NeedsDeciphering { get; internal set; }
 
         /// <summary>
         /// Video streams
