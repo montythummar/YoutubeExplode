@@ -19,18 +19,53 @@ namespace YoutubeExplode.Models
         Unknown,
 
         /// <summary>
-        /// HD video stream
+        /// 1080p HD video stream
+        /// </summary>
+        High1080,
+
+        /// <summary>
+        /// 720p HD video stream
+        /// </summary>
+        High720,
+
+        /// <summary>
+        /// HD video stream with unspecified resolution
         /// </summary>
         High,
 
         /// <summary>
-        /// Medium-quality video stream
+        /// 480p medium-quality video stream
+        /// </summary>
+        Medium480,
+
+        /// <summary>
+        /// 360p medium-quality video stream
+        /// </summary>
+        Medium360,
+
+        /// <summary>
+        /// Medium-quality video stream with unspecified resolution
         /// </summary>
         Medium,
 
         /// <summary>
-        /// Low-quality video stream
+        /// 240p low-quality video stream
         /// </summary>
-        Low
+        Low240,
+
+        /// <summary>
+        /// 144p low-quality video stream
+        /// </summary>
+        Low144,
+
+        /// <summary>
+        /// Low-quality video stream with unspecified resolution
+        /// </summary>
+        Low,
+        
+        /// <summary>
+        /// There is no video in this stream (audio-only)
+        /// </summary>
+        NoVideo
     }
 }

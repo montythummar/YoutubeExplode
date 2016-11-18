@@ -129,11 +129,11 @@ namespace YoutubeExplodeDemo.ViewModels
             });
 
             // Thumbnail
-            if (VideoInfo?.ThumbnailURL != null)
+            if (VideoInfo?.ImageHighQuality != null)
             {
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
-                bmp.UriSource = new Uri(VideoInfo.ThumbnailURL, UriKind.Absolute);
+                bmp.UriSource = new Uri(VideoInfo.Thumbnail, UriKind.Absolute);
                 bmp.EndInit();
                 ThumbnailImageSource = bmp;
             }
