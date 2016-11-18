@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Models;
@@ -42,6 +43,33 @@ namespace YoutubeExplode
             }
 
             return dic;
+        }
+
+        private static IEnumerable<VideoStreamEndpoint> ParseVideoStreamEndpoints(string streamsRaw)
+        {
+            foreach (var streamRaw in streamsRaw.Split(","))
+            {
+                var streamsDic = GetParameters(streamRaw);
+
+                // Extract values
+                string type = streamsDic.GetValueOrDefault("type");
+                string quality = streamsDic.GetValueOrDefault("quality_label") ?? streamsDic.GetValueOrDefault("quality");
+                string url = streamsDic.GetValueOrDefault("url");
+                string resolution = streamsDic.GetValueOrDefault("size");
+                int bitrate = streamsDic.GetValueOrDefault("bitrate").ParseIntOrDefault();
+                double fps = streamsDic.GetValueOrDefault("fps").ParseDoubleOrDefault();
+
+                // Add stream
+                yield return new VideoStreamEndpoint
+                {
+                    URL = url,
+                    TypeString = type,
+                    QualityString = quality,
+                    ResolutionString = resolution,
+                    Bitrate = bitrate,
+                    FPS = fps
+                };
+            }
         }
 
         public static VideoInfo ParseVideoInfo(string infoRaw)
@@ -82,32 +110,8 @@ namespace YoutubeExplode
 
             // Get the streams
             string streamsRaw = dic.GetValueOrDefault("adaptive_fmts") ?? dic.GetValueOrDefault("url_encoded_fmt_stream_map");
-            if (string.IsNullOrWhiteSpace(streamsRaw)) return result;
-            var streams = new List<VideoStreamEndpoint>();
-            foreach (var streamRaw in streamsRaw.Split(","))
-            {
-                var streamsDic = GetParameters(streamRaw);
-
-                // Extract values
-                string type = streamsDic.GetValueOrDefault("type");
-                string quality = streamsDic.GetValueOrDefault("quality_label") ?? streamsDic.GetValueOrDefault("quality");
-                string url = streamsDic.GetValueOrDefault("url");
-                string resolution = streamsDic.GetValueOrDefault("size");
-                int bitrate = streamsDic.GetValueOrDefault("bitrate").ParseIntOrDefault();
-                double fps = streamsDic.GetValueOrDefault("fps").ParseDoubleOrDefault();
-
-                // Add stream
-                streams.Add(new VideoStreamEndpoint
-                {
-                    URL = url,
-                    TypeString = type,
-                    QualityString = quality,
-                    ResolutionString = resolution,
-                    Bitrate = bitrate,
-                    FPS = fps
-                });
-            }
-            result.Streams = streams.ToArray();
+            if (!string.IsNullOrWhiteSpace(streamsRaw))
+                result.Streams = ParseVideoStreamEndpoints(streamsRaw).ToArray();
 
             // Return
             return result;
