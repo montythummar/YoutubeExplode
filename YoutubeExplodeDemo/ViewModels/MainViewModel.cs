@@ -16,6 +16,8 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
 using NegativeLayer.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using YoutubeExplode;
 using YoutubeExplode.Models;
 using YoutubeExplodeDemo.Services;
@@ -83,6 +85,13 @@ namespace YoutubeExplodeDemo.ViewModels
             }
         }
 
+        private string _rawData;
+        public string RawData
+        {
+            get { return _rawData; }
+            set { Set(ref _rawData, value); }
+        }
+
         // Commands
         public RelayCommand SubmitCommand { get; }
         public RelayCommand DownloadVideoCommand { get; }
@@ -119,6 +128,11 @@ namespace YoutubeExplodeDemo.ViewModels
 
                     // Populate video info
                     VideoInfo = _client.GetVideoInfo(id);
+
+                    // Serialize into raw data
+                    var settings = new JsonSerializerSettings();
+                    settings.Converters.Add(new StringEnumConverter());
+                    RawData = JsonConvert.SerializeObject(VideoInfo, Formatting.Indented, settings);
                 }
                 catch (Exception ex)
                 {
