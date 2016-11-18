@@ -94,14 +94,14 @@ namespace YoutubeExplodeDemo.ViewModels
             _client = new YoutubeClient();
 
             // Commands
-            SubmitCommand = new RelayCommand(Submit);
-            DownloadVideoCommand = new RelayCommand(DownloadVideo, () => SelectedStream != null && !IsDownloading);
+            SubmitCommand = new RelayCommand(SubmitAsync);
+            DownloadVideoCommand = new RelayCommand(DownloadVideoAsync, () => SelectedStream != null && !IsDownloading);
 
             // Events
             _downloader.ProgressChanged += (sender, args) => DownloadProgress = _downloader.Progress;
         }
 
-        private async void Submit()
+        private async void SubmitAsync()
         {
             // Check params
             if (VideoID.IsBlank())
@@ -133,7 +133,7 @@ namespace YoutubeExplodeDemo.ViewModels
             {
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
-                bmp.UriSource = new Uri(VideoInfo.Thumbnail, UriKind.Absolute);
+                bmp.UriSource = new Uri(VideoInfo.ImageHighQuality, UriKind.Absolute);
                 bmp.EndInit();
                 ThumbnailImageSource = bmp;
             }
@@ -145,7 +145,7 @@ namespace YoutubeExplodeDemo.ViewModels
             }
         }
 
-        private async void DownloadVideo()
+        private async void DownloadVideoAsync()
         {
             // Check params
             if (SelectedStream == null) return;
