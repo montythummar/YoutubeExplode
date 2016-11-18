@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web;
+using System.Net;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Models;
 
@@ -22,7 +22,7 @@ namespace YoutubeExplode
             var keyValuePairsRaw = parametersRaw.Split("&");
             foreach (string keyValuePairRaw in keyValuePairsRaw)
             {
-                string keyValuePairRawDecoded = HttpUtility.UrlDecode(keyValuePairRaw);
+                string keyValuePairRawDecoded = WebUtility.UrlDecode(keyValuePairRaw);
                 if (string.IsNullOrWhiteSpace(keyValuePairRawDecoded))
                     continue;
 

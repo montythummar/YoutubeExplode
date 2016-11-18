@@ -9,7 +9,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -112,11 +111,11 @@ namespace YoutubeExplodeDemo.ViewModels
             {
                 try
                 {
-                    // Get video id from url if necessary
-                    string id = VideoID;
-                    var match = Regex.Match(id, @"[?&]v=(.+?)(?:&|$)");
-                    if (match.Success)
-                        id = match.Groups[1].Value;
+                    string id;
+
+                    // Parse URL if necessary
+                    if (!_client.TryParseVideoID(VideoID, out id))
+                        id = VideoID;
 
                     // Populate video info
                     VideoInfo = _client.GetVideoInfo(id);

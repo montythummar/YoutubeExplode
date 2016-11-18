@@ -8,6 +8,7 @@
 
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using YoutubeExplode.Models;
 
 namespace YoutubeExplode
@@ -23,6 +24,9 @@ namespace YoutubeExplode
         /// <param name="url">URL of the request</param>
         /// <returns>The page HTML content as string</returns>
         public delegate string PerformGetRequestDelegate(string url);
+
+        private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// Default instance of YoutubeClient
@@ -75,6 +79,32 @@ namespace YoutubeExplode
                 throw new Exception($"Could not parse video info for {videoID}");
 
             return result;
+        }
+
+        /// <summary>
+        /// Parses video ID from a youtube video URL
+        /// </summary>
+        /// <returns>Video ID</returns>
+        public string ParseVideoID(string videoURL)
+        {
+            var match = VideoUrlToIDRegex.Match(videoURL);
+            if (!match.Success)
+                throw new FormatException($"Could not parse Video ID from given string: {videoURL}");
+            return match.Groups[1].Value;
+        }
+
+        /// <summary>
+        /// Tries to parse video ID from a youtube video URL
+        /// </summary>
+        /// <returns>Whether the execution was successful or not</returns>
+        public bool TryParseVideoID(string videoURL, out string videoID)
+        {
+            videoID = null;
+            var match = VideoUrlToIDRegex.Match(videoURL);
+            if (!match.Success)
+                return false;
+            videoID = match.Groups[1].Value;
+            return true;
         }
     }
 }
