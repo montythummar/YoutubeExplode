@@ -37,6 +37,21 @@ namespace YoutubeExplode
             return defaultValue;
         }
 
+        public static T ConvertOrDefault<T>(this object obj, T defaultValue = default(T))
+        {
+            if (obj == null)
+                return defaultValue;
+
+            try
+            {
+                return (T) Convert.ChangeType(obj, typeof(T));
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
         public static double ParseDoubleOrDefault(this string str, double defaultValue = default(double))
         {
             if (string.IsNullOrWhiteSpace(str))

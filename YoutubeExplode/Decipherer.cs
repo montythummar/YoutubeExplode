@@ -167,7 +167,7 @@ namespace YoutubeExplode
             string operations = GetOperations(rawJs);
 
             // Update signatures on videostreams
-            foreach (var stream in videoInfo.Streams)
+            foreach (var stream in videoInfo.Streams.Where(s => s.NeedsDeciphering))
             {
                 string sig = stream.Signature;
                 string newSig = DecipherWithOperations(sig, operations);
@@ -180,6 +180,8 @@ namespace YoutubeExplode
                     stream.URL = stream.URL.Replace(sig, newSig);
                 else
                     stream.URL += $"&signature={newSig}";
+
+                stream.NeedsDeciphering = false;
             }
 
             videoInfo.NeedsDeciphering = false;

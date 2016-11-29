@@ -13,6 +13,7 @@ namespace YoutubeExplode.Models
     /// </summary>
     public class VideoStreamEndpoint
     {
+        #region Static
         private static VideoStreamType ParseType(string typeString)
         {
             if (string.IsNullOrWhiteSpace(typeString)) return VideoStreamType.Unknown;
@@ -71,6 +72,7 @@ namespace YoutubeExplode.Models
             // Default is mp4
             return "mp4";
         }
+        #endregion
 
         private string _typeString;
         private string _qualityString;
@@ -79,7 +81,12 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Video signature
         /// </summary>
-        internal string Signature { get; set; }
+        public string Signature { get; internal set; }
+
+        /// <summary>
+        /// Whether or not this stream's signature needs to be deciphered before the stream can be accessed
+        /// </summary>
+        public bool NeedsDeciphering { get; internal set; }
 
         /// <summary>
         /// URL of the stream

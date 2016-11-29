@@ -61,27 +61,27 @@ namespace YoutubeExplode.Models
         public TimeSpan Length { get; internal set; }
 
         /// <summary>
-        /// Is the video publicly listed?
+        /// Whether this video is listed publicly
         /// </summary>
         public bool IsListed { get; internal set; }
 
         /// <summary>
-        /// Is it allowed to rate the video?
+        /// Whether it's allowed to leave user rating on this video
         /// </summary>
         public bool IsRatingAllowed { get; internal set; }
 
         /// <summary>
-        /// Is the video's audio muted?
+        /// Whether the audio of this video has been muted
         /// </summary>
         public bool IsMuted { get; internal set; }
 
         /// <summary>
-        /// Is it allowed to embed this video?
+        /// Whether it's allowed to embed this video outside of youtube
         /// </summary>
         public bool IsEmbedingAllowed { get; internal set; }
 
         /// <summary>
-        /// Does this video have closed captions available?
+        /// Whether this video has closed captions
         /// </summary>
         public bool HasClosedCaptions { get; internal set; }
 
@@ -101,7 +101,7 @@ namespace YoutubeExplode.Models
         public string[] Keywords { get; internal set; }
 
         /// <summary>
-        /// Does this video use an encrypted signature?
+        /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
         /// </summary>
         public bool NeedsDeciphering { get; internal set; }
 
@@ -109,6 +109,11 @@ namespace YoutubeExplode.Models
         /// Video streams
         /// </summary>
         public VideoStreamEndpoint[] Streams { get; internal set; }
+
+        /// <summary>
+        /// Version of the video player, used for this video's playback
+        /// </summary>
+        public string PlayerVersion { get; internal set; }
 
         internal VideoInfo() { }
     }

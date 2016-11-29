@@ -8,6 +8,7 @@
 
 using System;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using YoutubeExplode.Models;
 
@@ -25,10 +26,7 @@ namespace YoutubeExplode
         /// <returns>The page HTML content as string</returns>
         public delegate string PerformGetRequestDelegate(string url);
 
-        private static readonly Regex VideoUrlToIDRegex = new Regex("[?&]v=(.+?)(?:&|$)",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-        private static readonly Regex PlayerJavascriptSourceRegex = new Regex("\"js\"\\s?:\\s?\"(.+?)\"",
+        private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
@@ -41,7 +39,10 @@ namespace YoutubeExplode
             try
             {
                 using (var client = new WebClient())
+                {
+                    client.Encoding = Encoding.UTF8;
                     return client.DownloadString(url);
+                }
             }
             catch
             {
@@ -64,7 +65,7 @@ namespace YoutubeExplode
         /// Get full information about a video by its ID
         /// </summary>
         /// <param name="videoID">The ID of the video</param>
-        /// <param name="decipherIfNeeded">When set to true, videos with encrypted signatures will be automatically deciphered. This requires extra HTTP requests and some computational time. If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="Decipher"/> method. Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamEndpoint"/> by URL</param>
+        /// <param name="decipherIfNeeded">When set to true, videos with encrypted signatures will be automatically deciphered. This requires one extra HTTP request and some computational time. If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="Decipher"/> method. Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamEndpoint"/> by URL</param>
         /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
         public VideoInfo GetVideoInfo(string videoID, bool decipherIfNeeded = true)
         {
@@ -72,15 +73,15 @@ namespace YoutubeExplode
                 throw new ArgumentException("Video ID should not be null or empty", nameof(videoID));
 
             // Grab info
-            string url = $"http://youtube.com/get_video_info?video_id={videoID}";
+            string url = $"http://youtube.com/watch?v={videoID}";
             string response = GetRequestDelegate(url);
             if (string.IsNullOrWhiteSpace(response))
-                throw new Exception($"Could not get video info for {videoID}");
+                throw new Exception("Could not get video info");
 
             // Parse
             var result = Parser.ParseVideoInfo(response);
             if (result == null)
-                throw new Exception($"Could not parse video info for {videoID}");
+                throw new Exception("Could not parse video info");
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
@@ -98,20 +99,12 @@ namespace YoutubeExplode
                 throw new ArgumentException("Given video info does not require to be deciphered", nameof(videoInfo));
 
             // Get the javascript source URL
-            string url = $"http://youtube.com/watch?v={videoInfo.ID}";
+            if (string.IsNullOrWhiteSpace(videoInfo.PlayerVersion))
+                throw new Exception("Given video info does not have information about the player version");
+            string url = $"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
             string response = GetRequestDelegate(url);
             if (string.IsNullOrWhiteSpace(response))
-                throw new Exception($"Could not get video page for {videoInfo.ID}");
-
-            // Look for the required string
-            var match = PlayerJavascriptSourceRegex.Match(response);
-            if (!match.Success)
-                throw new Exception($"Could not parse video page for {videoInfo.ID}");
-            string jsUrl = match.Groups[1].Value.Replace("\\", string.Empty);
-            jsUrl = jsUrl.ToUri("http://youtube.com").AbsoluteUri;
-
-            // Get the js
-            response = GetRequestDelegate(jsUrl);
+                throw new Exception("Could not get the video player source code");
 
             // Decipher
             Decipherer.Decipher(videoInfo, response);
@@ -125,7 +118,7 @@ namespace YoutubeExplode
         {
             var match = VideoUrlToIDRegex.Match(videoURL);
             if (!match.Success)
-                throw new FormatException($"Could not parse Video ID from given string: {videoURL}");
+                throw new FormatException("Could not parse Video ID from given string");
             return match.Groups[1].Value;
         }
 
