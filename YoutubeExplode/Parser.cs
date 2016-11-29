@@ -139,7 +139,7 @@ namespace YoutubeExplode
             result.IsMuted = videoInfo.GetValueOrDefault("muted").ConvertOrDefault(1) == 1;
             result.IsEmbedingAllowed = videoInfo.GetValueOrDefault("allow_embed").ConvertOrDefault(1) == 1;
             result.HasClosedCaptions = videoInfo.GetValueOrDefault("has_cc").ConvertOrDefault(false);
-            result.ViewCount = videoInfo.GetValueOrDefault("view_count").ConvertOrDefault(0);
+            result.ViewCount = videoInfo.GetValueOrDefault("view_count").ConvertOrDefault(0u);
             result.AvgRating = videoInfo.GetValueOrDefault("avg_rating").ConvertOrDefault(0.0);
             result.Keywords = videoInfo.GetValueOrDefault("keywords").ConvertOrDefault(string.Empty).Split(",");
 

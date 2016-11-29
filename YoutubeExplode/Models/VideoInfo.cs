@@ -88,7 +88,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// View count
         /// </summary>
-        public int ViewCount { get; internal set; }
+        public ulong ViewCount { get; internal set; }
 
         /// <summary>
         /// Average user rating
@@ -101,11 +101,6 @@ namespace YoutubeExplode.Models
         public string[] Keywords { get; internal set; }
 
         /// <summary>
-        /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
-        /// </summary>
-        public bool NeedsDeciphering { get; internal set; }
-
-        /// <summary>
         /// Video streams
         /// </summary>
         public VideoStreamEndpoint[] Streams { get; internal set; }
@@ -114,6 +109,11 @@ namespace YoutubeExplode.Models
         /// Version of the video player, used for this video's playback
         /// </summary>
         public string PlayerVersion { get; internal set; }
+
+        /// <summary>
+        /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
+        /// </summary>
+        public bool NeedsDeciphering { get; internal set; }
 
         internal VideoInfo() { }
     }
