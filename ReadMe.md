@@ -2,24 +2,28 @@ YoutubeExplode
 ===================
 
 
-Zero-dependency .NET library that parses out various public information on Youtube videos, including download URLs
+Zero-dependency .NET library that parses out various public information on Youtube videos, including download URLs. Works with signed videos.
 
 **Parsed data:**
 
- - Title (string)
- - Author (string)
- - Thumbnail URL (string)
- - Length (TimeSpan)
- - Is Listed (bool)
- - View Count (int)
- - Average User Rating (double)
- - Streaming Endpoints (IEnumerable\<VideoStreamEndpoint\>)
-  - TypeString (string)
-  - QualityString (string)
-  - URL (string)
-  - Type (enum => [Unknown, MP4, WebM, ThirdGenerationPartnershipProject])
-  - Quality (enum => [Unknown, High, Medium, Low])
-  - FileExtension (string)
+ - Video id, title and author
+ - Search keywords
+ - Length
+ - View count
+ - Rating
+ - URLs of thumbnail, high/medium/low quality images
+ - URLS of watermarks
+ - Whether this video is listed, is muted, allows ratings, allows embeding and has closed captions
+ - Video streams
+
+The video stream objects include the following data:
+
+ - URL
+ - Type
+ - Quality
+ - Resolution
+ - Bitrate
+ - FPS
 
 **Usage:**
 
