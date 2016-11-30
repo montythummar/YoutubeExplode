@@ -8,11 +8,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace YoutubeExplode
 {
     internal static class Ext
     {
+        public static bool IsBlank(this string str)
+        {
+            return string.IsNullOrWhiteSpace(str);
+        }
+
+        public static string Reverse(this string str)
+        {
+            return new string(str.Reverse<char>().ToArray());
+        }
+
         public static string[] Split(this string input, params string[] separators)
         {
             return input.Split(separators, StringSplitOptions.RemoveEmptyEntries);

@@ -79,13 +79,13 @@ namespace YoutubeExplode
         /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
         public VideoInfo GetVideoInfo(string videoID, bool decipherIfNeeded = true)
         {
-            if (string.IsNullOrWhiteSpace(videoID))
+            if (videoID.IsBlank())
                 throw new ArgumentNullException(nameof(videoID));
 
             // Grab info
             string url = $"{Protocol}youtube.com/watch?v={videoID}";
             string response = GetRequestDelegate(url);
-            if (string.IsNullOrWhiteSpace(response))
+            if (response.IsBlank())
                 throw new Exception("Could not get video info");
 
             // Parse
@@ -107,13 +107,13 @@ namespace YoutubeExplode
         {
             if (!videoInfo.NeedsDeciphering)
                 throw new ArgumentException("Given video info does not need to be deciphered", nameof(videoInfo));
-            if (string.IsNullOrWhiteSpace(videoInfo.PlayerVersion))
+            if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
 
             // Get the javascript source URL
             string url = $"{Protocol}s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
             string response = GetRequestDelegate(url);
-            if (string.IsNullOrWhiteSpace(response))
+            if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
             // Decipher

@@ -7,6 +7,7 @@
 // ------------------------------------------------------------------ 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,146 +15,148 @@ using YoutubeExplode.Models;
 
 namespace YoutubeExplode
 {
-    // Stolen from https://github.com/flagbug/YoutubeExtractor/blob/master/YoutubeExtractor/YoutubeExtractor/Decipherer.cs
-    // TODO: refactor this piece of shit
-
     internal static class Decipherer
     {
-        private static string GetOperations(string rawJs)
+        private static readonly Regex FunctionNameRegex = new Regex(@"\.sig\s*\|\|([a-zA-Z0-9\$]+)\(",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex FunctionCallRegex = new Regex(@"\w+\.(\w+)\(",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static string GetFunctionCallFromLine(string line)
         {
-            //Find "C" in this: var A = B.sig||C (B.s)
-            string functNamePattern = @"\.sig\s*\|\|([a-zA-Z0-9\$]+)\("; //Regex Formed To Find Word or DollarSign
-
-            var funcName = Regex.Match(rawJs, functNamePattern).Groups[1].Value;
-
-            if (funcName.Contains("$"))
-            {
-                funcName = "\\" + funcName; //Due To Dollar Sign Introduction, Need To Escape
-            }
-
-            string funcPattern = @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}"; //Escape funcName string
-            var funcBody = Regex.Match(rawJs, funcPattern, RegexOptions.Singleline).Value; //Entire sig function
-            var lines = funcBody.Split(';'); //Each line in sig function
-
-            string idReverse = "", idSlice = "", idCharSwap = ""; //Hold name for each cipher method
-            string functionIdentifier;
-            string operations = "";
-
-            foreach (var line in lines.Skip(1).Take(lines.Length - 2)) //Matches the funcBody with each cipher method. Only runs till all three are defined.
-            {
-                if (!string.IsNullOrEmpty(idReverse) && !string.IsNullOrEmpty(idSlice) &&
-                    !string.IsNullOrEmpty(idCharSwap))
-                {
-                    break; //Break loop if all three cipher methods are defined
-                }
-
-                functionIdentifier = GetFunctionFromLine(line);
-                string reReverse = $@"{functionIdentifier}:\bfunction\b\(\w+\)"; //Regex for reverse (one parameter)
-                string reSlice = $@"{functionIdentifier}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\."; //Regex for slice (return or not)
-                string reSwap = $@"{functionIdentifier}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b"; //Regex for the char swap.
-
-                if (Regex.Match(rawJs, reReverse).Success)
-                {
-                    idReverse = functionIdentifier; //If def matched the regex for reverse then the current function is a defined as the reverse
-                }
-
-                if (Regex.Match(rawJs, reSlice).Success)
-                {
-                    idSlice = functionIdentifier; //If def matched the regex for slice then the current function is defined as the slice.
-                }
-
-                if (Regex.Match(rawJs, reSwap).Success)
-                {
-                    idCharSwap = functionIdentifier; //If def matched the regex for charSwap then the current function is defined as swap.
-                }
-            }
-
-            foreach (var line in lines.Skip(1).Take(lines.Length - 2))
-            {
-                Match m;
-                functionIdentifier = GetFunctionFromLine(line);
-
-                if ((m = Regex.Match(line, @"\(\w+,(?<index>\d+)\)")).Success && functionIdentifier == idCharSwap)
-                {
-                    operations += "w" + m.Groups["index"].Value + " "; //operation is a swap (w)
-                }
-
-                if ((m = Regex.Match(line, @"\(\w+,(?<index>\d+)\)")).Success && functionIdentifier == idSlice)
-                {
-                    operations += "s" + m.Groups["index"].Value + " "; //operation is a slice
-                }
-
-                if (functionIdentifier == idReverse) //No regex required for reverse (reverse method has no parameters)
-                {
-                    operations += "r "; //operation is a reverse
-                }
-            }
-
-            return operations.Trim();
+            var match = FunctionCallRegex.Match(line);
+            return match.Groups[1].Value;
         }
 
-        private static string ApplyOperation(string cipher, string op)
+        private static IEnumerable<ScramblingOperation> GetOperations(string rawJs)
         {
-            switch (op[0])
+            // Get the decipher function name
+            var funcNameMatch = FunctionNameRegex.Match(rawJs);
+            if (!funcNameMatch.Success)
+                throw new Exception("Could not find the entry function for signature deciphering");
+            string funcName = funcNameMatch.Groups[1].Value;
+
+            // Escape dollar sign
+            funcName = funcName.Replace("$", "\\$");
+
+            // Get the body of the function
+            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}",
+                RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            if (!funcBodyMatch.Success)
+                throw new Exception("Could not get the signature decipherer function body");
+            string funcBody = funcBodyMatch.Value;
+            var funcLines = funcBody.Split(";");
+
+            // Identify scrambling functions
+            string reverseFuncName = null;
+            string sliceFuncName = null;
+            string charSwapFuncName = null;
+
+            // Analyze the function body (skip first and last line) to determine the names of scrambling functions
+            foreach (var line in funcLines.Skip(1).Take(funcLines.Length - 2))
             {
-                case 'r':
-                    return new string(cipher.ToCharArray().Reverse().ToArray());
+                // Break when all functions are found
+                if (!reverseFuncName.IsBlank() && !sliceFuncName.IsBlank() && !charSwapFuncName.IsBlank())
+                    break;
 
-                case 'w':
+                // Get the function called on this line
+                string calledFunctionName = GetFunctionCallFromLine(line);
+
+                // Compose regexes to identify what function we're dealing with
+                // -- reverse (1 param)
+                var reverseFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\)",
+                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                // -- slice (return or not)
+                var sliceFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.",
+                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                // -- swap
+                var swapFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b",
+                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+                // Determine the function type and assign the name
+                if (reverseFuncRegex.Match(rawJs).Success)
+                    reverseFuncName = calledFunctionName;
+                else if (sliceFuncRegex.Match(rawJs).Success)
+                    sliceFuncName = calledFunctionName;
+                else if (swapFuncRegex.Match(rawJs).Success)
+                    charSwapFuncName = calledFunctionName;
+            }
+
+            // Make sure all are set
+            if (reverseFuncName.IsBlank() || sliceFuncName.IsBlank() || charSwapFuncName.IsBlank())
+                throw new Exception("Could not determine the name of one or more scrambling functions");
+
+            // Analyze the function body again to determine the operation set and order
+            foreach (var line in funcLines.Skip(1).Take(funcLines.Length - 2))
+            {
+                // Get the function called on this line
+                string calledFunctionName = GetFunctionCallFromLine(line);
+
+                // Swap operation
+                if (calledFunctionName.EqualsInvariant(charSwapFuncName))
+                {
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    yield return new ScramblingOperation(ScramblingOperationType.Swap, index);
+                }
+                // Slice operation
+                else if (calledFunctionName.EqualsInvariant(sliceFuncName))
+                {
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    yield return new ScramblingOperation(ScramblingOperationType.Slice, index);
+                }
+                // Reverse operation
+                else if (calledFunctionName.EqualsInvariant(reverseFuncName))
+                {
+                    yield return new ScramblingOperation(ScramblingOperationType.Reverse);
+                }
+            }
+        }
+
+        private static string ApplyOperation(string signature, ScramblingOperation operation)
+        {
+            if (signature.IsBlank())
+                throw new ArgumentNullException(signature);
+
+            switch (operation.Type)
+            {
+                // Swap first char of the signature with one of given index
+                case ScramblingOperationType.Swap:
+                {
+                    var sb = new StringBuilder(signature)
                     {
-                        int index = GetOpIndex(op);
-                        return SwapFirstChar(cipher, index);
-                    }
-
-                case 's':
-                    {
-                        int index = GetOpIndex(op);
-                        return cipher.Substring(index);
-                    }
-
+                        [0] = signature[operation.Parameter],
+                        [operation.Parameter] = signature[0]
+                    };
+                    return sb.ToString();
+                }
+                // Substring past the given index
+                case ScramblingOperationType.Slice:
+                    return signature.Substring(operation.Parameter);
+                // Reverse string
+                case ScramblingOperationType.Reverse:
+                    return signature.Reverse();
+                // Sanity check
                 default:
-                    throw new NotImplementedException("Couldn't find cipher operation.");
+                    throw new NotImplementedException("Non-implemented scrambling operation");
             }
         }
 
-        private static string DecipherWithOperations(string cipher, string operations)
+        private static string ApplyOperations(string signature, IEnumerable<ScramblingOperation> operations)
         {
-            return operations.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
-                .Aggregate(cipher, ApplyOperation);
-        }
+            if (signature.IsBlank())
+                throw new ArgumentNullException(signature);
 
-        private static string GetFunctionFromLine(string currentLine)
-        {
-            var matchFunctionReg = new Regex(@"\w+\.(?<functionID>\w+)\("); //lc.ac(b,c) want the ac part.
-            var rgMatch = matchFunctionReg.Match(currentLine);
-            string matchedFunction = rgMatch.Groups["functionID"].Value;
-            return matchedFunction; //return 'ac'
-        }
+            foreach (var operation in operations)
+                signature = ApplyOperation(signature, operation);
 
-        private static int GetOpIndex(string op)
-        {
-            string parsed = new Regex(@".(\d+)").Match(op).Result("$1");
-            int index = int.Parse(parsed);
-
-            return index;
-        }
-
-        private static string SwapFirstChar(string cipher, int index)
-        {
-            var builder = new StringBuilder(cipher)
-            {
-                [0] = cipher[index],
-                [index] = cipher[0]
-            };
-
-            return builder.ToString();
+            return signature;
         }
 
         public static void Decipher(VideoInfo videoInfo, string rawJs)
         {
             if (videoInfo == null)
                 throw new ArgumentNullException(nameof(videoInfo));
-            if (string.IsNullOrWhiteSpace(rawJs))
+            if (rawJs.IsBlank())
                 throw new ArgumentNullException(nameof(rawJs));
 
             // No streams => nothing to decipher => we're good
@@ -164,13 +167,13 @@ namespace YoutubeExplode
             }
 
             // Get operations
-            string operations = GetOperations(rawJs);
+            var operations = GetOperations(rawJs).ToArray();
 
             // Update signatures on videostreams
             foreach (var stream in videoInfo.Streams.Where(s => s.NeedsDeciphering))
             {
                 string sig = stream.Signature;
-                string newSig = DecipherWithOperations(sig, operations);
+                string newSig = ApplyOperations(sig, operations);
 
                 // Update signature
                 stream.Signature = newSig;
@@ -181,9 +184,11 @@ namespace YoutubeExplode
                 else
                     stream.URL += $"&signature={newSig}";
 
+                // Update flag
                 stream.NeedsDeciphering = false;
             }
 
+            // Update global flag
             videoInfo.NeedsDeciphering = false;
         }
     }

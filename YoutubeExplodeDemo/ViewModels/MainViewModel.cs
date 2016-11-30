@@ -142,7 +142,7 @@ namespace YoutubeExplodeDemo.ViewModels
             });
 
             // Thumbnail
-            if (VideoInfo?.ImageHighQuality != null)
+            if (VideoInfo?.ImageHighQuality.IsNotBlank() == true)
             {
                 var bmp = new BitmapImage();
                 bmp.BeginInit();

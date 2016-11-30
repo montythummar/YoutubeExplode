@@ -25,7 +25,7 @@ namespace YoutubeExplode
 
         private static Dictionary<string, string> ParseEncodedDictionary(string raw)
         {
-            if (string.IsNullOrWhiteSpace(raw))
+            if (raw.IsBlank())
                 return null;
 
             var dic = new Dictionary<string, string>();
@@ -33,7 +33,7 @@ namespace YoutubeExplode
             foreach (string keyValuePairRaw in keyValuePairsRaw)
             {
                 string keyValuePairRawDecoded = Uri.UnescapeDataString(keyValuePairRaw);
-                if (string.IsNullOrWhiteSpace(keyValuePairRawDecoded))
+                if (keyValuePairRawDecoded.IsBlank())
                     continue;
 
                 // Look for the equals sign
@@ -56,7 +56,7 @@ namespace YoutubeExplode
 
         private static IEnumerable<VideoStreamEndpoint> ParseVideoStreamEndpoints(string raw)
         {
-            if (string.IsNullOrWhiteSpace(raw))
+            if (raw.IsBlank())
                 yield break;
 
             foreach (var streamRaw in raw.Split(","))
@@ -98,7 +98,7 @@ namespace YoutubeExplode
 
         public static VideoInfo ParseVideoInfo(string html)
         {
-            if (string.IsNullOrWhiteSpace(html))
+            if (html.IsBlank())
                 throw new ArgumentNullException(nameof(html));
 
             // Get the json
@@ -117,7 +117,7 @@ namespace YoutubeExplode
             // Try to extract player version
             var assets = json.GetValueOrDefault("assets") as JsonObject;
             string playerJsUrl = assets?.GetValueOrDefault("js", "");
-            if (!string.IsNullOrWhiteSpace(playerJsUrl))
+            if (!playerJsUrl.IsBlank())
                 result.PlayerVersion = VideoPlayerVersionRegex.Match(playerJsUrl).Groups[1].Value;
 
             // Get video info
