@@ -59,7 +59,7 @@
                              Padding="0"
                              Visibility="{Binding VideoInfoVisible, Converter={StaticResource BoolToVisibilityConverter}}">
             <dragablz:TabablzControl FixedHeaderCount="9999">
-                <TabItem Header="Video">
+                <TabItem Header="Player">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -170,14 +170,14 @@
                                     <DataTemplate>
                                         <Grid HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamTypeColumn" />
-                                                <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamQualityColumn" />
-                                                <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamFPSColumn" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
                                             <WrapPanel Grid.Column="0" Margin="0,0,5,0">
                                                 <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Type: " />
-                                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileExtension}" />
+                                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type}" />
                                             </WrapPanel>
                                             <WrapPanel Grid.Column="1" Margin="0,0,5,0">
                                                 <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Quality: " />
@@ -211,16 +211,104 @@
                                      Value="{Binding DownloadProgress}" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="Raw Data">
-                    <TextBox HorizontalAlignment="Stretch"
-                             VerticalAlignment="Stretch"
-                             BorderThickness="0"
-                             FontFamily="Consolas"
-                             FontSize="10"
-                             HorizontalScrollBarVisibility="Auto"
-                             IsReadOnly="True"
-                             Text="{Binding RawData}"
-                             VerticalScrollBarVisibility="Auto" />
+                <TabItem Header="Data">
+                    <ScrollViewer Padding="5"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Vertical">
+                            <WrapPanel>
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="ID:" />
+                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{Binding VideoInfo.ID}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="Title:" />
+                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{Binding VideoInfo.Title}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="Author:" />
+                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{Binding VideoInfo.Author}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="Length:" />
+                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{Binding VideoInfo.Length}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="View count:" />
+                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{Binding VideoInfo.ViewCount}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="Rating:" />
+                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                           Text="{Binding VideoInfo.AvgRating}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </WrapPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Keywords:" />
+                                <ItemsControl Margin="5,0,0,0" ItemsSource="{Binding VideoInfo.Keywords}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                                       Text="{Binding}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="0,0,5,0"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           Text="Thumbnails and Images:" />
+                                <TextBlock Margin="5,0,0,0">
+                                    <Hyperlink NavigateUri="{Binding VideoInfo.Thumbnail}" RequestNavigate="Hyperlink_OnRequestNavigate">Thumbnail</Hyperlink>
+                                    <LineBreak />
+                                    <Hyperlink NavigateUri="{Binding VideoInfo.ImageHighQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image High Quality</Hyperlink>
+                                    <LineBreak />
+                                    <Hyperlink NavigateUri="{Binding VideoInfo.ImageMediumQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Medium Quality</Hyperlink>
+                                    <LineBreak />
+                                    <Hyperlink NavigateUri="{Binding VideoInfo.ImageLowQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Low Quality</Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Streams:" />
+                                <ItemsControl Margin="5,0,0,0" ItemsSource="{Binding VideoInfo.Streams}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis">
+                                                <Run Text="{Binding Type, Mode=OneWay}" /><Run Text="," />
+                                                <Run Text="{Binding Quality, Mode=OneWay}" /><Run Text="," />
+                                                <Run Text="{Binding FPS, Mode=OneWay, StringFormat=\{0\} fps}" /><Run Text="," />
+                                                <Run Text="{Binding ResolutionString, Mode=OneWay}" /><Run Text="," />
+                                                <Run Text="{Binding Bitrate, Mode=OneWay, StringFormat=\{0\} bps}" /><Run Text="," />
+                                                <Hyperlink NavigateUri="{Binding URL}" RequestNavigate="Hyperlink_OnRequestNavigate">Open</Hyperlink>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
                 </TabItem>
             </dragablz:TabablzControl>
         </materialDesign:Card>

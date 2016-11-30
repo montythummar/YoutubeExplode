@@ -1,15 +1,14 @@
-﻿<Application
-    x:Class="YoutubeExplodeDemo.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-    xmlns:ignore="http://www.galasoft.ch/ignore"
-    xmlns:local="clr-namespace:YoutubeExplodeDemo"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    StartupUri="Views/MainWindow.xaml"
-    mc:Ignorable="d ignore">
+﻿<Application x:Class="YoutubeExplodeDemo.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+             xmlns:ignore="http://www.galasoft.ch/ignore"
+             xmlns:local="clr-namespace:YoutubeExplodeDemo"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             StartupUri="Views/MainWindow.xaml"
+             mc:Ignorable="d ignore">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -27,54 +26,42 @@
             <Color x:Key="TextColor">Black</Color>
             <Color x:Key="InverseTextColor">Snow</Color>
 
-            <SolidColorBrush
-                x:Key="PrimaryHueLightBrush"
-                Opacity="0.75"
-                Color="{DynamicResource PrimaryColor}" />
-            <SolidColorBrush
-                x:Key="PrimaryHueLightForegroundBrush"
-                Opacity="0.87"
-                Color="{DynamicResource TextColor}" />
-            <SolidColorBrush
-                x:Key="PrimaryHueMidBrush"
-                Opacity="1"
-                Color="{DynamicResource PrimaryColor}" />
-            <SolidColorBrush
-                x:Key="PrimaryHueMidForegroundBrush"
-                Opacity="1"
-                Color="{DynamicResource InverseTextColor}" />
-            <SolidColorBrush
-                x:Key="PrimaryHueDarkBrush"
-                Opacity="1"
-                Color="{DynamicResource PrimaryDarkColor}" />
-            <SolidColorBrush
-                x:Key="PrimaryHueDarkForegroundBrush"
-                Opacity="0.7"
-                Color="{DynamicResource InverseTextColor}" />
-            <SolidColorBrush
-                x:Key="SecondaryAccentBrush"
-                Opacity="1"
-                Color="{DynamicResource AccentColor}" />
-            <SolidColorBrush
-                x:Key="SecondaryAccentForegroundBrush"
-                Opacity="0.64"
-                Color="{DynamicResource TextColor}" />
-            <SolidColorBrush
-                x:Key="PrimaryTextBrush"
-                Opacity="0.87"
-                Color="{DynamicResource TextColor}" />
-            <SolidColorBrush
-                x:Key="SecondaryTextBrush"
-                Opacity="0.64"
-                Color="{DynamicResource TextColor}" />
-            <SolidColorBrush
-                x:Key="DimTextBrush"
-                Opacity="0.45"
-                Color="{DynamicResource TextColor}" />
-            <SolidColorBrush
-                x:Key="MiscBrush"
-                Opacity="0.18"
-                Color="{DynamicResource TextColor}" />
+            <SolidColorBrush x:Key="PrimaryHueLightBrush"
+                             Opacity="0.75"
+                             Color="{DynamicResource PrimaryColor}" />
+            <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush"
+                             Opacity="0.87"
+                             Color="{DynamicResource TextColor}" />
+            <SolidColorBrush x:Key="PrimaryHueMidBrush"
+                             Opacity="1"
+                             Color="{DynamicResource PrimaryColor}" />
+            <SolidColorBrush x:Key="PrimaryHueMidForegroundBrush"
+                             Opacity="1"
+                             Color="{DynamicResource InverseTextColor}" />
+            <SolidColorBrush x:Key="PrimaryHueDarkBrush"
+                             Opacity="1"
+                             Color="{DynamicResource PrimaryDarkColor}" />
+            <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush"
+                             Opacity="0.7"
+                             Color="{DynamicResource InverseTextColor}" />
+            <SolidColorBrush x:Key="SecondaryAccentBrush"
+                             Opacity="1"
+                             Color="{DynamicResource AccentColor}" />
+            <SolidColorBrush x:Key="SecondaryAccentForegroundBrush"
+                             Opacity="0.64"
+                             Color="{DynamicResource TextColor}" />
+            <SolidColorBrush x:Key="PrimaryTextBrush"
+                             Opacity="0.87"
+                             Color="{DynamicResource TextColor}" />
+            <SolidColorBrush x:Key="SecondaryTextBrush"
+                             Opacity="0.64"
+                             Color="{DynamicResource TextColor}" />
+            <SolidColorBrush x:Key="DimTextBrush"
+                             Opacity="0.45"
+                             Color="{DynamicResource TextColor}" />
+            <SolidColorBrush x:Key="MiscBrush"
+                             Opacity="0.18"
+                             Color="{DynamicResource TextColor}" />
 
             <!--  Styles  -->
             <Style TargetType="{x:Type materialDesign:Card}">
@@ -90,6 +77,10 @@
                         <Setter Property="Opacity" Value="0.5" />
                     </Trigger>
                 </Style.Triggers>
+            </Style>
+
+            <Style TargetType="{x:Type Hyperlink}">
+                <Setter Property="Foreground" Value="{DynamicResource SecondaryAccentBrush}" />
             </Style>
 
             <Style BasedOn="{StaticResource MaterialDesignTextBox}" TargetType="{x:Type TextBox}">

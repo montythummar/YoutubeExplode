@@ -7,8 +7,10 @@
 // ------------------------------------------------------------------ 
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using YoutubeExplodeDemo.ViewModels;
 
@@ -91,6 +93,11 @@ namespace YoutubeExplodeDemo.Views
             var newPos =
                 TimeSpan.FromMilliseconds(VideoPositionSlider.Value*VideoMediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
             VideoMediaElement.Position = newPos;
+        }
+
+        private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(e.Uri.ToString());
         }
     }
 }
