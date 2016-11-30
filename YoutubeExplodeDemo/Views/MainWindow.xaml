@@ -172,15 +172,20 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamTypeColumn" />
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamQualityColumn" />
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="VideoStreamFPSColumn" />
                                             </Grid.ColumnDefinitions>
 
                                             <WrapPanel Grid.Column="0" Margin="0,0,5,0">
                                                 <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Type: " />
                                                 <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileExtension}" />
                                             </WrapPanel>
-                                            <WrapPanel Grid.Column="1">
+                                            <WrapPanel Grid.Column="1" Margin="0,0,5,0">
                                                 <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Quality: " />
                                                 <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality}" />
+                                            </WrapPanel>
+                                            <WrapPanel Grid.Column="2">
+                                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="FPS: " />
+                                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FPS}" />
                                             </WrapPanel>
                                         </Grid>
                                     </DataTemplate>
