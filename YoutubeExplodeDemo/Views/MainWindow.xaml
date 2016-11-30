@@ -277,6 +277,34 @@
                                 </ItemsControl>
                             </StackPanel>
                             <StackPanel Orientation="Vertical">
+                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Flags:" />
+                                <CheckBox Margin="5,0,0,0"
+                                          Content="Listed"
+                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                          IsChecked="{Binding VideoInfo.IsListed, Mode=OneWay}"
+                                          IsHitTestVisible="False" />
+                                <CheckBox Margin="5,0,0,0"
+                                          Content="Muted"
+                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                          IsChecked="{Binding VideoInfo.IsMuted, Mode=OneWay}"
+                                          IsHitTestVisible="False" />
+                                <CheckBox Margin="5,0,0,0"
+                                          Content="Rating Allowed"
+                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                          IsChecked="{Binding VideoInfo.IsRatingAllowed, Mode=OneWay}"
+                                          IsHitTestVisible="False" />
+                                <CheckBox Margin="5,0,0,0"
+                                          Content="Embeding Allowed"
+                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                          IsChecked="{Binding VideoInfo.IsEmbedingAllowed, Mode=OneWay}"
+                                          IsHitTestVisible="False" />
+                                <CheckBox Margin="5,0,0,0"
+                                          Content="Closed Captions Available"
+                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                          IsChecked="{Binding VideoInfo.HasClosedCaptions, Mode=OneWay}"
+                                          IsHitTestVisible="False" />
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
                                 <TextBlock Margin="0,0,5,0"
                                            Foreground="{DynamicResource SecondaryTextBrush}"
                                            Text="Thumbnails and Images:" />
