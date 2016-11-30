@@ -151,8 +151,9 @@ namespace YoutubeExplode
             result.Keywords = videoInfo.GetValueOrDefault("keywords", "").Split(",");
 
             // Get the streams
-            string streamsRaw = videoInfo.GetValueOrDefault("adaptive_fmts", "") ??
-                                videoInfo.GetValueOrDefault("url_encoded_fmt_stream_map", "");
+            string streamsRaw = videoInfo.GetValueOrDefault("adaptive_fmts", "");
+            if (streamsRaw.IsBlank())
+                streamsRaw = videoInfo.GetValueOrDefault("url_encoded_fmt_stream_map", "");
             result.Streams = ParseVideoStreamEndpoints(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
