@@ -14,20 +14,14 @@ using YoutubeExplode.Models;
 
 namespace YoutubeExplode
 {
-    /// <summary>
-    /// YoutubeClient
-    /// </summary>
-    public class YoutubeClient
+    public partial class YoutubeClient
     {
         /// <summary>
-        /// Delegate that handles GET requests and returns the content of the page as a string
+        /// Delegate that (synchronously) handles GET requests and returns the content of the page as a string
         /// </summary>
         /// <param name="url">URL of the request</param>
-        /// <returns>The page HTML content as string</returns>
+        /// <returns>The page's HTML content as string or null if the operation failed</returns>
         public delegate string PerformGetRequestDelegate(string url);
-
-        private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// Default instance of YoutubeClient
@@ -49,11 +43,27 @@ namespace YoutubeExplode
                 return null;
             }
         }
+    }
+
+    /// <summary>
+    /// YoutubeClient
+    /// </summary>
+    public partial class YoutubeClient
+    {
+        private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private string Protocol => UseSSL ? "https://" : "http://";
 
         /// <summary>
         /// Delegate that handles GET request for the client
         /// </summary>
         public PerformGetRequestDelegate GetRequestDelegate { get; set; }
+
+        /// <summary>
+        /// Whether to use the HTTPS protocol instead of HTTP for requests
+        /// </summary>
+        public bool UseSSL { get; set; } = true;
 
         /// <inheritdoc />
         public YoutubeClient()
@@ -70,10 +80,10 @@ namespace YoutubeExplode
         public VideoInfo GetVideoInfo(string videoID, bool decipherIfNeeded = true)
         {
             if (string.IsNullOrWhiteSpace(videoID))
-                throw new ArgumentException("Video ID should not be null or empty", nameof(videoID));
+                throw new ArgumentNullException(nameof(videoID));
 
             // Grab info
-            string url = $"http://youtube.com/watch?v={videoID}";
+            string url = $"{Protocol}youtube.com/watch?v={videoID}";
             string response = GetRequestDelegate(url);
             if (string.IsNullOrWhiteSpace(response))
                 throw new Exception("Could not get video info");
@@ -96,12 +106,12 @@ namespace YoutubeExplode
         public void Decipher(VideoInfo videoInfo)
         {
             if (!videoInfo.NeedsDeciphering)
-                throw new ArgumentException("Given video info does not require to be deciphered", nameof(videoInfo));
-
-            // Get the javascript source URL
+                throw new ArgumentException("Given video info does not need to be deciphered", nameof(videoInfo));
             if (string.IsNullOrWhiteSpace(videoInfo.PlayerVersion))
                 throw new Exception("Given video info does not have information about the player version");
-            string url = $"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
+
+            // Get the javascript source URL
+            string url = $"{Protocol}s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
             string response = GetRequestDelegate(url);
             if (string.IsNullOrWhiteSpace(response))
                 throw new Exception("Could not get the video player source code");

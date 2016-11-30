@@ -37,6 +37,13 @@ namespace YoutubeExplode
             return defaultValue;
         }
 
+        public static TConverted GetValueOrDefault<TKey, TValue, TConverted>(this IDictionary<TKey, TValue> dic,
+            TKey key, TConverted defaultValue = default(TConverted))
+        {
+            var result = GetValueOrDefault(dic, key);
+            return ConvertOrDefault(result, defaultValue);
+        }
+
         public static T ConvertOrDefault<T>(this object obj, T defaultValue = default(T))
         {
             if (obj == null)
