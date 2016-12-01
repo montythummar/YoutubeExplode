@@ -163,6 +163,11 @@ namespace YoutubeExplode.Models
         /// </summary>
         public string FileExtension { get; private set; }
 
+        /// <summary>
+        /// File size (in bytes) of the video
+        /// </summary>
+        public ulong FileSize { get; internal set; }
+
         internal VideoStreamEndpoint() { }
 
         /// <inheritdoc />

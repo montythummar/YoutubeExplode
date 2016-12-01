@@ -168,26 +168,16 @@
                                       SelectedItem="{Binding SelectedStream}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid HorizontalAlignment="Left">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <WrapPanel Grid.Column="0" Margin="0,0,5,0">
-                                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Type: " />
-                                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type}" />
-                                            </WrapPanel>
-                                            <WrapPanel Grid.Column="1" Margin="0,0,5,0">
-                                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="Quality: " />
-                                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality}" />
-                                            </WrapPanel>
-                                            <WrapPanel Grid.Column="2">
-                                                <TextBlock Foreground="{DynamicResource SecondaryTextBrush}" Text="FPS: " />
-                                                <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FPS}" />
-                                            </WrapPanel>
-                                        </Grid>
+                                        <TextBlock Foreground="{DynamicResource SecondaryTextBrush}">
+                                            <Run Text="Type:" />
+                                            <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
+                                            <Run Text="Quality:" />
+                                            <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Mode=OneWay}" />
+                                            <Run Text="FPS:" />
+                                            <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FPS, Mode=OneWay}" />
+                                            <Run Text="Size:" />
+                                            <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, StringFormat=\{0:0\,\,.00\} mb, Mode=OneWay}" />
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -329,6 +319,7 @@
                                                 <Run Text="{Binding FPS, Mode=OneWay, StringFormat=\{0\} fps}" /><Run Text="," />
                                                 <Run Text="{Binding ResolutionString, Mode=OneWay}" /><Run Text="," />
                                                 <Run Text="{Binding Bitrate, Mode=OneWay, StringFormat=\{0:N0\} bit/s}" /><Run Text="," />
+                                                <Run Text="{Binding FileSize, Mode=OneWay, StringFormat=\{0:N0\} bytes}" /><Run Text="," />
                                                 <Hyperlink NavigateUri="{Binding URL}" RequestNavigate="Hyperlink_OnRequestNavigate">Open</Hyperlink>
                                             </TextBlock>
                                         </DataTemplate>
