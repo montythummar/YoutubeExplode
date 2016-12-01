@@ -294,9 +294,9 @@
                                           IsChecked="{Binding VideoInfo.IsRatingAllowed, Mode=OneWay}"
                                           IsHitTestVisible="False" />
                                 <CheckBox Margin="5,0,0,0"
-                                          Content="Embeding Allowed"
+                                          Content="Embedding Allowed"
                                           Foreground="{DynamicResource PrimaryTextBrush}"
-                                          IsChecked="{Binding VideoInfo.IsEmbedingAllowed, Mode=OneWay}"
+                                          IsChecked="{Binding VideoInfo.IsEmbeddingAllowed, Mode=OneWay}"
                                           IsHitTestVisible="False" />
                                 <CheckBox Margin="5,0,0,0"
                                           Content="Closed Captions Available"

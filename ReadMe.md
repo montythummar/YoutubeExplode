@@ -13,7 +13,7 @@ Zero-dependency .NET library that parses out various public information on Youtu
  - Rating
  - URLs of thumbnail, high/medium/low quality images
  - URLS of watermarks
- - Whether this video is listed, is muted, allows ratings, allows embeding and has closed captions
+ - Whether this video is listed, is muted, allows ratings, allows embedding and has closed captions
  - Video streams
 
 The video stream objects include the following data:

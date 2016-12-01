@@ -144,7 +144,7 @@ namespace YoutubeExplode
             result.IsListed = videoInfo.GetValueOrDefault("is_listed", 1) == 1;
             result.IsRatingAllowed = videoInfo.GetValueOrDefault("allow_ratings", 1) == 1;
             result.IsMuted = videoInfo.GetValueOrDefault("muted", 0) == 1;
-            result.IsEmbedingAllowed = videoInfo.GetValueOrDefault("allow_embed", 1) == 1;
+            result.IsEmbeddingAllowed = videoInfo.GetValueOrDefault("allow_embed", 1) == 1;
             result.HasClosedCaptions = videoInfo.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfo.GetValueOrDefault("view_count", 0ul);
             result.AvgRating = videoInfo.GetValueOrDefault("avg_rating", 0.0);

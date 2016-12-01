@@ -78,7 +78,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Whether it's allowed to embed this video outside of youtube
         /// </summary>
-        public bool IsEmbedingAllowed { get; internal set; }
+        public bool IsEmbeddingAllowed { get; internal set; }
 
         /// <summary>
         /// Whether this video has closed captions
