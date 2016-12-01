@@ -64,15 +64,13 @@ namespace YoutubeExplode
                 var dic = ParseEncodedDictionary(streamRaw);
 
                 // Extract values
-                string sig = dic.GetValueOrDefault("s") ??
-                             dic.GetValueOrDefault("sig") ??
-                             dic.GetValueOrDefault("signature");
-                bool needsDeciphering = dic.ContainsKey("s");
+                string sig = dic.GetValueOrDefault("s");
+                bool needsDeciphering = !sig.IsBlank();
                 string url = dic.GetValueOrDefault("url");
                 string type = dic.GetValueOrDefault("type");
                 string quality = dic.GetValueOrDefault("quality_label") ??
                                  dic.GetValueOrDefault("quality");
-                string resolution = dic.GetValueOrDefault("size");
+                string resolution = dic.GetValueOrDefault("size") ?? "0x0";
                 ulong bitrate = dic.GetValueOrDefault("bitrate").ParseUlongOrDefault();
                 double fps = dic.GetValueOrDefault("fps").ParseDoubleOrDefault();
 
