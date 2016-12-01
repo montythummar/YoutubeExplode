@@ -2,7 +2,11 @@ YoutubeExplode
 ===================
 
 
-Zero-dependency .NET library that parses out various public information on Youtube videos, including download URLs. Works with signed videos.
+Zero-dependency light-weight .NET library that parses out various public information on Youtube videos, including download URLs. Works with signed videos.
+
+
+**Download demo:**
+If you want to download the demo - head to the releases page.
 
 **Parsed data:**
 
