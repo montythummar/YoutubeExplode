@@ -24,6 +24,7 @@ The video stream objects include the following data:
  - Resolution
  - Bitrate
  - FPS
+ - File size
 
 **Usage:**
 
