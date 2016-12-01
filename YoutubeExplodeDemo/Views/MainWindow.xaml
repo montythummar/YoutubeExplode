@@ -253,7 +253,7 @@
                                            Foreground="{DynamicResource SecondaryTextBrush}"
                                            Text="View count:" />
                                 <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
-                                           Text="{Binding VideoInfo.ViewCount}"
+                                           Text="{Binding VideoInfo.ViewCount, StringFormat=\{0:N0\}}"
                                            TextTrimming="CharacterEllipsis" />
                             </WrapPanel>
                             <WrapPanel>
@@ -328,7 +328,7 @@
                                                 <Run Text="{Binding Quality, Mode=OneWay}" /><Run Text="," />
                                                 <Run Text="{Binding FPS, Mode=OneWay, StringFormat=\{0\} fps}" /><Run Text="," />
                                                 <Run Text="{Binding ResolutionString, Mode=OneWay}" /><Run Text="," />
-                                                <Run Text="{Binding Bitrate, Mode=OneWay, StringFormat=\{0\} bps}" /><Run Text="," />
+                                                <Run Text="{Binding Bitrate, Mode=OneWay, StringFormat=\{0:N0\} bit/s}" /><Run Text="," />
                                                 <Hyperlink NavigateUri="{Binding URL}" RequestNavigate="Hyperlink_OnRequestNavigate">Open</Hyperlink>
                                             </TextBlock>
                                         </DataTemplate>

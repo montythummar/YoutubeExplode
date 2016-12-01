@@ -14,6 +14,9 @@ namespace YoutubeExplode
 {
     internal static class Ext
     {
+        public delegate T ParseDelegate<out T>(string str);
+        public delegate bool TryParseDelegate<T>(string str, out T result);
+
         public static bool IsBlank(this string str)
         {
             return string.IsNullOrWhiteSpace(str);
@@ -70,25 +73,22 @@ namespace YoutubeExplode
             }
         }
 
-        public static double ParseDoubleOrDefault(this string str, double defaultValue = default(double))
+        public static T ParseOrDefault<T>(this string str, TryParseDelegate<T> handler, T defaultValue = default(T))
         {
             if (string.IsNullOrWhiteSpace(str))
                 return defaultValue;
-            double result;
-            if (double.TryParse(str, out result))
-                return result;
-            return defaultValue;
+            T result;
+            return handler(str, out result) ? result : defaultValue;
         }
 
+        public static double ParseDoubleOrDefault(this string str, double defaultValue = default(double))
+            => ParseOrDefault(str, double.TryParse, defaultValue);
+
         public static int ParseIntOrDefault(this string str, int defaultValue = default(int))
-        {
-            if (string.IsNullOrWhiteSpace(str))
-                return defaultValue;
-            int result;
-            if (int.TryParse(str, out result))
-                return result;
-            return defaultValue;
-        }
+            => ParseOrDefault(str, int.TryParse, defaultValue);
+
+        public static ulong ParseUlongOrDefault(this string str, ulong defaultValue = default(ulong))
+            => ParseOrDefault(str, ulong.TryParse, defaultValue);
 
         public static bool EqualsInvariant(this string str, string other)
         {

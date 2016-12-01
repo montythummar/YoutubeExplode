@@ -73,7 +73,7 @@ namespace YoutubeExplode
                 string quality = dic.GetValueOrDefault("quality_label") ??
                                  dic.GetValueOrDefault("quality");
                 string resolution = dic.GetValueOrDefault("size");
-                int bitrate = dic.GetValueOrDefault("bitrate").ParseIntOrDefault();
+                ulong bitrate = dic.GetValueOrDefault("bitrate").ParseUlongOrDefault();
                 double fps = dic.GetValueOrDefault("fps").ParseDoubleOrDefault();
 
                 // Yield a stream object

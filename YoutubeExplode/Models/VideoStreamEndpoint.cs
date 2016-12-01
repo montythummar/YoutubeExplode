@@ -131,9 +131,9 @@ namespace YoutubeExplode.Models
         public string ResolutionString { get; internal set; }
 
         /// <summary>
-        /// Video bitrate
+        /// Video bitrate (bits per second)
         /// </summary>
-        public int Bitrate { get; internal set; }
+        public ulong Bitrate { get; internal set; }
 
         /// <summary>
         /// Frame update frequency of this video
