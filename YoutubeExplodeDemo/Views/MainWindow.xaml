@@ -152,7 +152,7 @@
                             <TextBlock Margin="5"
                                        HorizontalAlignment="Center"
                                        Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
-                                       Text="{Binding VideoInfo.AvgRating, StringFormat=\{0:N2\} ★}" />
+                                       Text="{Binding VideoInfo.AverageRating, StringFormat=\{0:N2\} ★}" />
                         </UniformGrid>
 
                         <Grid Grid.Row="5">
@@ -261,7 +261,7 @@
                                            Foreground="{DynamicResource SecondaryTextBrush}"
                                            Text="Rating:" />
                                 <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
-                                           Text="{Binding VideoInfo.AvgRating}"
+                                           Text="{Binding VideoInfo.AverageRating}"
                                            TextTrimming="CharacterEllipsis" />
                             </WrapPanel>
                             <StackPanel Orientation="Vertical">

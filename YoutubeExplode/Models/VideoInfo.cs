@@ -93,7 +93,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Average user rating
         /// </summary>
-        public double AvgRating { get; internal set; }
+        public double AverageRating { get; internal set; }
 
         /// <summary>
         /// Video keywords used for searching

@@ -147,7 +147,7 @@ namespace YoutubeExplode
             result.IsEmbeddingAllowed = videoInfo.GetValueOrDefault("allow_embed", 1) == 1;
             result.HasClosedCaptions = videoInfo.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfo.GetValueOrDefault("view_count", 0ul);
-            result.AvgRating = videoInfo.GetValueOrDefault("avg_rating", 0.0);
+            result.AverageRating = videoInfo.GetValueOrDefault("avg_rating", 0.0);
             result.Keywords = videoInfo.GetValueOrDefault("keywords", "").Split(",");
 
             // Get the streams
