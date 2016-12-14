@@ -19,6 +19,16 @@ namespace YoutubeExplode.Models
         Unknown,
 
         /// <summary>
+        /// 2160p (4K) HD video stream
+        /// </summary>
+        High2160,
+
+        /// <summary>
+        /// 1440p HD video stream
+        /// </summary>
+        High1440,
+
+        /// <summary>
         /// 1080p HD video stream
         /// </summary>
         High1080,
