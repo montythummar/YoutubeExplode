@@ -74,6 +74,9 @@ namespace YoutubeExplode
         private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        private static readonly Regex VideoJsonRegex = new Regex(@"ytplayer\.config\s*=\s*(\{.+?\});",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
+
         private string Protocol => UseSSL ? "https://" : "http://";
 
         /// <summary>
@@ -110,16 +113,34 @@ namespace YoutubeExplode
             if (videoID.IsBlank())
                 throw new ArgumentNullException(nameof(videoID));
 
-            // Grab info
+            // Grab watch page html code
             string url = $"{Protocol}youtube.com/watch?v={videoID}";
-            string response = GetRequestDelegate(url);
-            if (response.IsBlank())
-                throw new Exception("Could not get video info");
+            string html = GetRequestDelegate(url);
+            if (html.IsBlank())
+                throw new Exception("Could not get video watch page (GET request failed)");
 
-            // Parse
-            var result = Parser.ParseVideoInfo(response);
-            if (result == null)
-                throw new Exception("Could not parse video info");
+            VideoInfo result;
+
+            // Try to get video info
+            var jsonMatch = VideoJsonRegex.Match(html);
+            if (jsonMatch.Success)
+            {
+                // Get it directly from JSON object in the watch page
+                result = Parser.ParseVideoInfoJson(jsonMatch.Groups[1].Value);
+                if (result == null)
+                    throw new Exception("Could not parse video info (JSON)");
+            }
+            else
+            {
+                // Get it from URL encoded data from internal api
+                url = $"{Protocol}youtube.com/get_video_info?video_id={videoID}";
+                html = GetRequestDelegate(url);
+                if (html.IsBlank())
+                    throw new Exception("Could not get URL-encoded video info (GET request failed)");
+                result = Parser.ParseVideoInfoUrlEncoded(html);
+                if (result == null)
+                    throw new Exception("Could not parse video info (URL-encoded)");
+            }
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
