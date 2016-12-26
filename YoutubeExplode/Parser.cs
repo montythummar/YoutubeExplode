@@ -112,39 +112,39 @@ namespace YoutubeExplode
                 result.PlayerVersion = VideoPlayerVersionRegex.Match(playerJsUrl).Groups[1].Value;
 
             // Get video info
-            var videoInfoJson = json.GetValueOrDefault("args") as JsonObject;
-            if (videoInfoJson == null)
+            var videoInfoEncoded = json.GetValueOrDefault("args") as JsonObject;
+            if (videoInfoEncoded == null)
                 throw new Exception("Video info not found in JSON");
 
             // Check the status
-            string status = videoInfoJson.GetValueOrDefault("status", "");
-            string reason = videoInfoJson.GetValueOrDefault("reason", "");
+            string status = videoInfoEncoded.GetValueOrDefault("status", "");
+            string reason = videoInfoEncoded.GetValueOrDefault("reason", "");
             if (status.EqualsInvariant("fail"))
                 throw new YoutubeErrorException(reason);
 
             // Populate data
-            result.ID = videoInfoJson.GetValueOrDefault("video_id", "");
-            result.Title = videoInfoJson.GetValueOrDefault("title", "");
-            result.Author = videoInfoJson.GetValueOrDefault("author", "");
-            result.Thumbnail = videoInfoJson.GetValueOrDefault("thumbnail_url", "");
-            result.ImageHighQuality = videoInfoJson.GetValueOrDefault("iurlhq", "");
-            result.ImageMediumQuality = videoInfoJson.GetValueOrDefault("iurlmq", "");
-            result.ImageLowQuality = videoInfoJson.GetValueOrDefault("iurlsd", "");
-            result.Watermarks = videoInfoJson.GetValueOrDefault("watermark", "").Split(",");
-            result.Length = TimeSpan.FromSeconds(videoInfoJson.GetValueOrDefault("length_seconds", 0.0));
-            result.IsListed = videoInfoJson.GetValueOrDefault("is_listed", 1) == 1;
-            result.IsRatingAllowed = videoInfoJson.GetValueOrDefault("allow_ratings", 1) == 1;
-            result.IsMuted = videoInfoJson.GetValueOrDefault("muted", 0) == 1;
-            result.IsEmbeddingAllowed = videoInfoJson.GetValueOrDefault("allow_embed", 1) == 1;
-            result.HasClosedCaptions = videoInfoJson.ContainsKey("caption_audio_tracks");
-            result.ViewCount = videoInfoJson.GetValueOrDefault("view_count", 0ul);
-            result.AverageRating = videoInfoJson.GetValueOrDefault("avg_rating", 0.0);
-            result.Keywords = videoInfoJson.GetValueOrDefault("keywords", "").Split(",");
+            result.ID = videoInfoEncoded.GetValueOrDefault("video_id", "");
+            result.Title = videoInfoEncoded.GetValueOrDefault("title", "");
+            result.Author = videoInfoEncoded.GetValueOrDefault("author", "");
+            result.Thumbnail = videoInfoEncoded.GetValueOrDefault("thumbnail_url", "");
+            result.ImageHighQuality = videoInfoEncoded.GetValueOrDefault("iurlhq", "");
+            result.ImageMediumQuality = videoInfoEncoded.GetValueOrDefault("iurlmq", "");
+            result.ImageLowQuality = videoInfoEncoded.GetValueOrDefault("iurlsd", "");
+            result.Watermarks = videoInfoEncoded.GetValueOrDefault("watermark", "").Split(",");
+            result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetValueOrDefault("length_seconds", 0.0));
+            result.IsListed = videoInfoEncoded.GetValueOrDefault("is_listed", 1) == 1;
+            result.IsRatingAllowed = videoInfoEncoded.GetValueOrDefault("allow_ratings", 1) == 1;
+            result.IsMuted = videoInfoEncoded.GetValueOrDefault("muted", 0) == 1;
+            result.IsEmbeddingAllowed = videoInfoEncoded.GetValueOrDefault("allow_embed", 1) == 1;
+            result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
+            result.ViewCount = videoInfoEncoded.GetValueOrDefault("view_count", 0ul);
+            result.AverageRating = videoInfoEncoded.GetValueOrDefault("avg_rating", 0.0);
+            result.Keywords = videoInfoEncoded.GetValueOrDefault("keywords", "").Split(",");
 
             // Get the streams
-            string streamsRaw = videoInfoJson.GetValueOrDefault("adaptive_fmts", "");
+            string streamsRaw = videoInfoEncoded.GetValueOrDefault("adaptive_fmts", "");
             if (streamsRaw.IsBlank())
-                streamsRaw = videoInfoJson.GetValueOrDefault("url_encoded_fmt_stream_map", "");
+                streamsRaw = videoInfoEncoded.GetValueOrDefault("url_encoded_fmt_stream_map", "");
             result.Streams = ParseVideoStreamEndpointsUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
@@ -160,38 +160,41 @@ namespace YoutubeExplode
                 throw new ArgumentNullException(nameof(urlRaw));
 
             // Get data
-            var urlEncodedDic = ParseDictionaryUrlEncoded(urlRaw);
+            var videoInfoEncoded = ParseDictionaryUrlEncoded(urlRaw);
 
             // Check the status
-            if (urlEncodedDic.GetValueOrDefault("status").EqualsInvariant("fail"))
-                throw new YoutubeErrorException(urlEncodedDic.GetValueOrDefault("reason"));
+            if (videoInfoEncoded.GetValueOrDefault("status").EqualsInvariant("fail"))
+                throw new YoutubeErrorException(videoInfoEncoded.GetValueOrDefault("reason"));
 
             // Prepare result
             var result = new VideoInfo();
 
+            // Player version (no way to obtain here)
+            result.PlayerVersion = "<Unknown>";
+
             // Populate data
-            result.ID = urlEncodedDic.GetValueOrDefault("video_id");
-            result.Title = urlEncodedDic.GetValueOrDefault("title");
-            result.Author = urlEncodedDic.GetValueOrDefault("author");
-            result.Thumbnail = urlEncodedDic.GetValueOrDefault("thumbnail_url");
-            result.ImageHighQuality = urlEncodedDic.GetValueOrDefault("iurlhq");
-            result.ImageMediumQuality = urlEncodedDic.GetValueOrDefault("iurlmq");
-            result.ImageLowQuality = urlEncodedDic.GetValueOrDefault("iurlsd");
-            result.Watermarks = urlEncodedDic.GetValueOrDefault("watermark").Split(",");
-            result.Length = TimeSpan.FromSeconds(urlEncodedDic.GetValueOrDefault("length_seconds").ParseDoubleOrDefault());
-            result.IsListed = urlEncodedDic.GetValueOrDefault("is_listed").ParseIntOrDefault(1) == 1;
-            result.IsRatingAllowed = urlEncodedDic.GetValueOrDefault("allow_ratings").ParseIntOrDefault(1) == 1;
-            result.IsMuted = urlEncodedDic.GetValueOrDefault("muted").ParseIntOrDefault() == 1;
-            result.IsEmbeddingAllowed = urlEncodedDic.GetValueOrDefault("allow_embed").ParseIntOrDefault(1) == 1;
-            result.HasClosedCaptions = urlEncodedDic.ContainsKey("caption_audio_tracks");
-            result.ViewCount = urlEncodedDic.GetValueOrDefault("view_count").ParseUlongOrDefault();
-            result.AverageRating = urlEncodedDic.GetValueOrDefault("avg_rating").ParseDoubleOrDefault();
-            result.Keywords = urlEncodedDic.GetValueOrDefault("keywords").Split(",");
+            result.ID = videoInfoEncoded.GetValueOrDefault("video_id");
+            result.Title = videoInfoEncoded.GetValueOrDefault("title");
+            result.Author = videoInfoEncoded.GetValueOrDefault("author");
+            result.Thumbnail = videoInfoEncoded.GetValueOrDefault("thumbnail_url");
+            result.ImageHighQuality = videoInfoEncoded.GetValueOrDefault("iurlhq");
+            result.ImageMediumQuality = videoInfoEncoded.GetValueOrDefault("iurlmq");
+            result.ImageLowQuality = videoInfoEncoded.GetValueOrDefault("iurlsd");
+            result.Watermarks = videoInfoEncoded.GetValueOrDefault("watermark").Split(",");
+            result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetValueOrDefault("length_seconds").ParseDoubleOrDefault());
+            result.IsListed = videoInfoEncoded.GetValueOrDefault("is_listed").ParseIntOrDefault(1) == 1;
+            result.IsRatingAllowed = videoInfoEncoded.GetValueOrDefault("allow_ratings").ParseIntOrDefault(1) == 1;
+            result.IsMuted = videoInfoEncoded.GetValueOrDefault("muted").ParseIntOrDefault() == 1;
+            result.IsEmbeddingAllowed = videoInfoEncoded.GetValueOrDefault("allow_embed").ParseIntOrDefault(1) == 1;
+            result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
+            result.ViewCount = videoInfoEncoded.GetValueOrDefault("view_count").ParseUlongOrDefault();
+            result.AverageRating = videoInfoEncoded.GetValueOrDefault("avg_rating").ParseDoubleOrDefault();
+            result.Keywords = videoInfoEncoded.GetValueOrDefault("keywords").Split(",");
 
             // Get the streams
-            string streamsRaw = urlEncodedDic.GetValueOrDefault("adaptive_fmts");
+            string streamsRaw = videoInfoEncoded.GetValueOrDefault("adaptive_fmts");
             if (streamsRaw.IsBlank())
-                streamsRaw = urlEncodedDic.GetValueOrDefault("url_encoded_fmt_stream_map");
+                streamsRaw = videoInfoEncoded.GetValueOrDefault("url_encoded_fmt_stream_map");
             result.Streams = ParseVideoStreamEndpointsUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
