@@ -7,65 +7,11 @@
 // ------------------------------------------------------------------ 
 
 using System;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using YoutubeExplode.Models;
 
 namespace YoutubeExplode
 {
-    /// <summary>
-    /// Delegate that (synchronously) handles GET requests and returns the content of the page as a string
-    /// </summary>
-    /// <param name="url">URL of the request</param>
-    /// <returns>The page's HTML content as string or null if the operation failed</returns>
-    public delegate string PerformGetRequestDelegate(string url);
-
-    /// <summary>
-    /// Delegate that (synchronously) handles HEAD requests and returns the response header collection
-    /// </summary>
-    /// <param name="url">URL of the request</param>
-    /// <returns>The header collection or null if the operation failed</returns>
-    public delegate WebHeaderCollection PerformHeadRequestDelegate(string url);
-
-    public partial class YoutubeClient
-    {
-        /// <summary>
-        /// Default instance of YoutubeClient
-        /// </summary>
-        public static YoutubeClient Default { get; } = new YoutubeClient();
-
-        private static string PerformGetRequestDefault(string url)
-        {
-            try
-            {
-                var req = WebRequest.CreateHttp(url);
-                req.Method = "GET";
-                using (var res = req.GetResponse())
-                    return Encoding.UTF8.GetString(res.GetResponseStream().ToArray());
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private static WebHeaderCollection PerformHeadRequestDefault(string url)
-        {
-            try
-            {
-                var req = WebRequest.CreateHttp(url);
-                req.Method = "HEAD";
-                using (var res = req.GetResponse())
-                    return res.Headers;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-    }
-
     /// <summary>
     /// YoutubeClient
     /// </summary>
@@ -77,29 +23,22 @@ namespace YoutubeExplode
         private static readonly Regex VideoJsonRegex = new Regex(@"ytplayer\.config\s*=\s*(\{.+?\});",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
+        /// <summary>
+        /// Default instance of YoutubeClient
+        /// </summary>
+        public static YoutubeClient Default { get; } = new YoutubeClient();
+
         private string Protocol => UseSSL ? "https://" : "http://";
 
         /// <summary>
-        /// Delegate that handles GET request for the client
+        /// HTTP request handler
         /// </summary>
-        public PerformGetRequestDelegate GetRequestDelegate { get; set; }
-
-        /// <summary>
-        /// Delegate that handles HEAD request for the client
-        /// </summary>
-        public PerformHeadRequestDelegate HeadRequestDelegate { get; set; }
+        public IRequestHandler RequestHandler { get; set; } = DefaultRequestHandler.Default;
 
         /// <summary>
         /// Whether to use the HTTPS protocol instead of HTTP for requests
         /// </summary>
         public bool UseSSL { get; set; } = true;
-
-        /// <inheritdoc />
-        public YoutubeClient()
-        {
-            GetRequestDelegate = PerformGetRequestDefault;
-            HeadRequestDelegate = PerformHeadRequestDefault;
-        }
 
         /// <summary>
         /// Get full information about a video by its ID
@@ -115,7 +54,7 @@ namespace YoutubeExplode
 
             // Grab watch page html code
             string url = $"{Protocol}youtube.com/watch?v={videoID}";
-            string html = GetRequestDelegate(url);
+            string html = RequestHandler.GetHtml(url);
             if (html.IsBlank())
                 throw new Exception("Could not get video watch page (GET request failed)");
 
@@ -134,7 +73,7 @@ namespace YoutubeExplode
             {
                 // Get it from URL encoded data from internal api
                 url = $"{Protocol}youtube.com/get_video_info?video_id={videoID}";
-                html = GetRequestDelegate(url);
+                html = RequestHandler.GetHtml(url);
                 if (html.IsBlank())
                     throw new Exception("Could not get URL-encoded video info (GET request failed)");
                 result = Parser.ParseVideoInfoUrlEncoded(html);
@@ -168,7 +107,7 @@ namespace YoutubeExplode
 
             // Get the javascript source URL
             string url = $"{Protocol}s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
-            string response = GetRequestDelegate(url);
+            string response = RequestHandler.GetHtml(url);
             if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
@@ -189,11 +128,11 @@ namespace YoutubeExplode
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the headers
-            var headers = HeadRequestDelegate(stream.URL);
+            var headers = RequestHandler.GetHeaders(stream.URL);
             if (headers == null)
                 throw new Exception("Could not obtain headers");
 
-            return stream.FileSize = headers["Content-Length"].ParseUlongOrDefault();
+            return stream.FileSize = headers.GetValueOrDefault("Content-Length").ParseUlongOrDefault();
         }
 
         /// <summary>
