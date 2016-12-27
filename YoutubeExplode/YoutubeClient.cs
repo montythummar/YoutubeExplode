@@ -15,7 +15,7 @@ namespace YoutubeExplode
     /// <summary>
     /// YoutubeClient
     /// </summary>
-    public partial class YoutubeClient
+    public class YoutubeClient
     {
         private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -28,17 +28,10 @@ namespace YoutubeExplode
         /// </summary>
         public static YoutubeClient Default { get; } = new YoutubeClient();
 
-        private string Protocol => UseSSL ? "https://" : "http://";
-
         /// <summary>
         /// HTTP request handler
         /// </summary>
         public IRequestHandler RequestHandler { get; set; } = DefaultRequestHandler.Default;
-
-        /// <summary>
-        /// Whether to use the HTTPS protocol instead of HTTP for requests
-        /// </summary>
-        public bool UseSSL { get; set; } = true;
 
         /// <summary>
         /// Get full information about a video by its ID
@@ -53,7 +46,7 @@ namespace YoutubeExplode
                 throw new ArgumentNullException(nameof(videoID));
 
             // Grab watch page html code
-            string url = $"{Protocol}youtube.com/watch?v={videoID}";
+            string url = $"https://youtube.com/watch?v={videoID}";
             string html = RequestHandler.GetHtml(url);
             if (html.IsBlank())
                 throw new Exception("Could not get video watch page (GET request failed)");
@@ -72,7 +65,7 @@ namespace YoutubeExplode
             else
             {
                 // Get it from URL encoded data from internal api
-                url = $"{Protocol}youtube.com/get_video_info?video_id={videoID}";
+                url = $"https://youtube.com/get_video_info?video_id={videoID}";
                 html = RequestHandler.GetHtml(url);
                 if (html.IsBlank())
                     throw new Exception("Could not get URL-encoded video info (GET request failed)");
@@ -106,7 +99,7 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not have information about the player version");
 
             // Get the javascript source URL
-            string url = $"{Protocol}s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
+            string url = $"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
             string response = RequestHandler.GetHtml(url);
             if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
