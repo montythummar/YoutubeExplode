@@ -17,21 +17,17 @@ namespace YoutubeExplode
 {
     internal static class Decipherer
     {
-        private static readonly Regex FunctionNameRegex = new Regex(@"\.sig\s*\|\|([a-zA-Z0-9\$]+)\(",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex FunctionCallRegex = new Regex(@"\w+\.(\w+)\(",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
         private static string GetFunctionCallFromLine(string line)
         {
-            var match = FunctionCallRegex.Match(line);
+            var match = Regex.Match(line, @"\w+\.(\w+)\(", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             return match.Groups[1].Value;
         }
 
-        private static IEnumerable<ScramblingOperation> GetOperations(string rawJs)
+        private static IEnumerable<ScramblingOperation> GetOperations(string playerRawJs)
         {
-            // Get the decipher function name
-            var funcNameMatch = FunctionNameRegex.Match(rawJs);
+            // Get the name of the function that handles deciphering
+            var funcNameMatch = Regex.Match(playerRawJs, @"\.sig\s*\|\|([a-zA-Z0-9\$]+)\(",
+                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!funcNameMatch.Success)
                 throw new Exception("Could not find the entry function for signature deciphering");
             string funcName = funcNameMatch.Groups[1].Value;
@@ -40,7 +36,7 @@ namespace YoutubeExplode
             funcName = funcName.Replace("$", "\\$");
 
             // Get the body of the function
-            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}",
+            var funcBodyMatch = Regex.Match(playerRawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}",
                 RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!funcBodyMatch.Success)
                 throw new Exception("Could not get the signature decipherer function body");
@@ -74,11 +70,11 @@ namespace YoutubeExplode
                     RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
                 // Determine the function type and assign the name
-                if (reverseFuncRegex.Match(rawJs).Success)
+                if (reverseFuncRegex.Match(playerRawJs).Success)
                     reverseFuncName = calledFunctionName;
-                else if (sliceFuncRegex.Match(rawJs).Success)
+                else if (sliceFuncRegex.Match(playerRawJs).Success)
                     sliceFuncName = calledFunctionName;
-                else if (swapFuncRegex.Match(rawJs).Success)
+                else if (swapFuncRegex.Match(playerRawJs).Success)
                     charSwapFuncName = calledFunctionName;
             }
 
@@ -112,7 +108,7 @@ namespace YoutubeExplode
             }
         }
 
-        private static string ApplyOperation(string signature, ScramblingOperation operation)
+        private static string ApplyOperation(ScramblingOperation operation, string signature)
         {
             if (signature.IsBlank())
                 throw new ArgumentNullException(signature);
@@ -141,23 +137,23 @@ namespace YoutubeExplode
             }
         }
 
-        private static string ApplyOperations(string signature, IEnumerable<ScramblingOperation> operations)
+        private static string ApplyOperations(IEnumerable<ScramblingOperation> operations, string signature)
         {
             if (signature.IsBlank())
                 throw new ArgumentNullException(signature);
 
             foreach (var operation in operations)
-                signature = ApplyOperation(signature, operation);
+                signature = ApplyOperation(operation, signature);
 
             return signature;
         }
 
-        public static void Decipher(VideoInfo videoInfo, string rawJs)
+        public static void Decipher(VideoInfo videoInfo, string playerRawJs)
         {
             if (videoInfo == null)
                 throw new ArgumentNullException(nameof(videoInfo));
-            if (rawJs.IsBlank())
-                throw new ArgumentNullException(nameof(rawJs));
+            if (playerRawJs.IsBlank())
+                throw new ArgumentNullException(nameof(playerRawJs));
 
             // No streams => nothing to decipher => we're good
             if (videoInfo.Streams == null || !videoInfo.Streams.Any())
@@ -167,13 +163,13 @@ namespace YoutubeExplode
             }
 
             // Get operations
-            var operations = GetOperations(rawJs).ToArray();
+            var operations = GetOperations(playerRawJs).ToArray();
 
             // Update signatures on videostreams
             foreach (var stream in videoInfo.Streams.Where(s => s.NeedsDeciphering))
             {
                 string sig = stream.Signature;
-                string newSig = ApplyOperations(sig, operations);
+                string newSig = ApplyOperations(operations, sig);
 
                 // Update signature
                 stream.Signature = newSig;

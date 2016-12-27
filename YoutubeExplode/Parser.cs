@@ -18,9 +18,6 @@ namespace YoutubeExplode
 {
     internal static class Parser
     {
-        private static readonly Regex VideoPlayerVersionRegex = new Regex(@"player-(.+?)/",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
         private static Dictionary<string, string> ParseDictionaryUrlEncoded(string raw)
         {
             if (raw.IsBlank())
@@ -109,7 +106,12 @@ namespace YoutubeExplode
             var assets = json.GetValueOrDefault("assets") as JsonObject;
             string playerJsUrl = assets?.GetValueOrDefault("js", "");
             if (!playerJsUrl.IsBlank())
-                result.PlayerVersion = VideoPlayerVersionRegex.Match(playerJsUrl).Groups[1].Value;
+            {
+                var match = Regex.Match(playerJsUrl, @"player-(.+?)/",
+                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                if (match.Success)
+                    result.PlayerVersion = match.Groups[1].Value;
+            }
 
             // Get video info
             var videoInfoEncoded = json.GetValueOrDefault("args") as JsonObject;

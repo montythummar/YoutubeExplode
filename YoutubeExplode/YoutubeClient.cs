@@ -17,12 +17,6 @@ namespace YoutubeExplode
     /// </summary>
     public class YoutubeClient
     {
-        private static readonly Regex VideoUrlToIDRegex = new Regex(@"[?&]v=(.+?)(?:&|$)",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-        private static readonly Regex VideoJsonRegex = new Regex(@"ytplayer\.config\s*=\s*(\{.+?\});",
-            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
         /// <summary>
         /// Default instance of YoutubeClient
         /// </summary>
@@ -54,7 +48,8 @@ namespace YoutubeExplode
             VideoInfo result;
 
             // Try to get video info
-            var jsonMatch = VideoJsonRegex.Match(html);
+            var jsonMatch = Regex.Match(html, @"ytplayer\.config\s*=\s*(\{.+?\});",
+                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline);
             if (jsonMatch.Success)
             {
                 // Get it directly from JSON object in the watch page
@@ -78,7 +73,7 @@ namespace YoutubeExplode
             if (result.NeedsDeciphering && decipherIfNeeded)
                 Decipher(result);
 
-            // File sizes
+            // Get file size of streams
             if (getFileSizes)
             {
                 foreach (var stream in result.Streams)
@@ -134,7 +129,8 @@ namespace YoutubeExplode
         /// <returns>Video ID</returns>
         public string ParseVideoID(string videoURL)
         {
-            var match = VideoUrlToIDRegex.Match(videoURL);
+            var match = Regex.Match(videoURL, @"[?&]v=(.+?)(?:&|$)",
+                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!match.Success)
                 throw new FormatException("Could not parse Video ID from given string");
             return match.Groups[1].Value;
@@ -147,7 +143,8 @@ namespace YoutubeExplode
         public bool TryParseVideoID(string videoURL, out string videoID)
         {
             videoID = default(string);
-            var match = VideoUrlToIDRegex.Match(videoURL);
+            var match = Regex.Match(videoURL, @"[?&]v=(.+?)(?:&|$)",
+                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (match.Success)
                 videoID = match.Groups[1].Value;
             return match.Success;
