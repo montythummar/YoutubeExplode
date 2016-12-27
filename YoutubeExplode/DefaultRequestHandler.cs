@@ -6,6 +6,7 @@
 //  Date: 26/12/2016
 // ------------------------------------------------------------------ 
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -46,7 +47,7 @@ namespace YoutubeExplode
                 var req = WebRequest.CreateHttp(url);
                 req.Method = "HEAD";
 
-                var result = new Dictionary<string, string>();
+                var result = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
                 using (var response = req.GetResponse())
                 {
                     for (int i = 0; i < response.Headers.Count; i++)
