@@ -42,10 +42,10 @@
                              Grid.Column="0"
                              KeyDown="tbVideoID_KeyDown"
                              Text="{Binding VideoID, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button x:Name="SubmitButton"
+                    <Button x:Name="GetDataButton"
                             Grid.Column="1"
                             Padding="5"
-                            Command="{Binding SubmitCommand}">
+                            Command="{Binding GetDataCommand}">
                         <materialDesign:PackIcon Width="24"
                                                  Height="24"
                                                  Kind="ArrowRight"
@@ -83,7 +83,7 @@
 
                         <Image Grid.Row="1"
                                Margin="5"
-                               Source="{Binding ThumbnailImageSource}" />
+                               Source="{Binding VideoInfo.ImageHighQuality}" />
 
                         <MediaElement x:Name="VideoMediaElement"
                                       Grid.Row="1"

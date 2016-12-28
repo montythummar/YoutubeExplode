@@ -100,7 +100,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Locator.cs" />
-    <Compile Include="Services\FileDownloaderService.cs" />
     <Compile Include="ViewModels\Dialogs.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
@@ -146,6 +145,7 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Resources\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YoutubeExplode\YoutubeExplode.csproj">

@@ -8,7 +8,6 @@
 
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
-using YoutubeExplodeDemo.Services;
 using YoutubeExplodeDemo.ViewModels;
 
 namespace YoutubeExplodeDemo
@@ -19,7 +18,6 @@ namespace YoutubeExplodeDemo
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            SimpleIoc.Default.Register<FileDownloaderService>();
             SimpleIoc.Default.Register<MainViewModel>();
         }
 

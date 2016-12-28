@@ -69,7 +69,7 @@ namespace YoutubeExplodeDemo.Views
         private void tbVideoID_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
-            ((MainViewModel) DataContext).SubmitCommand.Execute(null);
+            ((MainViewModel) DataContext).GetDataCommand.Execute(null);
         }
 
         private void PlayButton_OnClick(object sender, RoutedEventArgs e)

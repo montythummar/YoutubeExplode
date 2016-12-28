@@ -8,23 +8,20 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
 using NegativeLayer.Extensions;
 using YoutubeExplode;
 using YoutubeExplode.Models;
-using YoutubeExplodeDemo.Services;
 
 namespace YoutubeExplodeDemo.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly FileDownloaderService _downloader;
         private readonly YoutubeClient _client;
 
         private string _videoID;
@@ -45,13 +42,6 @@ namespace YoutubeExplodeDemo.ViewModels
             }
         }
 
-        private ImageSource _thumbnailImageSource;
-        public ImageSource ThumbnailImageSource
-        {
-            get { return _thumbnailImageSource; }
-            private set { Set(ref _thumbnailImageSource, value); }
-        }
-
         public bool VideoInfoVisible => VideoInfo != null;
 
         private VideoStreamEndpoint _selectedStream;
@@ -68,7 +58,7 @@ namespace YoutubeExplodeDemo.ViewModels
         private double _downloadProgress;
         public double DownloadProgress
         {
-            get { return _downloadProgress;}
+            get { return _downloadProgress; }
             set { Set(ref _downloadProgress, value); }
         }
 
@@ -84,60 +74,46 @@ namespace YoutubeExplodeDemo.ViewModels
         }
 
         // Commands
-        public RelayCommand SubmitCommand { get; }
+        public RelayCommand GetDataCommand { get; }
         public RelayCommand DownloadVideoCommand { get; }
 
-        public MainViewModel(FileDownloaderService downloader)
+        public MainViewModel()
         {
-            _downloader = downloader;
             _client = new YoutubeClient();
 
             // Commands
-            SubmitCommand = new RelayCommand(SubmitAsync);
+            GetDataCommand = new RelayCommand(GetDataAsync);
             DownloadVideoCommand = new RelayCommand(DownloadVideoAsync, () => SelectedStream != null && !IsDownloading);
-
-            // Events
-            _downloader.ProgressChanged += (sender, args) => DownloadProgress = _downloader.Progress;
         }
 
-        private async void SubmitAsync()
+        private async void GetDataAsync()
         {
             // Check params
             if (VideoID.IsBlank())
                 return;
 
-            // Do the heavy lifting async
+            // Reset data
+            VideoInfo = null;
+
+            // Parse URL if necessary
+            string id;
+            if (!_client.TryParseVideoID(VideoID, out id))
+                id = VideoID;
+
+            // Perform the request
             await Task.Run(() =>
             {
                 try
                 {
-                    string id;
-
-                    // Parse URL if necessary
-                    if (!_client.TryParseVideoID(VideoID, out id))
-                        id = VideoID;
-
-                    // Populate video info
                     VideoInfo = _client.GetVideoInfo(id);
                 }
                 catch (Exception ex)
                 {
-                    VideoInfo = null;
                     Dialogs.Error(ex.Message);
                 }
             });
 
-            // Thumbnail
-            if (VideoInfo?.ImageHighQuality.IsNotBlank() == true)
-            {
-                var bmp = new BitmapImage();
-                bmp.BeginInit();
-                bmp.UriSource = new Uri(VideoInfo.ImageHighQuality, UriKind.Absolute);
-                bmp.EndInit();
-                ThumbnailImageSource = bmp;
-            }
-
-            // Selected stream
+            // Select the first stream available
             if (VideoInfo?.Streams != null && VideoInfo.Streams.Any())
             {
                 SelectedStream = VideoInfo.Streams.First();
@@ -150,10 +126,8 @@ namespace YoutubeExplodeDemo.ViewModels
             if (SelectedStream == null) return;
             if (VideoInfo == null) return;
 
-            IsDownloading = true;
-
             // Copy values
-            string id = VideoInfo.ID;
+            string title = VideoInfo.Title;
             string ext = SelectedStream.FileExtension;
 
             // Select destination
@@ -161,37 +135,46 @@ namespace YoutubeExplodeDemo.ViewModels
             {
                 AddExtension = true,
                 DefaultExt = ext,
-                FileName = $"youtube_export_{id}.{ext}",
+                FileName = $"{title}.{ext}".Except(Path.GetInvalidFileNameChars()),
                 Filter = $"{ext.ToUpperInvariant()} Video Files|*.{ext}|All files|*.*"
             };
-            if (!sfd.ShowDialog().GetValueOrDefault())
-            {
-                IsDownloading = false;
-                return;
-            }
+            if (sfd.ShowDialog() == false) return;
             string filePath = sfd.FileName;
 
-            // Download
-            bool success = true;
-            await Task.Run(() =>
+            // Try download
+            IsDownloading = true;
+            bool success = await Task.Run(() =>
             {
-                try
+                using (var output = File.Create(filePath))
+                using (var input = _client.DownloadVideoStream(SelectedStream))
                 {
-                    _downloader.DownloadFile(SelectedStream.URL, filePath);
+                    if (input == null) return false;
+
+                    // Read the response and copy it to output stream
+                    var buffer = new byte[1024];
+                    int bytesRead;
+                    do
+                    {
+                        bytesRead = input.Read(buffer, 0, 1024);
+                        output.Write(buffer, 0, bytesRead);
+                        DownloadProgress += 1.0*bytesRead/SelectedStream.FileSize;
+                    } while (bytesRead > 0);
                 }
-                catch (Exception ex)
-                {
-                    Dialogs.Error(ex.Message);
-                    success = false;
-                }
+                return true;
             });
-
-            // Notify
-            if (success &&
-                Dialogs.PromptYesNo($"Video (ID = {id}) downloaded!{Environment.NewLine}Do you want to open it?"))
-                Process.Start(filePath);
-
             IsDownloading = false;
+
+            // Finalize
+            if (success)
+            {
+                if (Dialogs.PromptYesNo(
+                        $"Video ({title}) has been downloaded!{Environment.NewLine}Do you want to open it?"))
+                    Process.Start(filePath);
+            }
+            else
+            {
+                Dialogs.Error("Could not download the video");
+            }
         }
     }
 }

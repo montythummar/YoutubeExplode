@@ -7,6 +7,7 @@
 // ------------------------------------------------------------------ 
 
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 using YoutubeExplode.Models;
 
@@ -40,8 +41,7 @@ namespace YoutubeExplode
                 throw new ArgumentNullException(nameof(videoID));
 
             // Grab watch page html code
-            string url = $"https://youtube.com/watch?v={videoID}";
-            string html = RequestHandler.GetHtml(url);
+            string html = RequestHandler.GetHtml($"https://youtube.com/watch?v={videoID}");
             if (html.IsBlank())
                 throw new Exception("Could not get video watch page (GET request failed)");
 
@@ -60,8 +60,7 @@ namespace YoutubeExplode
             else
             {
                 // Get it from URL encoded data from internal api
-                url = $"https://youtube.com/get_video_info?video_id={videoID}";
-                html = RequestHandler.GetHtml(url);
+                html = RequestHandler.GetHtml($"https://youtube.com/get_video_info?video_id={videoID}");
                 if (html.IsBlank())
                     throw new Exception("Could not get URL-encoded video info (GET request failed)");
                 result = Parser.ParseVideoInfoUrlEncoded(html);
@@ -71,7 +70,9 @@ namespace YoutubeExplode
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
+            {
                 Decipher(result);
+            }
 
             // Get file size of streams
             if (getFileSizes)
@@ -94,13 +95,13 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not have information about the player version");
 
             // Get the javascript source URL
-            string url = $"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js";
-            string response = RequestHandler.GetHtml(url);
-            if (response.IsBlank())
+            string player = videoInfo.PlayerVersion;
+            string js = RequestHandler.GetHtml($"https://s.ytimg.com/yts/jsbin/player-{player}/base.js");
+            if (js.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
             // Decipher
-            Decipherer.Decipher(videoInfo, response);
+            Decipherer.Decipher(videoInfo, js);
         }
 
         /// <summary>
@@ -121,6 +122,42 @@ namespace YoutubeExplode
                 throw new Exception("Could not obtain headers");
 
             return stream.FileSize = headers.GetValueOrDefault("Content-Length").ParseUlongOrDefault();
+        }
+
+        /// <summary>
+        /// Downloads the given video stream
+        /// </summary>
+        public Stream DownloadVideoStream(VideoStreamEndpoint stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            if (stream.URL.IsBlank())
+                throw new Exception("Given stream does not have an URL");
+            if (stream.NeedsDeciphering)
+                throw new Exception("Given stream's signature needs to be deciphered first");
+
+            return RequestHandler.DownloadFile(stream.URL);
+        }
+
+        /// <summary>
+        /// Downloads the given video stream and saves it to a file
+        /// </summary>
+        public void DownloadVideoStream(VideoStreamEndpoint stream, string filePath)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            if (stream.URL.IsBlank())
+                throw new Exception("Given stream does not have an URL");
+            if (stream.NeedsDeciphering)
+                throw new Exception("Given stream's signature needs to be deciphered first");
+
+            using (var s = DownloadVideoStream(stream))
+            {
+                if (s == null)
+                    throw new Exception("Could not download the given video stream");
+
+                File.WriteAllBytes(filePath, s.ToArray());
+            }
         }
 
         /// <summary>

@@ -7,6 +7,7 @@
 // ------------------------------------------------------------------ 
 
 using System.Collections.Generic;
+using System.IO;
 
 namespace YoutubeExplode
 {
@@ -26,5 +27,11 @@ namespace YoutubeExplode
         /// </summary>
         /// <returns>Header dictionary or null if the operation failed</returns>
         IDictionary<string, string> GetHeaders(string url);
+
+        /// <summary>
+        /// Performs a GET request and returns the binary content of the response as a stream
+        /// </summary>
+        /// <returns>Response stream or null if the operation failed</returns>
+        Stream DownloadFile(string url);
     }
 }

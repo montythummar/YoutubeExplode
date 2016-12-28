@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 
@@ -30,6 +31,7 @@ namespace YoutubeExplode
             {
                 var req = WebRequest.CreateHttp(url);
                 req.Method = "GET";
+
                 using (var response = req.GetResponse())
                     return Encoding.UTF8.GetString(response.GetResponseStream().ToArray());
             }
@@ -58,6 +60,22 @@ namespace YoutubeExplode
                     }
                 }
                 return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public Stream DownloadFile(string url)
+        {
+            try
+            {
+                var req = WebRequest.CreateHttp(url);
+                req.Method = "GET";
+
+                return req.GetResponse().GetResponseStream();
             }
             catch
             {
