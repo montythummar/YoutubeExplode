@@ -25,7 +25,7 @@ namespace YoutubeExplode
         public static DefaultRequestHandler Default { get; } = new DefaultRequestHandler();
 
         /// <inheritdoc />
-        public string GetHtml(string url)
+        public string GetString(string url)
         {
             try
             {

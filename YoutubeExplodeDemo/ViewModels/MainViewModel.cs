@@ -146,7 +146,7 @@ namespace YoutubeExplodeDemo.ViewModels
             bool success = await Task.Run(() =>
             {
                 using (var output = File.Create(filePath))
-                using (var input = _client.DownloadVideoStream(SelectedStream))
+                using (var input = _client.DownloadVideo(SelectedStream))
                 {
                     if (input == null) return false;
 

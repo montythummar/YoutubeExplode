@@ -32,8 +32,8 @@ namespace YoutubeExplode
         /// Get full information about a video by its ID
         /// </summary>
         /// <param name="videoID">The ID of the video</param>
-        /// <param name="decipherIfNeeded">When set to true, videos with encrypted signatures will be automatically deciphered. This requires one extra HTTP GET request and some computational time. If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="Decipher"/> method. Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamEndpoint"/> by URL</param>
-        /// <param name="getFileSizes">When set to true, it will also attempt to get file sizes of all obtained streams. This requires one extra HTTP HEAD request. If set to false, you can use <see cref="GetStreamFileSize"/> to get file size of individual streams. This parameter requires <paramref name="decipherIfNeeded"/> to be set.</param>
+        /// <param name="decipherIfNeeded">When set to true, videos with encrypted signatures will be automatically deciphered. This requires one extra HTTP GET request and some computational time. If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreams"/> method. Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamEndpoint"/> by URL</param>
+        /// <param name="getFileSizes">When set to true, it will also attempt to get file sizes of all obtained streams. This requires one extra HTTP HEAD request. If set to false, you can use <see cref="GetFileSize"/> to get file size of individual streams. This parameter requires <paramref name="decipherIfNeeded"/> to be set.</param>
         /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
         public VideoInfo GetVideoInfo(string videoID, bool decipherIfNeeded = true, bool getFileSizes = true)
         {
@@ -41,14 +41,14 @@ namespace YoutubeExplode
                 throw new ArgumentNullException(nameof(videoID));
 
             // Grab watch page html code
-            string html = RequestHandler.GetHtml($"https://youtube.com/watch?v={videoID}");
-            if (html.IsBlank())
+            string response = RequestHandler.GetString($"https://youtube.com/watch?v={videoID}");
+            if (response.IsBlank())
                 throw new Exception("Could not get video watch page (GET request failed)");
 
             VideoInfo result;
 
             // Try to get video info
-            var jsonMatch = Regex.Match(html, @"ytplayer\.config\s*=\s*(\{.+?\});",
+            var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline);
             if (jsonMatch.Success)
             {
@@ -60,10 +60,10 @@ namespace YoutubeExplode
             else
             {
                 // Get it from URL encoded data from internal api
-                html = RequestHandler.GetHtml($"https://youtube.com/get_video_info?video_id={videoID}");
-                if (html.IsBlank())
+                response = RequestHandler.GetString($"https://youtube.com/get_video_info?video_id={videoID}");
+                if (response.IsBlank())
                     throw new Exception("Could not get URL-encoded video info (GET request failed)");
-                result = Parser.ParseVideoInfoUrlEncoded(html);
+                result = Parser.ParseVideoInfoUrlEncoded(response);
                 if (result == null)
                     throw new Exception("Could not parse video info (URL-encoded)");
             }
@@ -71,14 +71,13 @@ namespace YoutubeExplode
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
             {
-                Decipher(result);
+                DecipherStreams(result);
             }
 
             // Get file size of streams
             if (getFileSizes)
             {
-                foreach (var stream in result.Streams)
-                    GetStreamFileSize(stream);
+                GetAllFileSizes(result);
             }
 
             return result;
@@ -87,8 +86,10 @@ namespace YoutubeExplode
         /// <summary>
         /// Deciphers the streams in the given <see cref="VideoInfo"/>
         /// </summary>
-        public void Decipher(VideoInfo videoInfo)
+        public void DecipherStreams(VideoInfo videoInfo)
         {
+            if (videoInfo == null)
+                throw new ArgumentNullException(nameof(videoInfo));
             if (!videoInfo.NeedsDeciphering)
                 throw new ArgumentException("Given video info does not need to be deciphered", nameof(videoInfo));
             if (videoInfo.PlayerVersion.IsBlank())
@@ -96,18 +97,19 @@ namespace YoutubeExplode
 
             // Get the javascript source URL
             string player = videoInfo.PlayerVersion;
-            string js = RequestHandler.GetHtml($"https://s.ytimg.com/yts/jsbin/player-{player}/base.js");
-            if (js.IsBlank())
+            string response = RequestHandler.GetString($"https://s.ytimg.com/yts/jsbin/player-{player}/base.js");
+            if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
             // Decipher
-            Decipherer.Decipher(videoInfo, js);
+            Decipherer.UnscrambleSignatures(videoInfo, response);
         }
 
         /// <summary>
-        /// Gets the file size of the video, streamed on given endpoint
+        /// Gets and populates the total file size of the video, streamed on given endpoint
+        /// <returns>The populated file size value (in bytes)</returns>
         /// </summary>
-        public ulong GetStreamFileSize(VideoStreamEndpoint stream)
+        public ulong GetFileSize(VideoStreamEndpoint stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -125,9 +127,24 @@ namespace YoutubeExplode
         }
 
         /// <summary>
+        /// Gets and populates the total file sizes of all videos, streamed on endpoints of current video object
+        /// </summary>
+        /// <param name="videoInfo"></param>
+        public void GetAllFileSizes(VideoInfo videoInfo)
+        {
+            if (videoInfo == null)
+                throw new ArgumentNullException(nameof(videoInfo));
+            if (videoInfo.Streams == null)
+                throw new Exception("There are no streams in the given video info");
+
+            foreach (var stream in videoInfo.Streams)
+                GetFileSize(stream);
+        }
+
+        /// <summary>
         /// Downloads the given video stream
         /// </summary>
-        public Stream DownloadVideoStream(VideoStreamEndpoint stream)
+        public Stream DownloadVideo(VideoStreamEndpoint stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -142,7 +159,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream and saves it to a file
         /// </summary>
-        public void DownloadVideoStream(VideoStreamEndpoint stream, string filePath)
+        public void DownloadVideo(VideoStreamEndpoint stream, string filePath)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -151,7 +168,7 @@ namespace YoutubeExplode
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            using (var s = DownloadVideoStream(stream))
+            using (var s = DownloadVideo(stream))
             {
                 if (s == null)
                     throw new Exception("Could not download the given video stream");

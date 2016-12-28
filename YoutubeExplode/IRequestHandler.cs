@@ -17,10 +17,10 @@ namespace YoutubeExplode
     public interface IRequestHandler
     {
         /// <summary>
-        /// Performs a GET request and returns the HTML content of the page as a string
+        /// Performs a GET request and returns the response content as a string
         /// </summary>
-        /// <returns>Page HTML content or null if the operation failed</returns>
-        string GetHtml(string url);
+        /// <returns>Respose content as a string or null if the operation failed</returns>
+        string GetString(string url);
 
         /// <summary>
         /// Performs a HEAD request and returns header dictionary

@@ -148,7 +148,7 @@ namespace YoutubeExplode
             return signature;
         }
 
-        public static void Decipher(VideoInfo videoInfo, string playerRawJs)
+        public static void UnscrambleSignatures(VideoInfo videoInfo, string playerRawJs)
         {
             if (videoInfo == null)
                 throw new ArgumentNullException(nameof(videoInfo));

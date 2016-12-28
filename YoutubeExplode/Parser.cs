@@ -172,7 +172,7 @@ namespace YoutubeExplode
             var result = new VideoInfo();
 
             // Player version (no way to obtain here)
-            result.PlayerVersion = null; // set to null, so deciphere can correctly throw an exception
+            result.PlayerVersion = null; // set to null, so that decipherer can correctly throw an exception
 
             // Populate data
             result.ID = videoInfoEncoded.GetValueOrDefault("video_id");
