@@ -47,7 +47,7 @@
     <Compile Include="Models\VideoStreamEndpoint.cs" />
     <Compile Include="Models\VideoStreamQuality.cs" />
     <Compile Include="Models\VideoStreamType.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="VideoInfoParser.cs" />
     <Compile Include="IRequestHandler.cs" />
     <Compile Include="SimpleJson.cs" />
     <Compile Include="YoutubeClient.cs" />

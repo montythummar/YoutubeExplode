@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------ 
 //  Solution: <YoutubeExplode>
 //  Project: <YoutubeExplode>
-//  File: <Parser.cs>
+//  File: <VideoInfoParser.cs>
 //  Created By: Alexey Golub
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
@@ -16,7 +16,7 @@ using YoutubeExplode.Models;
 
 namespace YoutubeExplode
 {
-    internal static class Parser
+    internal static class VideoInfoParser
     {
         private static Dictionary<string, string> ParseDictionaryUrlEncoded(string raw)
         {
@@ -84,18 +84,13 @@ namespace YoutubeExplode
             }
         }
 
-        private static JsonObject ParseJson(string json)
-        {
-            return SimpleJson.DeserializeObject(json) as JsonObject;
-        }
-
         public static VideoInfo ParseVideoInfoJson(string rawJson)
         {
             if (rawJson.IsBlank())
                 throw new ArgumentNullException(nameof(rawJson));
 
             // Get the json
-            var json = ParseJson(rawJson);
+            var json = SimpleJson.DeserializeObject(rawJson) as JsonObject;
             if (json == null)
                 throw new Exception("Could not deserialize video info JSON");
 
@@ -116,7 +111,7 @@ namespace YoutubeExplode
             // Get video info
             var videoInfoEncoded = json.GetValueOrDefault("args") as JsonObject;
             if (videoInfoEncoded == null)
-                throw new Exception("Video info not found in JSON");
+                throw new Exception("Actual video info not found in JSON");
 
             // Check the status
             string status = videoInfoEncoded.GetValueOrDefault("status", "");
