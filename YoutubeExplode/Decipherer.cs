@@ -15,7 +15,7 @@ using YoutubeExplode.Models;
 
 namespace YoutubeExplode
 {
-    internal static class Decipherer
+    internal class Decipherer
     {
         private static string GetFunctionCallFromLine(string line)
         {
@@ -117,14 +117,14 @@ namespace YoutubeExplode
             {
                 // Swap first char of the signature with one of given index
                 case ScramblingOperationType.Swap:
-                {
-                    var sb = new StringBuilder(signature)
                     {
-                        [0] = signature[operation.Parameter],
-                        [operation.Parameter] = signature[0]
-                    };
-                    return sb.ToString();
-                }
+                        var sb = new StringBuilder(signature)
+                        {
+                            [0] = signature[operation.Parameter],
+                            [operation.Parameter] = signature[0]
+                        };
+                        return sb.ToString();
+                    }
                 // Substring past the given index
                 case ScramblingOperationType.Slice:
                     return signature.Substring(operation.Parameter);
@@ -148,13 +148,21 @@ namespace YoutubeExplode
             return signature;
         }
 
-        public static void UnscrambleSignatures(VideoInfo videoInfo, string playerRawJs)
+        private readonly ScramblingOperation[] _operations;
+
+        public Decipherer(string playerRawJs)
         {
-            if (videoInfo == null)
-                throw new ArgumentNullException(nameof(videoInfo));
             if (playerRawJs.IsBlank())
                 throw new ArgumentNullException(nameof(playerRawJs));
 
+            _operations = GetOperations(playerRawJs).ToArray();
+        }
+
+        public void UnscrambleSignatures(VideoInfo videoInfo)
+        {
+            if (videoInfo == null)
+                throw new ArgumentNullException(nameof(videoInfo));
+            
             // No streams => nothing to decipher => we're good
             if (videoInfo.Streams == null || !videoInfo.Streams.Any())
             {
@@ -162,14 +170,11 @@ namespace YoutubeExplode
                 return;
             }
 
-            // Get operations
-            var operations = GetOperations(playerRawJs).ToArray();
-
             // Update signatures on videostreams
             foreach (var stream in videoInfo.Streams.Where(s => s.NeedsDeciphering))
             {
                 string sig = stream.Signature;
-                string newSig = ApplyOperations(operations, sig);
+                string newSig = ApplyOperations(_operations, sig);
 
                 // Update signature
                 stream.Signature = newSig;

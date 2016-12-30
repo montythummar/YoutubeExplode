@@ -101,7 +101,7 @@ namespace YoutubeExplode
                 throw new Exception("Could not get the video player source code");
 
             // Decipher
-            Decipherer.UnscrambleSignatures(videoInfo, response);
+            new Decipherer(response).UnscrambleSignatures(videoInfo);
         }
 
         /// <summary>
