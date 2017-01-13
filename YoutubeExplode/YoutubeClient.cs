@@ -29,6 +29,15 @@ namespace YoutubeExplode
         public IRequestHandler RequestHandler { get; set; } = DefaultRequestHandler.Default;
 
         /// <summary>
+        /// Verifies that the given string is a valid youtube video ID
+        /// </summary>
+        /// <returns>True if valid, false otherwise</returns>
+        public bool VerifyYoutubeID(string videoID)
+        {
+            return !Regex.IsMatch(videoID, @"[^0-9a-zA-Z_\-]", RegexOptions.CultureInvariant);
+        }
+
+        /// <summary>
         /// Get full information about a video by its ID
         /// </summary>
         /// <param name="videoID">The ID of the video</param>
@@ -39,6 +48,8 @@ namespace YoutubeExplode
         {
             if (videoID.IsBlank())
                 throw new ArgumentNullException(nameof(videoID));
+            if (!VerifyYoutubeID(videoID))
+                throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoID));
 
             // Grab watch page html code
             string response = RequestHandler.GetString($"https://youtube.com/watch?v={videoID}");
