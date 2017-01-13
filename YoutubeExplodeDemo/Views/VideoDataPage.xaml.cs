@@ -21,6 +21,7 @@ namespace YoutubeExplodeDemo.Views
         private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.ToString());
+            e.Handled = true;
         }
     }
 }
