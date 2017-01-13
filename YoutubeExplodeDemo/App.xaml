@@ -15,7 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/WPFExtensions;component/ConvertersDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -110,8 +109,6 @@
             <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             </Style>
-
-            <Style BasedOn="{StaticResource MaterialDesignTabablzControlStyle}" TargetType="dragablz:TabablzControl" />
 
             <local:Locator x:Key="Locator" d:IsDataSource="True" />
         </ResourceDictionary>
