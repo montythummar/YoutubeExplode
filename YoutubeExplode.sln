@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExplode", "YoutubeEx
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D3632A9-3DE4-4E64-AC3E-94810F2F55D0}"
 	ProjectSection(SolutionItems) = preProject
+		License.txt = License.txt
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
