@@ -6,7 +6,7 @@ Zero-dependency light-weight .NET library that parses out various public informa
 
 
 **Download demo:**
-If you want to download the demo - head to the releases page.
+If you want to download the demo - head to the [releases](https://github.com/Tyrrrz/YoutubeExplode/releases) page.
 
 **Parsed data:**
 
@@ -52,6 +52,17 @@ Process.Start(videoInfo.Streams.First().URL);
 
 ```
 
+**Demo dependencies:**
+
+*The library itself doesn't have any external dependencies, this is just in regards to the demo application.*
+
+ - [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) - this library
+ - [ffmediaelement](https://github.com/unosquare/ffmediaelement) - video playback
+ - [GalaSoft.MVVMLight](http://www.mvvmlight.net) - MVVM rapid development
+ - [MaterialDesignXAML](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) - MaterialDesign UI
+ - [NLExtensions](https://www.nuget.org/packages/NLExtensions) - my set of various extensions for rapid development
+ - [NLWPFExtensions](https://www.nuget.org/packages/NLWPFExtensions) - my set of various WPF extensions for rapid development
+ 
 **Screenshots:**
 
 ![](http://www.tyrrrz.me/projects/images/ytexplode_1.png)
