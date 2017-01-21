@@ -34,6 +34,7 @@ namespace YoutubeExplodeDemo.Views
             _syncTimer.Tick += (sender, args) =>
             {
                 if (_freezePositionSlider) return;
+                if (VideoMediaElement.NaturalDuration <= 0) return;
                 VideoPositionSlider.Value =
                     (double) VideoMediaElement.Position/VideoMediaElement.NaturalDuration;
             };
@@ -81,6 +82,7 @@ namespace YoutubeExplodeDemo.Views
         private void VideoPositionSlider_PreviewMouseLeftButtonUp(object sender,
             MouseButtonEventArgs mouseButtonEventArgs)
         {
+            if (VideoMediaElement.NaturalDuration <= 0) return;
             VideoMediaElement.Position = (decimal) (VideoPositionSlider.Value*VideoMediaElement.NaturalDuration);
             _freezePositionSlider = false;
         }
