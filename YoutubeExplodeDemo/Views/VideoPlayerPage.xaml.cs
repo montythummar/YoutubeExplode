@@ -16,8 +16,8 @@ namespace YoutubeExplodeDemo.Views
 {
     public partial class VideoPlayerPage
     {
-        private readonly DispatcherTimer _positionTimer;
-        private bool _isPlaying;
+        private readonly DispatcherTimer _syncTimer;
+        private bool _freezePositionSlider;
 
         public VideoPlayerPage()
         {
@@ -25,42 +25,37 @@ namespace YoutubeExplodeDemo.Views
 
             ((MainViewModel) DataContext).PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(MainViewModel.SelectedStream) && _isPlaying)
+                if (args.PropertyName == nameof(MainViewModel.SelectedStream) && VideoMediaElement.IsPlaying)
                     Stop();
             };
 
-            // Sorry WPF gods but MediaElement sucks
-            _positionTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(0.5)};
-            _positionTimer.Tick += (sender, args) =>
+            _syncTimer = new DispatcherTimer();
+            _syncTimer.Interval = TimeSpan.FromSeconds(0.5);
+            _syncTimer.Tick += (sender, args) =>
             {
-                if (!VideoMediaElement.NaturalDuration.HasTimeSpan) return;
-                VideoPositionSlider.Value = VideoMediaElement.Position.TotalMilliseconds/
-                                            VideoMediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-                if (VideoMediaElement.Position >= VideoMediaElement.NaturalDuration)
-                    Stop();
+                if (_freezePositionSlider) return;
+                VideoPositionSlider.Value =
+                    (double) VideoMediaElement.Position/VideoMediaElement.NaturalDuration;
             };
         }
 
         private void Play()
         {
             VideoMediaElement.Play();
-            _positionTimer.Start();
-            _isPlaying = true;
+            _syncTimer.Start();
         }
 
         private void Pause()
         {
             VideoMediaElement.Pause();
-            _positionTimer.Stop();
+            _syncTimer.Stop();
         }
 
         private void Stop()
         {
-            VideoMediaElement.Position = TimeSpan.Zero;
             VideoMediaElement.Stop();
-            _positionTimer.Stop();
+            _syncTimer.Stop();
             VideoPositionSlider.Value = 0;
-            _isPlaying = false;
         }
 
         private void PlayButton_OnClick(object sender, RoutedEventArgs e)
@@ -78,14 +73,16 @@ namespace YoutubeExplodeDemo.Views
             Stop();
         }
 
+        private void VideoPositionSlider_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _freezePositionSlider = true;
+        }
+
         private void VideoPositionSlider_PreviewMouseLeftButtonUp(object sender,
             MouseButtonEventArgs mouseButtonEventArgs)
         {
-            if (!VideoMediaElement.NaturalDuration.HasTimeSpan) return;
-            var newPos =
-                TimeSpan.FromMilliseconds(VideoPositionSlider.Value*
-                                          VideoMediaElement.NaturalDuration.TimeSpan.TotalMilliseconds);
-            VideoMediaElement.Position = newPos;
+            VideoMediaElement.Position = (decimal) (VideoPositionSlider.Value*VideoMediaElement.NaturalDuration);
+            _freezePositionSlider = false;
         }
     }
 }
