@@ -165,13 +165,9 @@
                         <!--  Images  -->
                         <TextBlock Margin="5">
                             <Run Text="Images:" />
-                            <LineBreak />
-                            <Hyperlink NavigateUri="{Binding VideoInfo.Thumbnail}" RequestNavigate="Hyperlink_OnRequestNavigate">Thumbnail</Hyperlink>
-                            <LineBreak />
-                            <Hyperlink NavigateUri="{Binding VideoInfo.ImageHighQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image High Quality</Hyperlink>
-                            <LineBreak />
-                            <Hyperlink NavigateUri="{Binding VideoInfo.ImageMediumQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Medium Quality</Hyperlink>
-                            <LineBreak />
+                            <Hyperlink NavigateUri="{Binding VideoInfo.Thumbnail}" RequestNavigate="Hyperlink_OnRequestNavigate">Thumbnail</Hyperlink><Run Text="," />
+                            <Hyperlink NavigateUri="{Binding VideoInfo.ImageHighQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image High Quality</Hyperlink><Run Text="," />
+                            <Hyperlink NavigateUri="{Binding VideoInfo.ImageMediumQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Medium Quality</Hyperlink><Run Text="," />
                             <Hyperlink NavigateUri="{Binding VideoInfo.ImageLowQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Low Quality</Hyperlink>
                         </TextBlock>
 
