@@ -182,7 +182,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">
+                                            <TextBlock Margin="0,0,10,0" VerticalAlignment="Center">
                                                 <Run Text="Type:" />
                                                 <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" /><Run Text="," />
 
@@ -196,15 +196,15 @@
                                                 <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding ResolutionString, Mode=OneWay}" /><Run Text="," />
 
                                                 <Run Text="Bitrate:" />
-                                                <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Bitrate, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}/s, Mode=OneWay}" /><Run Text="," />
+                                                <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Bitrate, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}it/s, Mode=OneWay}" /><Run Text="," />
 
                                                 <Run Text="Size:" />
                                                 <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, Mode=OneWay}" />
                                             </TextBlock>
-                                            <Button Margin="2,0,0,0"
-                                                    Padding="0"
+                                            <Button Width="16"
                                                     Height="16"
-                                                    Width="16"
+                                                    Margin="2,0,0,0"
+                                                    Padding="0"
                                                     Background="Transparent"
                                                     BorderThickness="0"
                                                     Command="{Binding Main.OpenVideoCommand, Source={StaticResource Locator}}"
@@ -213,10 +213,10 @@
                                                     ToolTip="Open video in browser">
                                                 <materialDesign:PackIcon Kind="Web" />
                                             </Button>
-                                            <Button Margin="2,0,0,0"
-                                                    Padding="0"
+                                            <Button Width="16"
                                                     Height="16"
-                                                    Width="16"
+                                                    Margin="2,0,0,0"
+                                                    Padding="0"
                                                     Background="Transparent"
                                                     BorderThickness="0"
                                                     Command="{Binding Main.DownloadVideoCommand, Source={StaticResource Locator}}"
