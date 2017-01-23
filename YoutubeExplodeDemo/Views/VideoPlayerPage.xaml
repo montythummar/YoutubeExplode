@@ -2,7 +2,6 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:ffme="clr-namespace:Unosquare.FFmpegMediaElement;assembly=Unosquare.FFmpegMediaElement"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Title="VideoPlayerPage"
@@ -22,65 +21,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--  Video  -->
-        <Grid Grid.Row="0">
-            <!--  Video Image  -->
-            <Image Margin="5" Source="{Binding VideoInfo.ImageHighQuality}" />
-
-            <!--  Video Player  -->
-            <ffme:MediaElement x:Name="VideoMediaElement"
-                               Margin="5"
-                               LoadedBehavior="Stop"
-                               Source="{Binding SelectedStream.URL}"
-                               StretchDirection="DownOnly"
-                               UnloadedBehavior="Close" />
-        </Grid>
+        <!--  Video Image  -->
+        <Image Grid.Row="0"
+               Margin="5"
+               Source="{Binding VideoInfo.ImageHighQuality}" />
 
         <StackPanel Grid.Row="1" Orientation="Vertical">
-            <!--  Seek Slider  -->
-            <Slider x:Name="VideoPositionSlider"
-                    Margin="15,5,15,5"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    IsMoveToPointEnabled="True"
-                    LargeChange="0.1"
-                    Maximum="1"
-                    Minimum="0"
-                    PreviewMouseLeftButtonDown="VideoPositionSlider_OnPreviewMouseLeftButtonDown"
-                    PreviewMouseLeftButtonUp="VideoPositionSlider_PreviewMouseLeftButtonUp"
-                    SmallChange="0.05" />
-
-            <!--  Player Controls  -->
-            <UniformGrid HorizontalAlignment="Center" Rows="1">
-                <Button x:Name="PlayButton"
-                        Margin="2"
-                        Padding="5"
-                        Click="PlayButton_OnClick">
-                    <materialDesign:PackIcon Width="24"
-                                             Height="24"
-                                             Kind="Play" />
-                </Button>
-                <Button x:Name="PauseButton"
-                        Margin="2"
-                        Padding="5"
-                        Click="PauseButton_OnClick">
-                    <materialDesign:PackIcon Width="24"
-                                             Height="24"
-                                             Kind="Pause" />
-                </Button>
-                <Button x:Name="StopButton"
-                        Margin="2"
-                        Padding="5"
-                        Click="StopButton_OnClick">
-                    <materialDesign:PackIcon Width="24"
-                                             Height="24"
-                                             Kind="Stop" />
-                </Button>
-
-            </UniformGrid>
-
             <!--  Video Stats  -->
             <UniformGrid Background="{DynamicResource PrimaryHueDarkBrush}" Rows="1">
                 <TextBlock Margin="5"
@@ -137,18 +86,17 @@
                         Padding="5"
                         Command="{Binding DownloadVideoCommand}"
                         ToolTip="Download">
-                    <materialDesign:PackIcon Width="24"
-                                             Height="24"
-                                             Kind="Download" />
+                    <materialDesign:PackIcon Kind="Download" />
                 </Button>
             </Grid>
-
-            <!--  Download Progress  -->
-            <ProgressBar Foreground="{DynamicResource SecondaryAccentBrush}"
-                         Maximum="1"
-                         Minimum="0"
-                         Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Visibility.Collapsed}"
-                         Value="{Binding DownloadProgress}" />
         </StackPanel>
+
+        <!--  Download Progress  -->
+        <ProgressBar Grid.Row="2"
+                     Foreground="{DynamicResource SecondaryAccentBrush}"
+                     Maximum="1"
+                     Minimum="0"
+                     Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Visibility.Collapsed}"
+                     Value="{Binding DownloadProgress}" />
     </Grid>
 </Page>
