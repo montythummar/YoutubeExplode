@@ -15,6 +15,8 @@ namespace YoutubeExplode.Models
     /// </summary>
     public class VideoInfo
     {
+        private string[] _keywords;
+
         /// <summary>
         /// Video ID
         /// </summary>
@@ -98,7 +100,21 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Video keywords used for searching
         /// </summary>
-        public string[] Keywords { get; internal set; }
+        public string[] Keywords
+        {
+            get { return _keywords; }
+            internal set
+            {
+                _keywords = value;
+
+                KeywordsString = value != null ? string.Join(", ", value) : string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Video keywords projected on a string
+        /// </summary>
+        public string KeywordsString { get; private set; }
 
         /// <summary>
         /// Video streams

@@ -6,8 +6,9 @@
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
 
-using System.Windows;
+using System.Diagnostics;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using YoutubeExplodeDemo.ViewModels;
 
 namespace YoutubeExplodeDemo.Views
@@ -18,8 +19,6 @@ namespace YoutubeExplodeDemo.Views
         {
             InitializeComponent();
             Closing += (s, e) => Locator.Cleanup();
-
-            NavigateVideoPlayerButton.IsEnabled = false;
         }
 
         private void tbVideoID_KeyDown(object sender, KeyEventArgs e)
@@ -28,20 +27,10 @@ namespace YoutubeExplodeDemo.Views
             ((MainViewModel) DataContext).GetDataCommand.Execute(null);
         }
 
-        private void NavigateVideoPlayerButton_OnClick(object sender, RoutedEventArgs e)
+        private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            NavigateVideoPlayerButton.IsEnabled = false;
-            NavigateVideoDataButton.IsEnabled = true;
-
-            ContentFrame.Navigate(new VideoPlayerPage());
-        }
-
-        private void NavigateVideoDataButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            NavigateVideoPlayerButton.IsEnabled = true;
-            NavigateVideoDataButton.IsEnabled = false;
-
-            ContentFrame.Navigate(new VideoDataPage());
+            Process.Start(e.Uri.ToString());
+            e.Handled = true;
         }
     }
 }

@@ -93,6 +93,7 @@
     </ApplicationDefinition>
     <Compile Include="Locator.cs" />
     <Compile Include="ViewModels\Dialogs.cs" />
+    <Compile Include="ViewModels\FileSizeConverter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -101,23 +102,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\VideoDataPage.xaml.cs">
-      <DependentUpon>VideoDataPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\VideoPlayerPage.xaml.cs">
-      <DependentUpon>VideoPlayerPage.xaml</DependentUpon>
-    </Compile>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\VideoDataPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\VideoPlayerPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

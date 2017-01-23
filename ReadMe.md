@@ -62,7 +62,7 @@ Process.Start(videoInfo.Streams.First().URL);
  - [GalaSoft.MVVMLight](http://www.mvvmlight.net) - MVVM rapid development
  - [MaterialDesignXAML](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) - MaterialDesign UI
  - [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions) - my set of various extensions for rapid development
- - [Tyrrrz.WPFExtensions](https://github.com/Tyrrrz/WpfExtensions) - my set of various WPF extensions for rapid development
+ - [Tyrrrz.WpfExtensions](https://github.com/Tyrrrz/WpfExtensions) - my set of various WPF extensions for rapid development
  
 **Screenshots:**
 

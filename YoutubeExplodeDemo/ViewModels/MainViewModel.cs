@@ -9,7 +9,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -25,6 +24,7 @@ namespace YoutubeExplodeDemo.ViewModels
         private readonly YoutubeClient _client;
 
         private string _videoID;
+
         public string VideoID
         {
             get { return _videoID; }
@@ -32,6 +32,7 @@ namespace YoutubeExplodeDemo.ViewModels
         }
 
         private VideoInfo _videoInfo;
+
         public VideoInfo VideoInfo
         {
             get { return _videoInfo; }
@@ -44,18 +45,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
         public bool VideoInfoVisible => VideoInfo != null;
 
-        private VideoStreamEndpoint _selectedStream;
-        public VideoStreamEndpoint SelectedStream
-        {
-            get { return _selectedStream; }
-            set
-            {
-                Set(ref _selectedStream, value);
-                DownloadVideoCommand.RaiseCanExecuteChanged();
-            }
-        }
-
         private double _downloadProgress;
+
         public double DownloadProgress
         {
             get { return _downloadProgress; }
@@ -63,6 +54,7 @@ namespace YoutubeExplodeDemo.ViewModels
         }
 
         private bool _isDownloading;
+
         public bool IsDownloading
         {
             get { return _isDownloading; }
@@ -75,7 +67,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
         // Commands
         public RelayCommand GetDataCommand { get; }
-        public RelayCommand DownloadVideoCommand { get; }
+        public RelayCommand<VideoStreamEndpoint> OpenVideoCommand { get; }
+        public RelayCommand<VideoStreamEndpoint> DownloadVideoCommand { get; }
 
         public MainViewModel()
         {
@@ -83,7 +76,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Commands
             GetDataCommand = new RelayCommand(GetDataAsync);
-            DownloadVideoCommand = new RelayCommand(DownloadVideoAsync, () => SelectedStream != null && !IsDownloading);
+            OpenVideoCommand = new RelayCommand<VideoStreamEndpoint>(vse => Process.Start(vse.URL));
+            DownloadVideoCommand = new RelayCommand<VideoStreamEndpoint>(DownloadVideoAsync, vse => !IsDownloading);
         }
 
         private async void GetDataAsync()
@@ -112,23 +106,17 @@ namespace YoutubeExplodeDemo.ViewModels
                     Dialogs.Error(ex.Message);
                 }
             });
-
-            // Select the first stream available
-            if (VideoInfo?.Streams != null && VideoInfo.Streams.Any())
-            {
-                SelectedStream = VideoInfo.Streams.First();
-            }
         }
 
-        private async void DownloadVideoAsync()
+        private async void DownloadVideoAsync(VideoStreamEndpoint videoStreamEndpoint)
         {
             // Check params
-            if (SelectedStream == null) return;
+            if (videoStreamEndpoint == null) return;
             if (VideoInfo == null) return;
 
             // Copy values
             string title = VideoInfo.Title;
-            string ext = SelectedStream.FileExtension;
+            string ext = videoStreamEndpoint.FileExtension;
 
             // Select destination
             var sfd = new SaveFileDialog
@@ -146,7 +134,7 @@ namespace YoutubeExplodeDemo.ViewModels
             bool success = await Task.Run(() =>
             {
                 using (var output = File.Create(filePath))
-                using (var input = _client.DownloadVideo(SelectedStream))
+                using (var input = _client.DownloadVideo(videoStreamEndpoint))
                 {
                     if (input == null) return false;
 
@@ -157,7 +145,7 @@ namespace YoutubeExplodeDemo.ViewModels
                     {
                         bytesRead = input.Read(buffer, 0, 1024);
                         output.Write(buffer, 0, bytesRead);
-                        DownloadProgress += 1.0*bytesRead/SelectedStream.FileSize;
+                        DownloadProgress += 1.0*bytesRead/videoStreamEndpoint.FileSize;
                     } while (bytesRead > 0);
                 }
                 return true;
@@ -168,7 +156,7 @@ namespace YoutubeExplodeDemo.ViewModels
             if (success)
             {
                 if (Dialogs.PromptYesNo(
-                        $"Video ({title}) has been downloaded!{Environment.NewLine}Do you want to open it?"))
+                    $"Video ({title}) has been downloaded!{Environment.NewLine}Do you want to open it?"))
                     Process.Start(filePath);
             }
             else
