@@ -2,7 +2,7 @@ YoutubeExplode
 ===================
 
 
-Zero-dependency light-weight .NET library that parses out various public information on Youtube videos, including download URLs. Works with signed videos.
+Light-weight .NET library that parses out various public information on Youtube videos, including download URLs. Works with signed videos.
 
 
 **Download demo:**
@@ -52,12 +52,13 @@ Process.Start(videoInfo.Streams.First().URL);
 
 ```
 
+**Library dependencies:**
+- [SimpleJSON](https://github.com/facebook-csharp-sdk/simple-json) - lightweight JSON parser
+
+
 **Demo dependencies:**
 
-*The library itself doesn't have any external dependencies, this is just in regards to the demo application.*
-
  - [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) - this library
- - [ffmediaelement](https://github.com/unosquare/ffmediaelement) - video playback
  - [GalaSoft.MVVMLight](http://www.mvvmlight.net) - MVVM rapid development
  - [MaterialDesignXAML](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) - MaterialDesign UI
  - [NLExtensions](https://www.nuget.org/packages/NLExtensions) - my set of various extensions for rapid development
