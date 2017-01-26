@@ -79,8 +79,8 @@ namespace YoutubeExplode
             }
 
             // Make sure all are set
-            if (reverseFuncName.IsBlank() || sliceFuncName.IsBlank() || charSwapFuncName.IsBlank())
-                throw new Exception("Could not determine the name of one or more scrambling functions");
+            //if (reverseFuncName.IsBlank() || sliceFuncName.IsBlank() || charSwapFuncName.IsBlank())
+                //throw new Exception("Could not determine the name of one or more scrambling functions");
 
             // Analyze the function body again to determine the operation set and order
             foreach (var line in funcLines)
