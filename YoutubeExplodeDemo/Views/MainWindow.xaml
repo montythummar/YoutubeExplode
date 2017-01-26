@@ -207,7 +207,7 @@
                                                     CommandParameter="{Binding}"
                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                     ToolTip="Open video in browser">
-                                                <materialDesign:PackIcon Kind="Web" />
+                                                <materialDesign:PackIcon Kind="YoutubePlay" />
                                             </Button>
                                             <Button Width="16"
                                                     Height="16"
