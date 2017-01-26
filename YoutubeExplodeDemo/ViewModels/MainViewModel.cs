@@ -76,7 +76,7 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Commands
             GetDataCommand = new RelayCommand(GetDataAsync);
-            OpenVideoCommand = new RelayCommand<VideoStreamEndpoint>(vse => Process.Start(vse.URL));
+            OpenVideoCommand = new RelayCommand<VideoStreamEndpoint>(vse => Process.Start(vse.Url));
             DownloadVideoCommand = new RelayCommand<VideoStreamEndpoint>(DownloadVideoAsync, vse => !IsDownloading);
         }
 

@@ -180,10 +180,10 @@ namespace YoutubeExplode
                 stream.Signature = newSig;
 
                 // Update URL
-                if (stream.URL.ContainsInvariant("signature"))
-                    stream.URL = stream.URL.Replace(sig, newSig);
+                if (stream.Url.ContainsInvariant("signature"))
+                    stream.Url = stream.Url.Replace(sig, newSig);
                 else
-                    stream.URL += $"&signature={newSig}";
+                    stream.Url += $"&signature={newSig}";
 
                 // Update flag
                 stream.NeedsDeciphering = false;

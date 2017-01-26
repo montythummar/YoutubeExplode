@@ -11,73 +11,8 @@ namespace YoutubeExplode.Models
     /// <summary>
     /// Stream endpoint for a Youtube video
     /// </summary>
-    public class VideoStreamEndpoint
+    public partial class VideoStreamEndpoint
     {
-        #region Static
-        private static VideoStreamType ParseType(string typeString)
-        {
-            if (string.IsNullOrWhiteSpace(typeString)) return VideoStreamType.Unknown;
-
-            if (typeString.ContainsInvariant("video/mp4"))
-                return VideoStreamType.MP4;
-            if (typeString.ContainsInvariant("video/webm"))
-                return VideoStreamType.WebM;
-            if (typeString.ContainsInvariant("video/3gpp"))
-                return VideoStreamType.ThirdGenerationPartnershipProject;
-            if (typeString.ContainsInvariant("audio/mp4"))
-                return VideoStreamType.AudioOnlyMP4;
-            if (typeString.ContainsInvariant("audio/webm"))
-                return VideoStreamType.AudioOnlyWebM;
-            if (typeString.ContainsInvariant("audio/3gpp"))
-                return VideoStreamType.AudioOnlyThirdGenerationPartnershipProject;
-
-            return VideoStreamType.Unknown;
-        }
-
-        private static VideoStreamQuality ParseQuality(string qualityString)
-        {
-            if (string.IsNullOrWhiteSpace(qualityString)) return VideoStreamQuality.Unknown;
-
-            if (qualityString.ContainsInvariant("2160p"))
-                return VideoStreamQuality.High2160;
-            if (qualityString.ContainsInvariant("1440p"))
-                return VideoStreamQuality.High1440;
-            if (qualityString.ContainsInvariant("1080p"))
-                return VideoStreamQuality.High1080;
-            if (qualityString.ContainsInvariant("720p") || qualityString.ContainsInvariant("hd720"))
-                return VideoStreamQuality.High720;
-            if (qualityString.ContainsInvariant("hd"))
-                return VideoStreamQuality.High;
-            if (qualityString.ContainsInvariant("480p"))
-                return VideoStreamQuality.Medium480;
-            if (qualityString.ContainsInvariant("360p"))
-                return VideoStreamQuality.Medium360;
-            if (qualityString.ContainsInvariant("medium"))
-                return VideoStreamQuality.Medium;
-            if (qualityString.ContainsInvariant("240p"))
-                return VideoStreamQuality.Low240;
-            if (qualityString.ContainsInvariant("144p"))
-                return VideoStreamQuality.Low144;
-            if (qualityString.ContainsInvariant("small"))
-                return VideoStreamQuality.Low;
-
-            return VideoStreamQuality.Unknown;
-        }
-
-        private static string GetExtension(VideoStreamType type)
-        {
-            if (type == VideoStreamType.MP4 || type == VideoStreamType.AudioOnlyMP4)
-                return "mp4";
-            if (type == VideoStreamType.WebM || type == VideoStreamType.AudioOnlyWebM)
-                return "webm";
-            if (type == VideoStreamType.ThirdGenerationPartnershipProject || type == VideoStreamType.AudioOnlyThirdGenerationPartnershipProject)
-                return "3gpp";
-
-            // Default is mp4
-            return "mp4";
-        }
-        #endregion
-
         private string _typeString;
         private string _qualityString;
         private VideoStreamType _type;
@@ -95,7 +30,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// URL of the stream
         /// </summary>
-        public string URL { get; internal set; }
+        public string Url { get; internal set; }
 
         /// <summary>
         /// Type of the video stream (raw string)
@@ -178,6 +113,72 @@ namespace YoutubeExplode.Models
         public override string ToString()
         {
             return $"{Type} | {Quality}";
+        }
+    }
+
+    public partial class VideoStreamEndpoint
+    {
+        private static VideoStreamType ParseType(string typeString)
+        {
+            if (string.IsNullOrWhiteSpace(typeString)) return VideoStreamType.Unknown;
+
+            if (typeString.ContainsInvariant("video/mp4"))
+                return VideoStreamType.MP4;
+            if (typeString.ContainsInvariant("video/webm"))
+                return VideoStreamType.WebM;
+            if (typeString.ContainsInvariant("video/3gpp"))
+                return VideoStreamType.ThirdGenerationPartnershipProject;
+            if (typeString.ContainsInvariant("audio/mp4"))
+                return VideoStreamType.AudioOnlyMP4;
+            if (typeString.ContainsInvariant("audio/webm"))
+                return VideoStreamType.AudioOnlyWebM;
+            if (typeString.ContainsInvariant("audio/3gpp"))
+                return VideoStreamType.AudioOnlyThirdGenerationPartnershipProject;
+
+            return VideoStreamType.Unknown;
+        }
+
+        private static VideoStreamQuality ParseQuality(string qualityString)
+        {
+            if (string.IsNullOrWhiteSpace(qualityString)) return VideoStreamQuality.Unknown;
+
+            if (qualityString.ContainsInvariant("2160p"))
+                return VideoStreamQuality.High2160;
+            if (qualityString.ContainsInvariant("1440p"))
+                return VideoStreamQuality.High1440;
+            if (qualityString.ContainsInvariant("1080p"))
+                return VideoStreamQuality.High1080;
+            if (qualityString.ContainsInvariant("720p") || qualityString.ContainsInvariant("hd720"))
+                return VideoStreamQuality.High720;
+            if (qualityString.ContainsInvariant("hd"))
+                return VideoStreamQuality.High;
+            if (qualityString.ContainsInvariant("480p"))
+                return VideoStreamQuality.Medium480;
+            if (qualityString.ContainsInvariant("360p"))
+                return VideoStreamQuality.Medium360;
+            if (qualityString.ContainsInvariant("medium"))
+                return VideoStreamQuality.Medium;
+            if (qualityString.ContainsInvariant("240p"))
+                return VideoStreamQuality.Low240;
+            if (qualityString.ContainsInvariant("144p"))
+                return VideoStreamQuality.Low144;
+            if (qualityString.ContainsInvariant("small"))
+                return VideoStreamQuality.Low;
+
+            return VideoStreamQuality.Unknown;
+        }
+
+        private static string GetExtension(VideoStreamType type)
+        {
+            if (type == VideoStreamType.MP4 || type == VideoStreamType.AudioOnlyMP4)
+                return "mp4";
+            if (type == VideoStreamType.WebM || type == VideoStreamType.AudioOnlyWebM)
+                return "webm";
+            if (type == VideoStreamType.ThirdGenerationPartnershipProject || type == VideoStreamType.AudioOnlyThirdGenerationPartnershipProject)
+                return "3gpp";
+
+            // Default is mp4
+            return "mp4";
         }
     }
 }

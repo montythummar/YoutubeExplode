@@ -123,13 +123,13 @@ namespace YoutubeExplode
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            if (stream.URL.IsBlank())
+            if (stream.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the headers
-            var headers = RequestHandler.GetHeaders(stream.URL);
+            var headers = RequestHandler.GetHeaders(stream.Url);
             if (headers == null)
                 throw new Exception("Could not obtain headers (HEAD request failed)");
 
@@ -157,12 +157,12 @@ namespace YoutubeExplode
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            if (stream.URL.IsBlank())
+            if (stream.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            return RequestHandler.DownloadFile(stream.URL);
+            return RequestHandler.DownloadFile(stream.Url);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace YoutubeExplode
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            if (stream.URL.IsBlank())
+            if (stream.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");

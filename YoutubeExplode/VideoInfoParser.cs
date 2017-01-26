@@ -74,7 +74,7 @@ namespace YoutubeExplode
                 {
                     Signature = sig,
                     NeedsDeciphering = needsDeciphering,
-                    URL = url,
+                    Url = url,
                     TypeString = type,
                     QualityString = quality,
                     ResolutionString = resolution,
@@ -120,7 +120,7 @@ namespace YoutubeExplode
                 throw new YoutubeErrorException(reason);
 
             // Populate data
-            result.ID = videoInfoEncoded.GetValueOrDefault("video_id", "");
+            result.Id = videoInfoEncoded.GetValueOrDefault("video_id", "");
             result.Title = videoInfoEncoded.GetValueOrDefault("title", "");
             result.Author = videoInfoEncoded.GetValueOrDefault("author", "");
             result.Thumbnail = videoInfoEncoded.GetValueOrDefault("thumbnail_url", "");
@@ -136,7 +136,7 @@ namespace YoutubeExplode
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfoEncoded.GetValueOrDefault("view_count", 0ul);
             result.AverageRating = videoInfoEncoded.GetValueOrDefault("avg_rating", 0.0);
-            result.Keywords = videoInfoEncoded.GetValueOrDefault("keywords", "").Split(",");
+            result.KeywordsString = videoInfoEncoded.GetValueOrDefault("keywords", "");
 
             // Get the streams
             string streamsRaw = videoInfoEncoded.GetValueOrDefault("adaptive_fmts", "");
@@ -170,7 +170,7 @@ namespace YoutubeExplode
             result.PlayerVersion = null; // set to null, so that decipherer can correctly throw an exception
 
             // Populate data
-            result.ID = videoInfoEncoded.GetValueOrDefault("video_id");
+            result.Id = videoInfoEncoded.GetValueOrDefault("video_id");
             result.Title = videoInfoEncoded.GetValueOrDefault("title");
             result.Author = videoInfoEncoded.GetValueOrDefault("author");
             result.Thumbnail = videoInfoEncoded.GetValueOrDefault("thumbnail_url");
@@ -186,7 +186,7 @@ namespace YoutubeExplode
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfoEncoded.GetValueOrDefault("view_count").ParseUlongOrDefault();
             result.AverageRating = videoInfoEncoded.GetValueOrDefault("avg_rating").ParseDoubleOrDefault();
-            result.Keywords = videoInfoEncoded.GetValueOrDefault("keywords").Split(",");
+            result.KeywordsString = videoInfoEncoded.GetValueOrDefault("keywords");
 
             // Get the streams
             string streamsRaw = videoInfoEncoded.GetValueOrDefault("adaptive_fmts");
