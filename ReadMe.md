@@ -29,9 +29,9 @@ The video stream objects include the following data:
  - Type
  - Quality
  - Resolution
- - Bitrate
+ - Bitrate (bits/s)
  - FPS
- - File size
+ - File size (bytes)
 
 **Usage:**
 
@@ -56,7 +56,7 @@ Process.Start(videoInfo.Streams.First().URL);
 ```
 
 **Library dependencies:**
-- [SimpleJSON](https://github.com/facebook-csharp-sdk/simple-json) - lightweight JSON parser
+- [SimpleJson](https://github.com/facebook-csharp-sdk/simple-json) - lightweight JSON parser
 
 
 **Demo dependencies:**
