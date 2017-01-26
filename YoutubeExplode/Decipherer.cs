@@ -48,8 +48,8 @@ namespace YoutubeExplode
             string sliceFuncName = null;
             string charSwapFuncName = null;
 
-            // Analyze the function body (skip first and last line) to determine the names of scrambling functions
-            foreach (var line in funcLines.Skip(1).Take(funcLines.Length - 2))
+            // Analyze the function body to determine the names of scrambling functions
+            foreach (var line in funcLines)
             {
                 // Break when all functions are found
                 if (!reverseFuncName.IsBlank() && !sliceFuncName.IsBlank() && !charSwapFuncName.IsBlank())
@@ -83,7 +83,7 @@ namespace YoutubeExplode
                 throw new Exception("Could not determine the name of one or more scrambling functions");
 
             // Analyze the function body again to determine the operation set and order
-            foreach (var line in funcLines.Skip(1).Take(funcLines.Length - 2))
+            foreach (var line in funcLines)
             {
                 // Get the function called on this line
                 string calledFunctionName = GetFunctionCallFromLine(line);
