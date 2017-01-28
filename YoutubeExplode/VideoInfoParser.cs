@@ -79,7 +79,7 @@ namespace YoutubeExplode
                     QualityString = quality,
                     ResolutionString = resolution,
                     Bitrate = bitrate,
-                    FPS = fps
+                    Fps = fps
                 };
             }
         }

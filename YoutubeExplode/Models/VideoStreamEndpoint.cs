@@ -77,7 +77,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Frame update frequency of this video
         /// </summary>
-        public double FPS { get; internal set; }
+        public double Fps { get; internal set; }
 
         /// <summary>
         /// Type of the video stream
