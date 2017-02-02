@@ -26,7 +26,7 @@ namespace YoutubeExplode
         private static IEnumerable<ScramblingOperation> GetOperations(string playerRawJs)
         {
             // Get the name of the function that handles deciphering
-            var funcNameMatch = Regex.Match(playerRawJs, @"\.sig\s*\|\|([a-zA-Z0-9\$]+)\(",
+            var funcNameMatch = Regex.Match(playerRawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!funcNameMatch.Success)
                 throw new Exception("Could not find the entry function for signature deciphering");
