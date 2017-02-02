@@ -19,15 +19,14 @@ namespace YoutubeExplode
     {
         private static string GetFunctionCallFromLine(string line)
         {
-            var match = Regex.Match(line, @"\w+\.(\w+)\(", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var match = Regex.Match(line, @"\w+\.(\w+)\(");
             return match.Groups[1].Value;
         }
 
         private static IEnumerable<ScramblingOperation> GetOperations(string playerRawJs)
         {
             // Get the name of the function that handles deciphering
-            var funcNameMatch = Regex.Match(playerRawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(",
-                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var funcNameMatch = Regex.Match(playerRawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(");
             if (!funcNameMatch.Success)
                 throw new Exception("Could not find the entry function for signature deciphering");
             string funcName = funcNameMatch.Groups[1].Value;
@@ -37,7 +36,7 @@ namespace YoutubeExplode
 
             // Get the body of the function
             var funcBodyMatch = Regex.Match(playerRawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}",
-                RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                RegexOptions.Singleline);
             if (!funcBodyMatch.Success)
                 throw new Exception("Could not get the signature decipherer function body");
             string funcBody = funcBodyMatch.Value;
@@ -60,14 +59,11 @@ namespace YoutubeExplode
 
                 // Compose regexes to identify what function we're dealing with
                 // -- reverse (1 param)
-                var reverseFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\)",
-                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                var reverseFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\)");
                 // -- slice (return or not)
-                var sliceFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.",
-                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                var sliceFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.");
                 // -- swap
-                var swapFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b",
-                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                var swapFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b");
 
                 // Determine the function type and assign the name
                 if (reverseFuncRegex.Match(playerRawJs).Success)
