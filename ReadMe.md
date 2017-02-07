@@ -7,9 +7,9 @@ Light-weight .NET library that parses out various public information on Youtube 
 
 **Download:**
 
-The library is distributed as a [nuget package](https://www.nuget.org/packages/YoutubeExplode)
+The library is distributed as a [nuget package](https://www.nuget.org/packages/YoutubeExplode): `Install-Package YoutubeExplode`
 
-If you want to download the demo - head to the [releases](https://github.com/Tyrrrz/YoutubeExplode/releases) page
+If you want to download the demo application - navigate to the [releases](https://github.com/Tyrrrz/YoutubeExplode/releases)
 
 **Parsed data:**
 
