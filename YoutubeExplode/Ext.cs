@@ -43,7 +43,7 @@ namespace YoutubeExplode
             return new Uri(ToUri(baseUri), uri);
         }
 
-        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key,
+        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key,
             TValue defaultValue = default(TValue))
         {
             TValue result;
@@ -52,10 +52,10 @@ namespace YoutubeExplode
             return defaultValue;
         }
 
-        public static TConverted GetValueOrDefault<TKey, TValue, TConverted>(this IDictionary<TKey, TValue> dic,
+        public static TConverted GetOrDefault<TKey, TValue, TConverted>(this IDictionary<TKey, TValue> dic,
             TKey key, TConverted defaultValue = default(TConverted))
         {
-            var result = GetValueOrDefault(dic, key);
+            var result = GetOrDefault(dic, key);
             return ConvertOrDefault(result, defaultValue);
         }
 

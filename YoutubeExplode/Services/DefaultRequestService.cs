@@ -22,7 +22,7 @@ namespace YoutubeExplode.Services
         /// <summary>
         /// Default instance
         /// </summary>
-        public static DefaultRequestService Default { get; } = new DefaultRequestService();
+        public static DefaultRequestService Instance { get; } = new DefaultRequestService();
 
         /// <inheritdoc />
         public string GetString(string url)

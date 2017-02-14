@@ -59,15 +59,15 @@ namespace YoutubeExplode
                 var dic = ParseDictionaryUrlEncoded(streamRaw);
 
                 // Extract values
-                string sig = dic.GetValueOrDefault("s");
+                string sig = dic.GetOrDefault("s");
                 bool needsDeciphering = !sig.IsBlank();
-                string url = dic.GetValueOrDefault("url");
-                string type = dic.GetValueOrDefault("type");
-                string quality = dic.GetValueOrDefault("quality_label") ??
-                                 dic.GetValueOrDefault("quality");
-                string resolution = dic.GetValueOrDefault("size") ?? "0x0";
-                ulong bitrate = dic.GetValueOrDefault("bitrate").ParseUlongOrDefault();
-                double fps = dic.GetValueOrDefault("fps").ParseDoubleOrDefault();
+                string url = dic.GetOrDefault("url");
+                string type = dic.GetOrDefault("type");
+                string quality = dic.GetOrDefault("quality_label") ??
+                                 dic.GetOrDefault("quality");
+                string resolution = dic.GetOrDefault("size") ?? "0x0";
+                ulong bitrate = dic.GetOrDefault("bitrate").ParseUlongOrDefault();
+                double fps = dic.GetOrDefault("fps").ParseDoubleOrDefault();
 
                 // Yield a stream object
                 yield return new VideoStreamEndpoint
@@ -84,13 +84,13 @@ namespace YoutubeExplode
             }
         }
 
-        public static VideoInfo ParseVideoInfoJson(string rawJson)
+        public static VideoInfo ParseVideoInfoJson(string raw)
         {
-            if (rawJson.IsBlank())
-                throw new ArgumentNullException(nameof(rawJson));
+            if (raw.IsBlank())
+                throw new ArgumentNullException(nameof(raw));
 
             // Get the json
-            var json = SimpleJson.DeserializeObject(rawJson) as JsonObject;
+            var json = SimpleJson.DeserializeObject(raw) as JsonObject;
             if (json == null)
                 throw new Exception("Could not deserialize video info JSON");
 
@@ -98,8 +98,8 @@ namespace YoutubeExplode
             var result = new VideoInfo();
 
             // Try to extract player version
-            var assets = json.GetValueOrDefault("assets") as JsonObject;
-            string playerJsUrl = assets?.GetValueOrDefault("js", "");
+            var assets = json.GetOrDefault("assets") as JsonObject;
+            string playerJsUrl = assets?.GetOrDefault("js", "");
             if (!playerJsUrl.IsBlank())
             {
                 var match = Regex.Match(playerJsUrl, @"player-(.+?)/",
@@ -109,39 +109,39 @@ namespace YoutubeExplode
             }
 
             // Get video info
-            var videoInfoEncoded = json.GetValueOrDefault("args") as JsonObject;
+            var videoInfoEncoded = json.GetOrDefault("args") as JsonObject;
             if (videoInfoEncoded == null)
                 throw new Exception("Actual video info not found in JSON");
 
             // Check the status
-            string status = videoInfoEncoded.GetValueOrDefault("status", "");
-            string reason = videoInfoEncoded.GetValueOrDefault("reason", "");
+            string status = videoInfoEncoded.GetOrDefault("status", "");
+            string reason = videoInfoEncoded.GetOrDefault("reason", "");
             if (status.EqualsInvariant("fail"))
                 throw new YoutubeErrorException(reason);
 
             // Populate data
-            result.Id = videoInfoEncoded.GetValueOrDefault("video_id", "");
-            result.Title = videoInfoEncoded.GetValueOrDefault("title", "");
-            result.Author = videoInfoEncoded.GetValueOrDefault("author", "");
-            result.Thumbnail = videoInfoEncoded.GetValueOrDefault("thumbnail_url", "");
-            result.ImageHighQuality = videoInfoEncoded.GetValueOrDefault("iurlhq", "");
-            result.ImageMediumQuality = videoInfoEncoded.GetValueOrDefault("iurlmq", "");
-            result.ImageLowQuality = videoInfoEncoded.GetValueOrDefault("iurlsd", "");
-            result.Watermarks = videoInfoEncoded.GetValueOrDefault("watermark", "").Split(",");
-            result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetValueOrDefault("length_seconds", 0.0));
-            result.IsListed = videoInfoEncoded.GetValueOrDefault("is_listed", 1) == 1;
-            result.IsRatingAllowed = videoInfoEncoded.GetValueOrDefault("allow_ratings", 1) == 1;
-            result.IsMuted = videoInfoEncoded.GetValueOrDefault("muted", 0) == 1;
-            result.IsEmbeddingAllowed = videoInfoEncoded.GetValueOrDefault("allow_embed", 1) == 1;
+            result.Id = videoInfoEncoded.GetOrDefault("video_id", "");
+            result.Title = videoInfoEncoded.GetOrDefault("title", "");
+            result.Author = videoInfoEncoded.GetOrDefault("author", "");
+            result.Thumbnail = videoInfoEncoded.GetOrDefault("thumbnail_url", "");
+            result.ImageHighQuality = videoInfoEncoded.GetOrDefault("iurlhq", "");
+            result.ImageMediumQuality = videoInfoEncoded.GetOrDefault("iurlmq", "");
+            result.ImageLowQuality = videoInfoEncoded.GetOrDefault("iurlsd", "");
+            result.Watermarks = videoInfoEncoded.GetOrDefault("watermark", "").Split(",");
+            result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetOrDefault("length_seconds", 0.0));
+            result.IsListed = videoInfoEncoded.GetOrDefault("is_listed", 1) == 1;
+            result.IsRatingAllowed = videoInfoEncoded.GetOrDefault("allow_ratings", 1) == 1;
+            result.IsMuted = videoInfoEncoded.GetOrDefault("muted", 0) == 1;
+            result.IsEmbeddingAllowed = videoInfoEncoded.GetOrDefault("allow_embed", 1) == 1;
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
-            result.ViewCount = videoInfoEncoded.GetValueOrDefault("view_count", 0ul);
-            result.AverageRating = videoInfoEncoded.GetValueOrDefault("avg_rating", 0.0);
-            result.KeywordsString = videoInfoEncoded.GetValueOrDefault("keywords", "");
+            result.ViewCount = videoInfoEncoded.GetOrDefault("view_count", 0ul);
+            result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating", 0.0);
+            result.KeywordsString = videoInfoEncoded.GetOrDefault("keywords", "");
 
             // Get the streams
-            string streamsRaw = videoInfoEncoded.GetValueOrDefault("adaptive_fmts", "");
+            string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts", "");
             if (streamsRaw.IsBlank())
-                streamsRaw = videoInfoEncoded.GetValueOrDefault("url_encoded_fmt_stream_map", "");
+                streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map", "");
             result.Streams = ParseVideoStreamEndpointsUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
@@ -151,17 +151,17 @@ namespace YoutubeExplode
             return result;
         }
 
-        public static VideoInfo ParseVideoInfoUrlEncoded(string urlRaw)
+        public static VideoInfo ParseVideoInfoUrlEncoded(string raw)
         {
-            if (urlRaw.IsBlank())
-                throw new ArgumentNullException(nameof(urlRaw));
+            if (raw.IsBlank())
+                throw new ArgumentNullException(nameof(raw));
 
             // Get data
-            var videoInfoEncoded = ParseDictionaryUrlEncoded(urlRaw);
+            var videoInfoEncoded = ParseDictionaryUrlEncoded(raw);
 
             // Check the status
-            if (videoInfoEncoded.GetValueOrDefault("status").EqualsInvariant("fail"))
-                throw new YoutubeErrorException(videoInfoEncoded.GetValueOrDefault("reason"));
+            if (videoInfoEncoded.GetOrDefault("status").EqualsInvariant("fail"))
+                throw new YoutubeErrorException(videoInfoEncoded.GetOrDefault("reason"));
 
             // Prepare result
             var result = new VideoInfo();
@@ -170,28 +170,28 @@ namespace YoutubeExplode
             result.PlayerVersion = null; // set to null, so that decipherer can correctly throw an exception
 
             // Populate data
-            result.Id = videoInfoEncoded.GetValueOrDefault("video_id");
-            result.Title = videoInfoEncoded.GetValueOrDefault("title");
-            result.Author = videoInfoEncoded.GetValueOrDefault("author");
-            result.Thumbnail = videoInfoEncoded.GetValueOrDefault("thumbnail_url");
-            result.ImageHighQuality = videoInfoEncoded.GetValueOrDefault("iurlhq");
-            result.ImageMediumQuality = videoInfoEncoded.GetValueOrDefault("iurlmq");
-            result.ImageLowQuality = videoInfoEncoded.GetValueOrDefault("iurlsd");
-            result.Watermarks = videoInfoEncoded.GetValueOrDefault("watermark").Split(",");
-            result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetValueOrDefault("length_seconds").ParseDoubleOrDefault());
-            result.IsListed = videoInfoEncoded.GetValueOrDefault("is_listed").ParseIntOrDefault(1) == 1;
-            result.IsRatingAllowed = videoInfoEncoded.GetValueOrDefault("allow_ratings").ParseIntOrDefault(1) == 1;
-            result.IsMuted = videoInfoEncoded.GetValueOrDefault("muted").ParseIntOrDefault() == 1;
-            result.IsEmbeddingAllowed = videoInfoEncoded.GetValueOrDefault("allow_embed").ParseIntOrDefault(1) == 1;
+            result.Id = videoInfoEncoded.GetOrDefault("video_id");
+            result.Title = videoInfoEncoded.GetOrDefault("title");
+            result.Author = videoInfoEncoded.GetOrDefault("author");
+            result.Thumbnail = videoInfoEncoded.GetOrDefault("thumbnail_url");
+            result.ImageHighQuality = videoInfoEncoded.GetOrDefault("iurlhq");
+            result.ImageMediumQuality = videoInfoEncoded.GetOrDefault("iurlmq");
+            result.ImageLowQuality = videoInfoEncoded.GetOrDefault("iurlsd");
+            result.Watermarks = videoInfoEncoded.GetOrDefault("watermark").Split(",");
+            result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetOrDefault("length_seconds").ParseDoubleOrDefault());
+            result.IsListed = videoInfoEncoded.GetOrDefault("is_listed").ParseIntOrDefault(1) == 1;
+            result.IsRatingAllowed = videoInfoEncoded.GetOrDefault("allow_ratings").ParseIntOrDefault(1) == 1;
+            result.IsMuted = videoInfoEncoded.GetOrDefault("muted").ParseIntOrDefault() == 1;
+            result.IsEmbeddingAllowed = videoInfoEncoded.GetOrDefault("allow_embed").ParseIntOrDefault(1) == 1;
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
-            result.ViewCount = videoInfoEncoded.GetValueOrDefault("view_count").ParseUlongOrDefault();
-            result.AverageRating = videoInfoEncoded.GetValueOrDefault("avg_rating").ParseDoubleOrDefault();
-            result.KeywordsString = videoInfoEncoded.GetValueOrDefault("keywords");
+            result.ViewCount = videoInfoEncoded.GetOrDefault("view_count").ParseUlongOrDefault();
+            result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating").ParseDoubleOrDefault();
+            result.KeywordsString = videoInfoEncoded.GetOrDefault("keywords");
 
             // Get the streams
-            string streamsRaw = videoInfoEncoded.GetValueOrDefault("adaptive_fmts");
+            string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
             if (streamsRaw.IsBlank())
-                streamsRaw = videoInfoEncoded.GetValueOrDefault("url_encoded_fmt_stream_map");
+                streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map");
             result.Streams = ParseVideoStreamEndpointsUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered

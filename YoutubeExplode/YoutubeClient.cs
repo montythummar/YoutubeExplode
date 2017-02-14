@@ -27,7 +27,7 @@ namespace YoutubeExplode
         /// <summary>
         /// HTTP request handler
         /// </summary>
-        public IRequestService RequestService { get; set; } = DefaultRequestService.Default;
+        public IRequestService RequestService { get; set; } = DefaultRequestService.Instance;
 
         /// <summary>
         /// Verifies that the given string is a valid youtube video ID
@@ -59,8 +59,7 @@ namespace YoutubeExplode
 
             // Try to get video info
             VideoInfo result;
-            var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});",
-                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});", RegexOptions.Multiline);
             if (jsonMatch.Success)
             {
                 // Get it directly from JSON object in the watch page
@@ -134,7 +133,7 @@ namespace YoutubeExplode
             if (headers == null)
                 throw new Exception("Could not obtain headers (HEAD request failed)");
 
-            return stream.FileSize = headers.GetValueOrDefault("Content-Length").ParseUlongOrDefault();
+            return stream.FileSize = headers.GetOrDefault("Content-Length").ParseUlongOrDefault();
         }
 
         /// <summary>
@@ -178,7 +177,7 @@ namespace YoutubeExplode
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            using (var input = DownloadVideo(stream))
+            using (var input = RequestService.DownloadFile(stream.Url))
             {
                 if (input == null)
                     throw new Exception("Could not download the given video stream");
