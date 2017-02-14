@@ -12,17 +12,17 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace YoutubeExplode
+namespace YoutubeExplode.Services
 {
     /// <summary>
     /// Uses <see cref="WebRequest"/> for handling requests
     /// </summary>
-    public sealed class DefaultRequestHandler : IRequestHandler
+    public sealed class DefaultRequestService : IRequestService
     {
         /// <summary>
         /// Default instance
         /// </summary>
-        public static DefaultRequestHandler Default { get; } = new DefaultRequestHandler();
+        public static DefaultRequestService Default { get; } = new DefaultRequestService();
 
         /// <inheritdoc />
         public string GetString(string url)

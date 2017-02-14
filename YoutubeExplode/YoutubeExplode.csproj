@@ -38,7 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Decipherer.cs" />
-    <Compile Include="DefaultRequestHandler.cs" />
+    <Compile Include="Services\DefaultRequestService.cs" />
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Ext.cs" />
     <Compile Include="Models\ScramblingOperation.cs" />
@@ -48,7 +48,7 @@
     <Compile Include="Models\VideoStreamQuality.cs" />
     <Compile Include="Models\VideoStreamType.cs" />
     <Compile Include="VideoInfoParser.cs" />
-    <Compile Include="IRequestHandler.cs" />
+    <Compile Include="Services\IRequestService.cs" />
     <Compile Include="SimpleJson.cs" />
     <Compile Include="YoutubeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

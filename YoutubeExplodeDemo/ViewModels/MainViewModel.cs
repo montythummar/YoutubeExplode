@@ -123,7 +123,7 @@ namespace YoutubeExplodeDemo.ViewModels
             {
                 AddExtension = true,
                 DefaultExt = ext,
-                FileName = $"{title}.{ext}".Except(Path.GetInvalidFileNameChars()),
+                FileName = $"{title}.{ext}".Without(Path.GetInvalidFileNameChars()),
                 Filter = $"{ext.ToUpperInvariant()} Video Files|*.{ext}|All files|*.*"
             };
             if (sfd.ShowDialog() == false) return;

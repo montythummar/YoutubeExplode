@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using YoutubeExplode.Models;
+using YoutubeExplode.Services;
 
 namespace YoutubeExplode
 {
@@ -26,7 +27,7 @@ namespace YoutubeExplode
         /// <summary>
         /// HTTP request handler
         /// </summary>
-        public IRequestHandler RequestHandler { get; set; } = DefaultRequestHandler.Default;
+        public IRequestService RequestService { get; set; } = DefaultRequestService.Default;
 
         /// <summary>
         /// Verifies that the given string is a valid youtube video ID
@@ -52,7 +53,7 @@ namespace YoutubeExplode
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoID));
 
             // Grab watch page html code
-            string response = RequestHandler.GetString($"https://youtube.com/watch?v={videoID}");
+            string response = RequestService.GetString($"https://youtube.com/watch?v={videoID}");
             if (response.IsBlank())
                 throw new Exception("Could not get video watch page (GET request failed)");
 
@@ -70,7 +71,7 @@ namespace YoutubeExplode
             else
             {
                 // Get it from URL encoded data from internal api
-                response = RequestHandler.GetString($"https://youtube.com/get_video_info?video_id={videoID}");
+                response = RequestService.GetString($"https://youtube.com/get_video_info?video_id={videoID}");
                 if (response.IsBlank())
                     throw new Exception("Could not get URL-encoded video info (GET request failed)");
                 result = VideoInfoParser.ParseVideoInfoUrlEncoded(response);
@@ -107,7 +108,7 @@ namespace YoutubeExplode
 
             // Get the javascript source URL
             string player = videoInfo.PlayerVersion;
-            string response = RequestHandler.GetString($"https://s.ytimg.com/yts/jsbin/player-{player}/base.js");
+            string response = RequestService.GetString($"https://s.ytimg.com/yts/jsbin/player-{player}/base.js");
             if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
@@ -129,7 +130,7 @@ namespace YoutubeExplode
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the headers
-            var headers = RequestHandler.GetHeaders(stream.Url);
+            var headers = RequestService.GetHeaders(stream.Url);
             if (headers == null)
                 throw new Exception("Could not obtain headers (HEAD request failed)");
 
@@ -162,7 +163,7 @@ namespace YoutubeExplode
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            return RequestHandler.DownloadFile(stream.Url);
+            return RequestService.DownloadFile(stream.Url);
         }
 
         /// <summary>

@@ -9,12 +9,12 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace YoutubeExplode
+namespace YoutubeExplode.Services
 {
     /// <summary>
     /// Implemented by classes that handle HTTP requests for YoutubeClient
     /// </summary>
-    public interface IRequestHandler
+    public interface IRequestService
     {
         /// <summary>
         /// Performs a GET request and returns the response content as a string
