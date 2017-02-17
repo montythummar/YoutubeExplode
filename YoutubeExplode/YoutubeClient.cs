@@ -27,7 +27,23 @@ namespace YoutubeExplode
         /// <summary>
         /// HTTP request handler
         /// </summary>
-        public IRequestService RequestService { get; set; } = DefaultRequestService.Instance;
+        public IRequestService RequestService { get; set; }
+
+        /// <summary>
+        /// Construct with custom services
+        /// </summary>
+        public YoutubeClient(IRequestService requestService)
+        {
+            RequestService = requestService;
+        }
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public YoutubeClient()
+            : this(DefaultRequestService.Instance)
+        {
+        }
 
         /// <summary>
         /// Verifies that the given string is a valid youtube video ID
