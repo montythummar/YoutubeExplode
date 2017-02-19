@@ -78,8 +78,8 @@
       <HintPath>..\packages\Tyrrrz.Extensions.1.0.3\lib\net45\Tyrrrz.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Tyrrrz.WpfExtensions, Version=1.0.6232.40740, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tyrrrz.WpfExtensions.1.0.0\lib\net45\Tyrrrz.WpfExtensions.dll</HintPath>
+    <Reference Include="Tyrrrz.WpfExtensions, Version=1.0.6259.35322, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tyrrrz.WpfExtensions.1.0.2\lib\net45\Tyrrrz.WpfExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />

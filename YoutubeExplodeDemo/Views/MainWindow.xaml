@@ -171,7 +171,7 @@
                                    TextTrimming="CharacterEllipsis"
                                    TextWrapping="Wrap">
                             <Run Text="Keywords:" />
-                            <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding VideoInfo.KeywordsString, Mode=OneWay}" />
+                            <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding VideoInfo.Keywords, Converter={StaticResource StringJoinConverter}, Mode=OneWay}" />
                         </TextBlock>
 
                         <!--  Images  -->

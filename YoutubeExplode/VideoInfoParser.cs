@@ -136,7 +136,7 @@ namespace YoutubeExplode
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfoEncoded.GetOrDefault("view_count", 0ul);
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating", 0.0);
-            result.KeywordsString = videoInfoEncoded.GetOrDefault("keywords", "");
+            result.Keywords = videoInfoEncoded.GetOrDefault("keywords", "").Split(",");
 
             // Get the streams
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts", "");
@@ -186,7 +186,7 @@ namespace YoutubeExplode
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfoEncoded.GetOrDefault("view_count").ParseUlongOrDefault();
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating").ParseDoubleOrDefault();
-            result.KeywordsString = videoInfoEncoded.GetOrDefault("keywords");
+            result.Keywords = videoInfoEncoded.GetOrDefault("keywords").Split(",");
 
             // Get the streams
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
