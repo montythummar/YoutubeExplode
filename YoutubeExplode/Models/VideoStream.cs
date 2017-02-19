@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------ 
 //  Solution: <YoutubeExplode>
 //  Project: <YoutubeExplode>
-//  File: <VideoStreamEndpoint.cs>
+//  File: <VideoStream.cs>
 //  Created By: Alexey Golub
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
@@ -11,7 +11,7 @@ namespace YoutubeExplode.Models
     /// <summary>
     /// Stream endpoint for a Youtube video
     /// </summary>
-    public partial class VideoStreamEndpoint
+    public partial class VideoStream
     {
         private string _typeString;
         private string _qualityString;
@@ -107,7 +107,7 @@ namespace YoutubeExplode.Models
         /// </summary>
         public ulong FileSize { get; internal set; }
 
-        internal VideoStreamEndpoint() { }
+        internal VideoStream() { }
 
         /// <inheritdoc />
         public override string ToString()
@@ -116,7 +116,7 @@ namespace YoutubeExplode.Models
         }
     }
 
-    public partial class VideoStreamEndpoint
+    public partial class VideoStream
     {
         private static VideoStreamType ParseType(string typeString)
         {

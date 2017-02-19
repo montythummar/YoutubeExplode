@@ -1,15 +1,18 @@
 ﻿// ------------------------------------------------------------------ 
 //  Solution: <YoutubeExplode>
 //  Project: <YoutubeExplode>
-//  File: <ScramblingOperationType.cs>
+//  File: <IScramblingOperation.cs>
 //  Created By: Alexey Golub
-//  Date: 30/11/2016
+//  Date: 19/02/2017
 // ------------------------------------------------------------------ 
 
 namespace YoutubeExplode.Models
 {
-    internal enum ScramblingOperationType
+    internal interface IScramblingOperation
     {
-        Swap, Slice, Reverse
+        /// <summary>
+        /// Unscrambles the given string
+        /// </summary>
+        string Unscramble(string input);
     }
 }

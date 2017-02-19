@@ -16,11 +16,17 @@ namespace YoutubeExplode
     internal static class Ext
     {
         public delegate T ParseDelegate<out T>(string str);
+
         public delegate bool TryParseDelegate<T>(string str, out T result);
 
         public static bool IsBlank(this string str)
         {
             return string.IsNullOrWhiteSpace(str);
+        }
+
+        public static bool IsNotBlank(this string str)
+        {
+            return !string.IsNullOrWhiteSpace(str);
         }
 
         public static string Reverse(this string str)
@@ -61,7 +67,7 @@ namespace YoutubeExplode
 
         public static T ConvertOrDefault<T>(this object obj, T defaultValue = default(T))
         {
-            if (obj == null)
+            if (obj == null && typeof(T).IsValueType)
                 return defaultValue;
 
             try
@@ -105,7 +111,7 @@ namespace YoutubeExplode
 
         public static byte[] ToArray(this Stream input)
         {
-            byte[] buffer = new byte[16 * 1024];
+            byte[] buffer = new byte[16*1024];
             using (var ms = new MemoryStream())
             {
                 int read;

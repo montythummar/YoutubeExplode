@@ -118,7 +118,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Video streams
         /// </summary>
-        public VideoStreamEndpoint[] Streams { get; internal set; }
+        public VideoStream[] Streams { get; internal set; }
 
         /// <summary>
         /// Version of the video player, used for this video's playback

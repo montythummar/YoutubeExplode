@@ -17,12 +17,12 @@ namespace YoutubeExplode
     /// <summary>
     /// YoutubeClient
     /// </summary>
-    public class YoutubeClient
+    public partial class YoutubeClient
     {
         /// <summary>
         /// Default instance of YoutubeClient
         /// </summary>
-        public static YoutubeClient Default { get; } = new YoutubeClient();
+        public static YoutubeClient Instance { get; } = new YoutubeClient();
 
         /// <summary>
         /// HTTP request handler
@@ -46,53 +46,77 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Verifies that the given string is a valid youtube video ID
+        /// Tries to get video info from the watch page
         /// </summary>
-        /// <returns>True if valid, false otherwise</returns>
-        public bool VerifyYoutubeID(string videoID)
+        /// <returns>Result if successful, null if not</returns>
+        private VideoInfo GetVideoInfoFromWatchPage(string videoId)
         {
-            return !Regex.IsMatch(videoID, @"[^0-9a-zA-Z_\-]", RegexOptions.CultureInvariant);
+            if (videoId.IsBlank())
+                throw new ArgumentNullException(nameof(videoId));
+            if (!VerifyYoutubeID(videoId))
+                throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
+
+            // Get
+            string response = RequestService.GetString($"https://youtube.com/watch?v={videoId}");
+            if (response.IsBlank())
+                throw new Exception("Could not get video watch page (GET request failed)");
+
+            // Parse
+            var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});", RegexOptions.Multiline);
+            return jsonMatch.Success ? VideoInfoParser.ParseVideoInfoJson(jsonMatch.Groups[1].Value) : null;
+        }
+
+        /// <summary>
+        /// Tries to get video info from the internal api
+        /// </summary>
+        /// <returns>Result if successful, null if not</returns>
+        private VideoInfo GetVideoInfoFromInternalApi(string videoId)
+        {
+            if (videoId.IsBlank())
+                throw new ArgumentNullException(nameof(videoId));
+            if (!VerifyYoutubeID(videoId))
+                throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
+
+            // Get
+            string response = RequestService.GetString($"https://youtube.com/get_video_info?video_id={videoId}");
+            if (response.IsBlank())
+                throw new Exception("Could not get URL-encoded video info (GET request failed)");
+
+            // Parse
+            return VideoInfoParser.ParseVideoInfoUrlEncoded(response);
         }
 
         /// <summary>
         /// Get full information about a video by its ID
         /// </summary>
-        /// <param name="videoID">The ID of the video</param>
-        /// <param name="decipherIfNeeded">When set to true, videos with encrypted signatures will be automatically deciphered. This requires one extra GET request and some computational time. If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreams"/> method. Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamEndpoint"/> by URL</param>
-        /// <param name="getFileSizes">When set to true, it will also attempt to get file sizes of all obtained streams. This requires one extra HEAD request per stream. If set to false, you can use <see cref="GetFileSize"/> to get file size of individual streams or <see cref="GetAllFileSizes"/> for all of them. This parameter requires <paramref name="decipherIfNeeded"/> to be set.</param>
+        /// 
+        /// <param name="videoId">The ID of the video</param>
+        /// 
+        /// <param name="decipherIfNeeded">
+        /// When set to true, videos with encrypted signatures will be automatically deciphered.
+        /// This requires one extra GET request and some computational time.
+        /// If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreams"/> method.
+        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStream"/> by URL</param>
+        /// 
+        /// <param name="getFileSizes">
+        /// When set to true, it will also attempt to get file sizes of all obtained streams.
+        /// This requires one extra HEAD request per stream.
+        /// If set to false, you can use <see cref="GetFileSize"/> to get file size of individual streams or <see cref="GetAllFileSizes"/> for all of them.
+        /// This parameter requires <paramref name="decipherIfNeeded"/> to be set.</param>
         /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
-        public VideoInfo GetVideoInfo(string videoID, bool decipherIfNeeded = true, bool getFileSizes = true)
+        public VideoInfo GetVideoInfo(string videoId, bool decipherIfNeeded = true, bool getFileSizes = true)
         {
-            if (videoID.IsBlank())
-                throw new ArgumentNullException(nameof(videoID));
-            if (!VerifyYoutubeID(videoID))
-                throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoID));
+            if (videoId.IsBlank())
+                throw new ArgumentNullException(nameof(videoId));
+            if (!VerifyYoutubeID(videoId))
+                throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
+            if (getFileSizes && !decipherIfNeeded)
+                throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
 
-            // Grab watch page html code
-            string response = RequestService.GetString($"https://youtube.com/watch?v={videoID}");
-            if (response.IsBlank())
-                throw new Exception("Could not get video watch page (GET request failed)");
-
-            // Try to get video info
-            VideoInfo result;
-            var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});", RegexOptions.Multiline);
-            if (jsonMatch.Success)
-            {
-                // Get it directly from JSON object in the watch page
-                result = VideoInfoParser.ParseVideoInfoJson(jsonMatch.Groups[1].Value);
-                if (result == null)
-                    throw new Exception("Could not parse video info (JSON)");
-            }
-            else
-            {
-                // Get it from URL encoded data from internal api
-                response = RequestService.GetString($"https://youtube.com/get_video_info?video_id={videoID}");
-                if (response.IsBlank())
-                    throw new Exception("Could not get URL-encoded video info (GET request failed)");
-                result = VideoInfoParser.ParseVideoInfoUrlEncoded(response);
-                if (result == null)
-                    throw new Exception("Could not parse video info (URL-encoded)");
-            }
+            // Get video info
+            var result = GetVideoInfoFromWatchPage(videoId) ?? GetVideoInfoFromInternalApi(videoId);
+            if (result == null)
+                throw new Exception("Could not obtain video info from either sources");
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
@@ -122,8 +146,7 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not have information about the player version");
 
             // Get the javascript source URL
-            string player = videoInfo.PlayerVersion;
-            string response = RequestService.GetString($"https://s.ytimg.com/yts/jsbin/player-{player}/base.js");
+            string response = RequestService.GetString($"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
             if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
@@ -132,10 +155,10 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Gets and populates the total file size of the video, streamed on given endpoint
-        /// <returns>The populated file size value (in bytes)</returns>
+        /// Gets and populates the total file size of the video, streamed on the given endpoint
+        /// <returns>The file size of the video (in bytes)</returns>
         /// </summary>
-        public ulong GetFileSize(VideoStreamEndpoint stream)
+        public ulong GetFileSize(VideoStream stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -169,7 +192,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream
         /// </summary>
-        public Stream DownloadVideo(VideoStreamEndpoint stream)
+        public Stream DownloadVideo(VideoStream stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -184,7 +207,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream and saves it to a file
         /// </summary>
-        public void DownloadVideo(VideoStreamEndpoint stream, string filePath)
+        public void DownloadVideo(VideoStream stream, string filePath)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -193,23 +216,36 @@ namespace YoutubeExplode
             if (stream.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            using (var input = RequestService.DownloadFile(stream.Url))
-            {
-                if (input == null)
-                    throw new Exception("Could not download the given video stream");
+            // Get the stream
+            var input = RequestService.DownloadFile(stream.Url);
+            if (input == null)
+                throw new Exception("Could not download the given video stream");
 
-                using (var output = File.Create(filePath))
-                    input.CopyTo(output);
-            }
+            // Write to file
+            using (input)
+            using (var output = File.Create(filePath))
+                input.CopyTo(output);
+        }
+    }
+
+    public partial class YoutubeClient
+    {
+        /// <summary>
+        /// Verifies that the given string is a valid youtube video ID
+        /// </summary>
+        /// <returns>True if valid, false otherwise</returns>
+        public static bool VerifyYoutubeID(string videoId)
+        {
+            return !Regex.IsMatch(videoId, @"[^0-9a-zA-Z_\-]", RegexOptions.CultureInvariant);
         }
 
         /// <summary>
         /// Parses video ID from a youtube video URL
         /// </summary>
         /// <returns>Video ID</returns>
-        public string ParseVideoID(string videoURL)
+        public static string ParseVideoID(string videoUrl)
         {
-            var match = Regex.Match(videoURL, @"[?&]v=(.+?)(?:&|$)",
+            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!match.Success)
                 throw new FormatException("Could not parse Video ID from given string");
@@ -220,10 +256,10 @@ namespace YoutubeExplode
         /// Tries to parse video ID from a youtube video URL
         /// </summary>
         /// <returns>Whether the execution was successful or not</returns>
-        public bool TryParseVideoID(string videoURL, out string videoID)
+        public static bool TryParseVideoID(string videoUrl, out string videoID)
         {
             videoID = default(string);
-            var match = Regex.Match(videoURL, @"[?&]v=(.+?)(?:&|$)",
+            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (match.Success)
                 videoID = match.Groups[1].Value;

@@ -18,13 +18,13 @@ namespace YoutubeExplode
 {
     internal static class VideoInfoParser
     {
-        private static Dictionary<string, string> ParseDictionaryUrlEncoded(string raw)
+        private static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
         {
-            if (raw.IsBlank())
+            if (rawUrlEncoded.IsBlank())
                 return null;
 
             var dic = new Dictionary<string, string>();
-            var keyValuePairsRaw = raw.Split("&");
+            var keyValuePairsRaw = rawUrlEncoded.Split("&");
             foreach (string keyValuePairRaw in keyValuePairsRaw)
             {
                 string keyValuePairRawDecoded = WebUtility.UrlDecode(keyValuePairRaw);
@@ -49,12 +49,12 @@ namespace YoutubeExplode
             return dic;
         }
 
-        private static IEnumerable<VideoStreamEndpoint> ParseVideoStreamEndpointsUrlEncoded(string raw)
+        private static IEnumerable<VideoStream> ParseVideoStreamsUrlEncoded(string rawUrlEncoded)
         {
-            if (raw.IsBlank())
+            if (rawUrlEncoded.IsBlank())
                 yield break;
 
-            foreach (var streamRaw in raw.Split(","))
+            foreach (var streamRaw in rawUrlEncoded.Split(","))
             {
                 var dic = ParseDictionaryUrlEncoded(streamRaw);
 
@@ -70,7 +70,7 @@ namespace YoutubeExplode
                 double fps = dic.GetOrDefault("fps").ParseDoubleOrDefault();
 
                 // Yield a stream object
-                yield return new VideoStreamEndpoint
+                yield return new VideoStream
                 {
                     Signature = sig,
                     NeedsDeciphering = needsDeciphering,
@@ -84,13 +84,13 @@ namespace YoutubeExplode
             }
         }
 
-        public static VideoInfo ParseVideoInfoJson(string raw)
+        public static VideoInfo ParseVideoInfoJson(string rawJson)
         {
-            if (raw.IsBlank())
-                throw new ArgumentNullException(nameof(raw));
+            if (rawJson.IsBlank())
+                throw new ArgumentNullException(nameof(rawJson));
 
             // Get the json
-            var json = SimpleJson.DeserializeObject(raw) as JsonObject;
+            var json = SimpleJson.DeserializeObject(rawJson) as JsonObject;
             if (json == null)
                 throw new Exception("Could not deserialize video info JSON");
 
@@ -100,7 +100,7 @@ namespace YoutubeExplode
             // Try to extract player version
             var assets = json.GetOrDefault("assets") as JsonObject;
             string playerJsUrl = assets?.GetOrDefault("js", "");
-            if (!playerJsUrl.IsBlank())
+            if (playerJsUrl.IsNotBlank())
             {
                 var match = Regex.Match(playerJsUrl, @"player-(.+?)/",
                     RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
@@ -142,7 +142,7 @@ namespace YoutubeExplode
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts", "");
             if (streamsRaw.IsBlank())
                 streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map", "");
-            result.Streams = ParseVideoStreamEndpointsUrlEncoded(streamsRaw).ToArray();
+            result.Streams = ParseVideoStreamsUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
@@ -151,13 +151,13 @@ namespace YoutubeExplode
             return result;
         }
 
-        public static VideoInfo ParseVideoInfoUrlEncoded(string raw)
+        public static VideoInfo ParseVideoInfoUrlEncoded(string rawUrlEncoded)
         {
-            if (raw.IsBlank())
-                throw new ArgumentNullException(nameof(raw));
+            if (rawUrlEncoded.IsBlank())
+                throw new ArgumentNullException(nameof(rawUrlEncoded));
 
             // Get data
-            var videoInfoEncoded = ParseDictionaryUrlEncoded(raw);
+            var videoInfoEncoded = ParseDictionaryUrlEncoded(rawUrlEncoded);
 
             // Check the status
             if (videoInfoEncoded.GetOrDefault("status").EqualsInvariant("fail"))
@@ -166,7 +166,7 @@ namespace YoutubeExplode
             // Prepare result
             var result = new VideoInfo();
 
-            // Player version (no way to obtain here)
+            // Player version
             result.PlayerVersion = null; // set to null, so that decipherer can correctly throw an exception
 
             // Populate data
@@ -192,7 +192,7 @@ namespace YoutubeExplode
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
             if (streamsRaw.IsBlank())
                 streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map");
-            result.Streams = ParseVideoStreamEndpointsUrlEncoded(streamsRaw).ToArray();
+            result.Streams = ParseVideoStreamsUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);

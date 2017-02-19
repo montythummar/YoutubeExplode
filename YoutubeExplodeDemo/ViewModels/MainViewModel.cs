@@ -24,14 +24,15 @@ namespace YoutubeExplodeDemo.ViewModels
         private readonly YoutubeClient _client;
 
         private string _videoID;
+        private VideoInfo _videoInfo;
+        private double _downloadProgress;
+        private bool _isDownloading;
 
-        public string VideoID
+        public string VideoId
         {
             get { return _videoID; }
             set { Set(ref _videoID, value); }
         }
-
-        private VideoInfo _videoInfo;
 
         public VideoInfo VideoInfo
         {
@@ -45,15 +46,11 @@ namespace YoutubeExplodeDemo.ViewModels
 
         public bool VideoInfoVisible => VideoInfo != null;
 
-        private double _downloadProgress;
-
         public double DownloadProgress
         {
             get { return _downloadProgress; }
             set { Set(ref _downloadProgress, value); }
         }
-
-        private bool _isDownloading;
 
         public bool IsDownloading
         {
@@ -67,8 +64,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
         // Commands
         public RelayCommand GetDataCommand { get; }
-        public RelayCommand<VideoStreamEndpoint> OpenVideoCommand { get; }
-        public RelayCommand<VideoStreamEndpoint> DownloadVideoCommand { get; }
+        public RelayCommand<VideoStream> OpenVideoCommand { get; }
+        public RelayCommand<VideoStream> DownloadVideoCommand { get; }
 
         public MainViewModel()
         {
@@ -76,14 +73,14 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Commands
             GetDataCommand = new RelayCommand(GetDataAsync);
-            OpenVideoCommand = new RelayCommand<VideoStreamEndpoint>(vse => Process.Start(vse.Url));
-            DownloadVideoCommand = new RelayCommand<VideoStreamEndpoint>(DownloadVideoAsync, vse => !IsDownloading);
+            OpenVideoCommand = new RelayCommand<VideoStream>(vse => Process.Start(vse.Url));
+            DownloadVideoCommand = new RelayCommand<VideoStream>(DownloadVideoAsync, vse => !IsDownloading);
         }
 
         private async void GetDataAsync()
         {
             // Check params
-            if (VideoID.IsBlank())
+            if (VideoId.IsBlank())
                 return;
 
             // Reset data
@@ -91,8 +88,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Parse URL if necessary
             string id;
-            if (!_client.TryParseVideoID(VideoID, out id))
-                id = VideoID;
+            if (!YoutubeClient.TryParseVideoID(VideoId, out id))
+                id = VideoId;
 
             // Perform the request
             await Task.Run(() =>
@@ -108,15 +105,15 @@ namespace YoutubeExplodeDemo.ViewModels
             });
         }
 
-        private async void DownloadVideoAsync(VideoStreamEndpoint videoStreamEndpoint)
+        private async void DownloadVideoAsync(VideoStream videoStream)
         {
             // Check params
-            if (videoStreamEndpoint == null) return;
+            if (videoStream == null) return;
             if (VideoInfo == null) return;
 
             // Copy values
             string title = VideoInfo.Title;
-            string ext = videoStreamEndpoint.FileExtension;
+            string ext = videoStream.FileExtension;
 
             // Select destination
             var sfd = new SaveFileDialog
@@ -134,7 +131,7 @@ namespace YoutubeExplodeDemo.ViewModels
             bool success = await Task.Run(() =>
             {
                 using (var output = File.Create(filePath))
-                using (var input = _client.DownloadVideo(videoStreamEndpoint))
+                using (var input = _client.DownloadVideo(videoStream))
                 {
                     if (input == null) return false;
 
@@ -145,7 +142,7 @@ namespace YoutubeExplodeDemo.ViewModels
                     {
                         bytesRead = input.Read(buffer, 0, 1024);
                         output.Write(buffer, 0, bytesRead);
-                        DownloadProgress += 1.0*bytesRead/videoStreamEndpoint.FileSize;
+                        DownloadProgress += 1.0*bytesRead/videoStream.FileSize;
                     } while (bytesRead > 0);
                 }
                 return true;

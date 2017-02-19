@@ -46,7 +46,7 @@
                     <TextBox x:Name="VideoIDTextBox"
                              Grid.Column="0"
                              KeyDown="tbVideoID_KeyDown"
-                             Text="{Binding VideoID, UpdateSourceTrigger=PropertyChanged}" />
+                             Text="{Binding VideoId, UpdateSourceTrigger=PropertyChanged}" />
                     <Button x:Name="GetDataButton"
                             Grid.Column="1"
                             Padding="5"
@@ -85,7 +85,16 @@
                                FontWeight="Bold"
                                Text="{Binding VideoInfo.Title}"
                                TextTrimming="CharacterEllipsis"
-                               TextWrapping="NoWrap" />
+                               TextWrapping="NoWrap">
+                        <TextBlock.ToolTip>
+                            <TextBlock>
+                                <Run Text="ID:" />
+                                <Run FontWeight="Bold" Text="{Binding VideoInfo.Id, Mode=OneWay}" />
+                                <Run Text="Title:" />
+                                <Run FontWeight="Bold" Text="{Binding VideoInfo.Title, Mode=OneWay}" />
+                            </TextBlock>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
                 </Border>
 
                 <!--  Stats  -->
@@ -128,7 +137,7 @@
                               VerticalScrollBarVisibility="Auto">
                     <StackPanel Orientation="Vertical">
                         <!--  Flags  -->
-                        <WrapPanel Margin="5"
+                        <WrapPanel Margin="5,2,5,2"
                                    HorizontalAlignment="Center"
                                    Orientation="Horizontal">
                             <CheckBox Content="Listed"
@@ -158,15 +167,15 @@
                         </WrapPanel>
 
                         <!--  Keywords  -->
-                        <TextBlock Margin="5"
+                        <TextBlock Margin="5,2,5,2"
                                    TextTrimming="CharacterEllipsis"
-                                   TextWrapping="WrapWithOverflow">
+                                   TextWrapping="Wrap">
                             <Run Text="Keywords:" />
                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding VideoInfo.KeywordsString, Mode=OneWay}" />
                         </TextBlock>
 
                         <!--  Images  -->
-                        <TextBlock Margin="5">
+                        <TextBlock Margin="5,2,5,2">
                             <Run Text="Images:" />
                             <Hyperlink NavigateUri="{Binding VideoInfo.Thumbnail}" RequestNavigate="Hyperlink_OnRequestNavigate">Thumbnail</Hyperlink><Run Text="," />
                             <Hyperlink NavigateUri="{Binding VideoInfo.ImageHighQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image High Quality</Hyperlink><Run Text="," />
@@ -175,7 +184,7 @@
                         </TextBlock>
 
                         <!--  Streams  -->
-                        <StackPanel Margin="5" Orientation="Vertical">
+                        <StackPanel Margin="5,2,5,2" Orientation="Vertical">
                             <TextBlock Text="Streams:" />
                             <ItemsControl Margin="3,0,0,0" ItemsSource="{Binding VideoInfo.Streams}">
                                 <ItemsControl.ItemTemplate>
