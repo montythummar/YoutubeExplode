@@ -18,12 +18,12 @@ namespace YoutubeExplode
     {
         private readonly IScramblingOperation[] _operations;
 
-        public Decipherer(string playerRawJs)
+        public Decipherer(IEnumerable<IScramblingOperation> operations)
         {
-            if (playerRawJs.IsBlank())
-                throw new ArgumentNullException(nameof(playerRawJs));
+            if (operations == null)
+                throw new ArgumentNullException(nameof(operations));
 
-            _operations = GetScramblingOperations(playerRawJs).ToArray();
+            _operations = operations.ToArray();
         }
 
         private string ApplyAllOperations(string signature)
@@ -154,6 +154,11 @@ namespace YoutubeExplode
                     yield return new ReverseScramblingOperation();
                 }
             }
+        }
+
+        public static Decipherer FromPlayerSource(string playerRawJs)
+        {
+            return new Decipherer(GetScramblingOperations(playerRawJs));
         }
     }
 }
