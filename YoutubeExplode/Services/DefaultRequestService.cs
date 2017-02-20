@@ -164,17 +164,10 @@ namespace YoutubeExplode.Services
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            byte[] buffer = new byte[1024];
             using (input)
             using (var ms = new MemoryStream())
             {
-                int bytesRead;
-                do
-                {
-                    bytesRead = input.Read(buffer, 0, buffer.Length);
-                    ms.Write(buffer, 0, bytesRead);
-                } while (bytesRead > 0);
-
+                input.CopyTo(ms);
                 return ms.ToArray();
             }
         }
@@ -187,17 +180,10 @@ namespace YoutubeExplode.Services
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            byte[] buffer = new byte[1024];
             using (input)
             using (var ms = new MemoryStream())
             {
-                int bytesRead;
-                do
-                {
-                    bytesRead = await input.ReadAsync(buffer, 0, buffer.Length);
-                    await ms.WriteAsync(buffer, 0, bytesRead);
-                } while (bytesRead > 0);
-
+                await input.CopyToAsync(ms);
                 return ms.ToArray();
             }
         }
