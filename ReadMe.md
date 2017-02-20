@@ -51,7 +51,7 @@ Console.WriteLine($"Author: {videoInfo.Author}");
 Console.WriteLine($"Length: {videoInfo.Length}");
 
 // Open the first video stream in a browser window and watch the video
-Process.Start(videoInfo.Streams.First().URL);
+Process.Start(videoInfo.Streams.First().Url);
 
 ```
 

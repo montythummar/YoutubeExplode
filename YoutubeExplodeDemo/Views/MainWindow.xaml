@@ -10,7 +10,7 @@
         Height="670"
         Background="{DynamicResource MaterialDesignPaper}"
         DataContext="{Binding Main, Source={StaticResource Locator}}"
-        FocusManager.FocusedElement="{Binding ElementName=VideoIDTextBox}"
+        FocusManager.FocusedElement="{Binding ElementName=VideoIdTextBox}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Icon="/YoutubeExplodeDemo;component/favicon.ico"
         SnapsToDevicePixels="True"
@@ -43,9 +43,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="VideoIDTextBox"
+                    <TextBox x:Name="VideoIdTextBox"
                              Grid.Column="0"
-                             KeyDown="tbVideoID_KeyDown"
+                             KeyDown="tbVideoId_KeyDown"
                              Text="{Binding VideoId, UpdateSourceTrigger=PropertyChanged}" />
                     <Button x:Name="GetDataButton"
                             Grid.Column="1"

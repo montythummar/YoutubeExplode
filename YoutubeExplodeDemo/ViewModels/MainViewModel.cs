@@ -23,15 +23,15 @@ namespace YoutubeExplodeDemo.ViewModels
     {
         private readonly YoutubeClient _client;
 
-        private string _videoID;
+        private string _videoId;
         private VideoInfo _videoInfo;
         private double _downloadProgress;
         private bool _isDownloading;
 
         public string VideoId
         {
-            get { return _videoID; }
-            set { Set(ref _videoID, value); }
+            get { return _videoId; }
+            set { Set(ref _videoId, value); }
         }
 
         public VideoInfo VideoInfo
@@ -88,7 +88,7 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Parse URL if necessary
             string id;
-            if (!YoutubeClient.TryParseVideoID(VideoId, out id))
+            if (!YoutubeClient.TryParseVideoId(VideoId, out id))
                 id = VideoId;
 
             // Perform the request

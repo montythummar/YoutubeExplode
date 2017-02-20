@@ -21,7 +21,7 @@ namespace YoutubeExplodeDemo.Views
             Closing += (s, e) => Locator.Cleanup();
         }
 
-        private void tbVideoID_KeyDown(object sender, KeyEventArgs e)
+        private void tbVideoId_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
             ((MainViewModel) DataContext).GetDataCommand.Execute(null);

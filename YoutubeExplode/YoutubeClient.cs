@@ -53,7 +53,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeID(videoId))
+            if (!VerifyYoutubeId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
@@ -74,7 +74,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeID(videoId))
+            if (!VerifyYoutubeId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
@@ -108,7 +108,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeID(videoId))
+            if (!VerifyYoutubeId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
             if (getFileSizes && !decipherIfNeeded)
                 throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
@@ -234,7 +234,7 @@ namespace YoutubeExplode
         /// Verifies that the given string is a valid youtube video ID
         /// </summary>
         /// <returns>True if valid, false otherwise</returns>
-        public static bool VerifyYoutubeID(string videoId)
+        public static bool VerifyYoutubeId(string videoId)
         {
             return !Regex.IsMatch(videoId, @"[^0-9a-zA-Z_\-]", RegexOptions.CultureInvariant);
         }
@@ -243,7 +243,7 @@ namespace YoutubeExplode
         /// Parses video ID from a youtube video URL
         /// </summary>
         /// <returns>Video ID</returns>
-        public static string ParseVideoID(string videoUrl)
+        public static string ParseVideoId(string videoUrl)
         {
             var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
@@ -256,13 +256,13 @@ namespace YoutubeExplode
         /// Tries to parse video ID from a youtube video URL
         /// </summary>
         /// <returns>Whether the execution was successful or not</returns>
-        public static bool TryParseVideoID(string videoUrl, out string videoID)
+        public static bool TryParseVideoId(string videoUrl, out string videoId)
         {
-            videoID = default(string);
+            videoId = default(string);
             var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (match.Success)
-                videoID = match.Groups[1].Value;
+                videoId = match.Groups[1].Value;
             return match.Success;
         }
     }
