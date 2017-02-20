@@ -112,6 +112,7 @@ namespace YoutubeExplode
         public static byte[] ToArray(this Stream input)
         {
             byte[] buffer = new byte[16*1024];
+            using (input)
             using (var ms = new MemoryStream())
             {
                 int read;
