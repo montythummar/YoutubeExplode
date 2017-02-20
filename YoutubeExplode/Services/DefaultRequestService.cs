@@ -28,6 +28,9 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public string GetString(string url)
         {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
             try
             {
                 var request = WebRequest.CreateHttp(url);
@@ -48,6 +51,9 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public IDictionary<string, string> GetHeaders(string url)
         {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
             try
             {
                 var request = WebRequest.CreateHttp(url);
@@ -67,6 +73,9 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public Stream DownloadFile(string url)
         {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
             try
             {
                 var request = WebRequest.CreateHttp(url);
@@ -83,6 +92,9 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public async Task<string> GetStringAsync(string url)
         {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
             try
             {
                 var request = WebRequest.CreateHttp(url);
@@ -103,6 +115,9 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public async Task<IDictionary<string, string>> GetHeadersAsync(string url)
         {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
             try
             {
                 var request = WebRequest.CreateHttp(url);
@@ -122,6 +137,9 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public async Task<Stream> DownloadFileAsync(string url)
         {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
             try
             {
                 var request = WebRequest.CreateHttp(url);
