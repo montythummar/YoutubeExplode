@@ -17,7 +17,7 @@ namespace YoutubeExplode.Services
     /// <summary>
     /// Uses <see cref="WebRequest"/> for handling requests
     /// </summary>
-    public sealed class DefaultRequestService : IRequestService
+    public class DefaultRequestService : IRequestService
     {
         /// <summary>
         /// Default instance
@@ -55,7 +55,7 @@ namespace YoutubeExplode.Services
                     for (int i = 0; i < response.Headers.Count; i++)
                     {
                         string headerName = response.Headers.GetKey(i);
-                        string headerValue = response.Headers[headerName];
+                        string headerValue = response.Headers.Get(i);
                         result.Add(headerName, headerValue);
                     }
                 }
