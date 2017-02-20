@@ -54,7 +54,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeId(videoId))
+            if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
@@ -75,7 +75,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeId(videoId))
+            if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
@@ -96,7 +96,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeId(videoId))
+            if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
@@ -116,7 +116,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeId(videoId))
+            if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
@@ -153,7 +153,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeId(videoId))
+            if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
             if (getFileSizes && !decipherIfNeeded)
                 throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
@@ -203,7 +203,7 @@ namespace YoutubeExplode
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
-            if (!VerifyYoutubeId(videoId))
+            if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
             if (getFileSizes && !decipherIfNeeded)
                 throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
@@ -423,7 +423,7 @@ namespace YoutubeExplode
         /// Verifies that the given string is a valid youtube video ID
         /// </summary>
         /// <returns>True if valid, false otherwise</returns>
-        public static bool VerifyYoutubeId(string videoId)
+        public static bool ValidateVideoId(string videoId)
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
