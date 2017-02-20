@@ -63,8 +63,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
         // Commands
         public RelayCommand GetDataCommand { get; }
-        public RelayCommand<VideoStream> OpenVideoCommand { get; }
-        public RelayCommand<VideoStream> DownloadVideoCommand { get; }
+        public RelayCommand<VideoStreamInfo> OpenVideoCommand { get; }
+        public RelayCommand<VideoStreamInfo> DownloadVideoCommand { get; }
 
         public MainViewModel()
         {
@@ -72,8 +72,8 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Commands
             GetDataCommand = new RelayCommand(GetDataAsync);
-            OpenVideoCommand = new RelayCommand<VideoStream>(vse => Process.Start(vse.Url));
-            DownloadVideoCommand = new RelayCommand<VideoStream>(DownloadVideoAsync, vse => !IsDownloading);
+            OpenVideoCommand = new RelayCommand<VideoStreamInfo>(vse => Process.Start(vse.Url));
+            DownloadVideoCommand = new RelayCommand<VideoStreamInfo>(DownloadVideoAsync, vse => !IsDownloading);
         }
 
         private async void GetDataAsync()
@@ -101,15 +101,15 @@ namespace YoutubeExplodeDemo.ViewModels
             }
         }
 
-        private async void DownloadVideoAsync(VideoStream videoStream)
+        private async void DownloadVideoAsync(VideoStreamInfo videoStreamInfo)
         {
             // Check params
-            if (videoStream == null) return;
+            if (videoStreamInfo == null) return;
             if (VideoInfo == null) return;
 
             // Copy values
             string title = VideoInfo.Title;
-            string ext = videoStream.FileExtension;
+            string ext = videoStreamInfo.FileExtension;
 
             // Select destination
             var sfd = new SaveFileDialog
@@ -128,7 +128,7 @@ namespace YoutubeExplodeDemo.ViewModels
             try
             {
                 using (var output = File.Create(filePath))
-                using (var input = await _client.DownloadVideoAsync(videoStream))
+                using (var input = await _client.DownloadVideoAsync(videoStreamInfo))
                 {
                     // Read the response and copy it to output stream
                     var buffer = new byte[1024];
@@ -138,8 +138,8 @@ namespace YoutubeExplodeDemo.ViewModels
                         bytesRead = await input.ReadAsync(buffer, 0, buffer.Length);
                         await output.WriteAsync(buffer, 0, bytesRead);
 
-                        if (videoStream.FileSize > 0)
-                            DownloadProgress += 1.0*bytesRead/videoStream.FileSize;
+                        if (videoStreamInfo.FileSize > 0)
+                            DownloadProgress += 1.0*bytesRead/videoStreamInfo.FileSize;
                     } while (bytesRead > 0);
                 }
 

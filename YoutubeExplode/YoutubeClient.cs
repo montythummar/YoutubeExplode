@@ -138,7 +138,7 @@ namespace YoutubeExplode
         /// When set to true, videos with encrypted signatures will be automatically deciphered.
         /// This requires one extra GET request and some computational time.
         /// If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreams"/> method.
-        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStream"/> by URL
+        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamInfo"/> by URL
         /// </param>
         /// 
         /// <param name="getFileSizes">
@@ -188,7 +188,7 @@ namespace YoutubeExplode
         /// When set to true, videos with encrypted signatures will be automatically deciphered.
         /// This requires one extra GET request and some computational time.
         /// If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreams"/> method.
-        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStream"/> by URL
+        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamInfo"/> by URL
         /// </param>
         /// 
         /// <param name="getFileSizes">
@@ -274,7 +274,7 @@ namespace YoutubeExplode
         /// Gets and populates the total file size of the video, streamed on the given endpoint
         /// <returns>The file size of the video (in bytes)</returns>
         /// </summary>
-        public ulong GetFileSize(VideoStream stream)
+        public ulong GetFileSize(VideoStreamInfo stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -295,7 +295,7 @@ namespace YoutubeExplode
         /// Gets and populates the total file size of the video, streamed on the given endpoint
         /// <returns>The file size of the video (in bytes)</returns>
         /// </summary>
-        public async Task<ulong> GetFileSizeAsync(VideoStream stream)
+        public async Task<ulong> GetFileSizeAsync(VideoStreamInfo stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -343,7 +343,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream
         /// </summary>
-        public Stream DownloadVideo(VideoStream stream)
+        public Stream DownloadVideo(VideoStreamInfo stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -358,7 +358,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream
         /// </summary>
-        public async Task<Stream> DownloadVideoAsync(VideoStream stream)
+        public async Task<Stream> DownloadVideoAsync(VideoStreamInfo stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -373,7 +373,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream and saves it to a file
         /// </summary>
-        public void DownloadVideo(VideoStream stream, string filePath)
+        public void DownloadVideo(VideoStreamInfo stream, string filePath)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -396,7 +396,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream and saves it to a file
         /// </summary>
-        public async Task DownloadVideoAsync(VideoStream stream, string filePath)
+        public async Task DownloadVideoAsync(VideoStreamInfo stream, string filePath)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));

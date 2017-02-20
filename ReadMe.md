@@ -37,21 +37,29 @@ The video stream objects include the following data:
 
 ```c#
 using System;
-using System.Diagnostics;
+using System.Linq;
+//using System.Threading.Tasks;
 using YoutubeExplode;
 
 ...
 
+// Get client instance
+var client = new YoutubeClient();
+//       ... YoutubeClient.Instance;
+
 // Get info
-var videoInfo = new YoutubeClient().GetVideoInfo("bx_KorIwABQ");
+var videoInfo = client.GetVideoInfo("bx_KorIwABQ");
+//          ... await client.GetVideoInfoAsync("bx_KorIwABQ");
 
 // Output some of it to console
 Console.WriteLine($"Title: {videoInfo.Title}");
 Console.WriteLine($"Author: {videoInfo.Author}");
 Console.WriteLine($"Length: {videoInfo.Length}");
 
-// Open the first video stream in a browser window and watch the video
-Process.Start(videoInfo.Streams.First().Url);
+// Download the first video stream to file
+var streamInfo = videoInfo.Streams.First();
+client.DownloadVideo(streamInfo, videoInfo.Id + "." + streamInfo.FileExtension);
+// await client.DownloadVideoAsync(streamInfo, videoInfo.Id + "." + streamInfo.FileExtension);
 
 ```
 

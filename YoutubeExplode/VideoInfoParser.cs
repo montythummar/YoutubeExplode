@@ -49,7 +49,7 @@ namespace YoutubeExplode
             return dic;
         }
 
-        private static IEnumerable<VideoStream> ParseVideoStreamsUrlEncoded(string rawUrlEncoded)
+        private static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosUrlEncoded(string rawUrlEncoded)
         {
             if (rawUrlEncoded.IsBlank())
                 throw new ArgumentNullException(nameof(rawUrlEncoded));
@@ -70,7 +70,7 @@ namespace YoutubeExplode
                 double fps = dic.GetOrDefault("fps").ParseDoubleOrDefault();
 
                 // Yield a stream object
-                yield return new VideoStream
+                yield return new VideoStreamInfo
                 {
                     Signature = sig,
                     NeedsDeciphering = needsDeciphering,
@@ -142,7 +142,7 @@ namespace YoutubeExplode
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts", "");
             if (streamsRaw.IsBlank())
                 streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map", "");
-            result.Streams = ParseVideoStreamsUrlEncoded(streamsRaw).ToArray();
+            result.Streams = ParseVideoStreamInfosUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
@@ -192,7 +192,7 @@ namespace YoutubeExplode
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
             if (streamsRaw.IsBlank())
                 streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map");
-            result.Streams = ParseVideoStreamsUrlEncoded(streamsRaw).ToArray();
+            result.Streams = ParseVideoStreamInfosUrlEncoded(streamsRaw).ToArray();
 
             // Check if any of the streams need to be deciphered
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);

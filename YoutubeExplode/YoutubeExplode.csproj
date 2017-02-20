@@ -46,7 +46,7 @@
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Ext.cs" />
     <Compile Include="Models\VideoInfo.cs" />
-    <Compile Include="Models\VideoStream.cs" />
+    <Compile Include="Models\VideoStreamInfo.cs" />
     <Compile Include="Models\VideoStreamQuality.cs" />
     <Compile Include="Models\VideoStreamType.cs" />
     <Compile Include="VideoInfoParser.cs" />
