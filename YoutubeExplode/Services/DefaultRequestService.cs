@@ -26,7 +26,7 @@ namespace YoutubeExplode.Services
         public static DefaultRequestService Instance { get; } = new DefaultRequestService();
 
         /// <inheritdoc />
-        public string GetString(string url)
+        public virtual string GetString(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
@@ -49,7 +49,7 @@ namespace YoutubeExplode.Services
         }
 
         /// <inheritdoc />
-        public IDictionary<string, string> GetHeaders(string url)
+        public virtual IDictionary<string, string> GetHeaders(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
@@ -71,7 +71,7 @@ namespace YoutubeExplode.Services
         }
 
         /// <inheritdoc />
-        public Stream DownloadFile(string url)
+        public virtual Stream DownloadFile(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
@@ -90,7 +90,7 @@ namespace YoutubeExplode.Services
         }
 
         /// <inheritdoc />
-        public async Task<string> GetStringAsync(string url)
+        public virtual async Task<string> GetStringAsync(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
@@ -113,7 +113,7 @@ namespace YoutubeExplode.Services
         }
 
         /// <inheritdoc />
-        public async Task<IDictionary<string, string>> GetHeadersAsync(string url)
+        public virtual async Task<IDictionary<string, string>> GetHeadersAsync(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
@@ -135,7 +135,7 @@ namespace YoutubeExplode.Services
         }
 
         /// <inheritdoc />
-        public async Task<Stream> DownloadFileAsync(string url)
+        public virtual async Task<Stream> DownloadFileAsync(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
