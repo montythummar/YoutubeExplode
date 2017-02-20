@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace YoutubeExplode
@@ -107,21 +106,6 @@ namespace YoutubeExplode
         public static bool ContainsInvariant(this string str, string other)
         {
             return str?.IndexOf(other, StringComparison.InvariantCultureIgnoreCase) >= 0;
-        }
-
-        public static byte[] ToArray(this Stream input)
-        {
-            byte[] buffer = new byte[16*1024];
-            using (input)
-            using (var ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
         }
     }
 }

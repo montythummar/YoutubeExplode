@@ -91,6 +91,10 @@
                 </Style.Triggers>
             </Style>
 
+            <Style BasedOn="{StaticResource {x:Type ProgressBar}}" TargetType="{x:Type ProgressBar}">
+                <Setter Property="Foreground" Value="{DynamicResource SecondaryAccentBrush}" />
+            </Style>
+
             <Style TargetType="{x:Type Hyperlink}">
                 <Setter Property="Foreground" Value="{DynamicResource SecondaryAccentBrush}" />
             </Style>
@@ -121,6 +125,17 @@
 
             <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+
+            <Style x:Key="FlatButtonStyle"
+                   BasedOn="{StaticResource {x:Type Button}}"
+                   TargetType="{x:Type Button}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0" />
+                <Setter Property="BorderThickness" Value="0" />
             </Style>
 
             <viewModels:FileSizeConverter x:Key="FileSizeConverter" />

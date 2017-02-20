@@ -28,6 +28,9 @@ namespace YoutubeExplode
 
         private string ApplyAllOperations(string signature)
         {
+            if (signature.IsBlank())
+                throw new ArgumentNullException(nameof(signature));
+
             foreach (var op in _operations)
                 signature = op.Unscramble(signature);
             return signature;
@@ -75,12 +78,18 @@ namespace YoutubeExplode
     {
         private static string GetFunctionCallFromLine(string line)
         {
+            if (line.IsBlank())
+                throw new ArgumentNullException(nameof(line));
+
             var match = Regex.Match(line, @"\w+\.(\w+)\(");
             return match.Groups[1].Value;
         }
 
         private static IEnumerable<IScramblingOperation> GetScramblingOperations(string playerRawJs)
         {
+            if (playerRawJs.IsBlank())
+                throw new ArgumentNullException(nameof(playerRawJs));
+
             // Get the name of the function that handles deciphering
             var funcNameMatch = Regex.Match(playerRawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(");
             if (!funcNameMatch.Success)
@@ -158,6 +167,9 @@ namespace YoutubeExplode
 
         public static Decipherer FromPlayerSource(string playerRawJs)
         {
+            if (playerRawJs.IsBlank())
+                throw new ArgumentNullException(nameof(playerRawJs));
+
             return new Decipherer(GetScramblingOperations(playerRawJs));
         }
     }

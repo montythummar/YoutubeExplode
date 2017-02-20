@@ -21,7 +21,7 @@ namespace YoutubeExplode
         private static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
         {
             if (rawUrlEncoded.IsBlank())
-                return null;
+                throw new ArgumentNullException(nameof(rawUrlEncoded));
 
             var dic = new Dictionary<string, string>();
             var keyValuePairsRaw = rawUrlEncoded.Split("&");
@@ -52,7 +52,7 @@ namespace YoutubeExplode
         private static IEnumerable<VideoStream> ParseVideoStreamsUrlEncoded(string rawUrlEncoded)
         {
             if (rawUrlEncoded.IsBlank())
-                yield break;
+                throw new ArgumentNullException(nameof(rawUrlEncoded));
 
             foreach (var streamRaw in rawUrlEncoded.Split(","))
             {

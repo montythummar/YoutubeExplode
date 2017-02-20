@@ -9,7 +9,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
@@ -92,17 +91,14 @@ namespace YoutubeExplodeDemo.ViewModels
                 id = VideoId;
 
             // Perform the request
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    VideoInfo = _client.GetVideoInfo(id);
-                }
-                catch (Exception ex)
-                {
-                    Dialogs.Error(ex.Message);
-                }
-            });
+                VideoInfo = await _client.GetVideoInfoAsync(id);
+            }
+            catch (Exception ex)
+            {
+                Dialogs.Error(ex.Message);
+            }
         }
 
         private async void DownloadVideoAsync(VideoStream videoStream)
@@ -128,38 +124,35 @@ namespace YoutubeExplodeDemo.ViewModels
 
             // Try download
             IsDownloading = true;
-            bool success = await Task.Run(() =>
+            DownloadProgress = 0;
+            try
             {
                 using (var output = File.Create(filePath))
-                using (var input = _client.DownloadVideo(videoStream))
+                using (var input = await _client.DownloadVideoAsync(videoStream))
                 {
-                    if (input == null) return false;
-
                     // Read the response and copy it to output stream
                     var buffer = new byte[1024];
                     int bytesRead;
                     do
                     {
-                        bytesRead = input.Read(buffer, 0, 1024);
-                        output.Write(buffer, 0, bytesRead);
-                        DownloadProgress += 1.0*bytesRead/videoStream.FileSize;
+                        bytesRead = await input.ReadAsync(buffer, 0, buffer.Length);
+                        await output.WriteAsync(buffer, 0, bytesRead);
+
+                        if (videoStream.FileSize > 0)
+                            DownloadProgress += 1.0*bytesRead/videoStream.FileSize;
                     } while (bytesRead > 0);
                 }
-                return true;
-            });
-            IsDownloading = false;
 
-            // Finalize
-            if (success)
-            {
+                // Prompt to open
                 if (Dialogs.PromptYesNo(
                     $"Video ({title}) has been downloaded!{Environment.NewLine}Do you want to open it?"))
                     Process.Start(filePath);
             }
-            else
+            catch (Exception ex)
             {
-                Dialogs.Error("Could not download the video");
+                Dialogs.Error(ex.Message);
             }
+            IsDownloading = false;
         }
     }
 }
