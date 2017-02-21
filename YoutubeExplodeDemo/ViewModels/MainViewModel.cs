@@ -22,10 +22,22 @@ namespace YoutubeExplodeDemo.ViewModels
     {
         private readonly YoutubeClient _client;
 
+        private bool _isBusy;
         private string _videoId;
         private VideoInfo _videoInfo;
-        private double _downloadProgress;
-        private bool _isDownloading;
+        private double _progress;
+        private bool _isProgressIndeterminate;
+
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            private set
+            {
+                Set(ref _isBusy, value);
+                GetVideoInfoCommand.RaiseCanExecuteChanged();
+                DownloadVideoCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         public string VideoId
         {
@@ -39,30 +51,26 @@ namespace YoutubeExplodeDemo.ViewModels
             private set
             {
                 Set(ref _videoInfo, value);
-                RaisePropertyChanged(() => VideoInfoVisible);
+                RaisePropertyChanged(() => IsVideoInfoAvailable);
             }
         }
 
-        public bool VideoInfoVisible => VideoInfo != null;
+        public bool IsVideoInfoAvailable => VideoInfo != null;
 
-        public double DownloadProgress
+        public double Progress
         {
-            get { return _downloadProgress; }
-            set { Set(ref _downloadProgress, value); }
+            get { return _progress; }
+            private set { Set(ref _progress, value); }
         }
 
-        public bool IsDownloading
+        public bool IsProgressIndeterminate
         {
-            get { return _isDownloading; }
-            set
-            {
-                Set(ref _isDownloading, value);
-                DownloadVideoCommand.RaiseCanExecuteChanged();
-            }
+            get { return _isProgressIndeterminate; }
+            private set { Set(ref _isProgressIndeterminate, value); }
         }
 
         // Commands
-        public RelayCommand GetDataCommand { get; }
+        public RelayCommand GetVideoInfoCommand { get; }
         public RelayCommand<VideoStreamInfo> OpenVideoCommand { get; }
         public RelayCommand<VideoStreamInfo> DownloadVideoCommand { get; }
 
@@ -71,16 +79,19 @@ namespace YoutubeExplodeDemo.ViewModels
             _client = new YoutubeClient();
 
             // Commands
-            GetDataCommand = new RelayCommand(GetDataAsync);
+            GetVideoInfoCommand = new RelayCommand(GetVideoInfoAsync, () => !IsBusy);
             OpenVideoCommand = new RelayCommand<VideoStreamInfo>(vse => Process.Start(vse.Url));
-            DownloadVideoCommand = new RelayCommand<VideoStreamInfo>(DownloadVideoAsync, vse => !IsDownloading);
+            DownloadVideoCommand = new RelayCommand<VideoStreamInfo>(DownloadVideoAsync, vse => !IsBusy);
         }
 
-        private async void GetDataAsync()
+        private async void GetVideoInfoAsync()
         {
             // Check params
             if (VideoId.IsBlank())
                 return;
+
+            IsBusy = true;
+            IsProgressIndeterminate = true;
 
             // Reset data
             VideoInfo = null;
@@ -99,6 +110,9 @@ namespace YoutubeExplodeDemo.ViewModels
             {
                 Dialogs.Error(ex.Message);
             }
+
+            IsProgressIndeterminate = false;
+            IsBusy = false;
         }
 
         private async void DownloadVideoAsync(VideoStreamInfo videoStreamInfo)
@@ -123,8 +137,8 @@ namespace YoutubeExplodeDemo.ViewModels
             string filePath = sfd.FileName;
 
             // Try download
-            IsDownloading = true;
-            DownloadProgress = 0;
+            IsBusy = true;
+            Progress = 0;
             try
             {
                 using (var output = File.Create(filePath))
@@ -139,7 +153,7 @@ namespace YoutubeExplodeDemo.ViewModels
                         await output.WriteAsync(buffer, 0, bytesRead);
 
                         if (videoStreamInfo.FileSize > 0)
-                            DownloadProgress += 1.0*bytesRead/videoStreamInfo.FileSize;
+                            Progress += 1.0*bytesRead/videoStreamInfo.FileSize;
                     } while (bytesRead > 0);
                 }
 
@@ -152,7 +166,8 @@ namespace YoutubeExplodeDemo.ViewModels
             {
                 Dialogs.Error(ex.Message);
             }
-            IsDownloading = false;
+            Progress = 0;
+            IsBusy = false;
         }
     }
 }

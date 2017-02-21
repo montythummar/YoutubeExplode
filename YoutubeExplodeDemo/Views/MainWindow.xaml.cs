@@ -24,7 +24,7 @@ namespace YoutubeExplodeDemo.Views
         private void tbVideoId_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
-            ((MainViewModel) DataContext).GetDataCommand.Execute(null);
+            ((MainViewModel) DataContext).GetVideoInfoCommand.Execute(null);
         }
 
         private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
