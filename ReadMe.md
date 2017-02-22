@@ -58,8 +58,9 @@ Console.WriteLine($"Length: {videoInfo.Length}");
 
 // Download the first video stream to file
 var streamInfo = videoInfo.Streams.First();
-client.DownloadVideo(streamInfo, videoInfo.Id + "." + streamInfo.FileExtension);
-// await client.DownloadVideoAsync(streamInfo, videoInfo.Id + "." + streamInfo.FileExtension);
+string fileName = $"{videoInfo.Id}_{streamInfo.Quality}.{streamInfo.FileExtension}";
+client.DownloadVideo(streamInfo, fileName);
+// await client.DownloadVideoAsync(streamInfo, fileName);
 
 ```
 
