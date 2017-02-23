@@ -96,7 +96,13 @@
             </Style>
 
             <Style TargetType="{x:Type Hyperlink}">
-                <Setter Property="Foreground" Value="{DynamicResource SecondaryAccentBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource SecondaryAccentBrush}" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <Style BasedOn="{StaticResource MaterialDesignTextBox}" TargetType="{x:Type TextBox}">
@@ -125,17 +131,6 @@
 
             <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            </Style>
-
-            <Style x:Key="FlatButtonStyle"
-                   BasedOn="{StaticResource {x:Type Button}}"
-                   TargetType="{x:Type Button}">
-                <Setter Property="Padding" Value="4" />
-                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderBrush" Value="Transparent" />
-                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0" />
-                <Setter Property="BorderThickness" Value="0" />
             </Style>
 
             <viewModels:FileSizeConverter x:Key="FileSizeConverter" />
