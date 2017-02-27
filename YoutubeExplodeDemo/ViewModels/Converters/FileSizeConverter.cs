@@ -10,7 +10,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace YoutubeExplodeDemo.ViewModels
+namespace YoutubeExplodeDemo.ViewModels.Converters
 {
     [ValueConversion(typeof(ulong), typeof(string))]
     public class FileSizeConverter : IValueConverter

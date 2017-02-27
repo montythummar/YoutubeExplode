@@ -6,7 +6,6 @@
 //  Date: 08/08/2016
 // ------------------------------------------------------------------ 
 
-using System;
 using System.Diagnostics;
 using System.IO;
 using GalaSoft.MvvmLight;
@@ -15,10 +14,11 @@ using Microsoft.Win32;
 using Tyrrrz.Extensions;
 using YoutubeExplode;
 using YoutubeExplode.Models;
+using YoutubeExplodeDemo.ViewModels.Interfaces;
 
 namespace YoutubeExplodeDemo.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase, IMainViewModel
     {
         private readonly YoutubeClient _client;
 
@@ -102,14 +102,7 @@ namespace YoutubeExplodeDemo.ViewModels
                 id = VideoId;
 
             // Perform the request
-            try
-            {
-                VideoInfo = await _client.GetVideoInfoAsync(id);
-            }
-            catch (Exception ex)
-            {
-                Dialogs.Error(ex.Message);
-            }
+            VideoInfo = await _client.GetVideoInfoAsync(id);
 
             IsProgressIndeterminate = false;
             IsBusy = false;
@@ -139,33 +132,22 @@ namespace YoutubeExplodeDemo.ViewModels
             // Try download
             IsBusy = true;
             Progress = 0;
-            try
+            using (var output = File.Create(filePath))
+            using (var input = await _client.DownloadVideoAsync(videoStreamInfo))
             {
-                using (var output = File.Create(filePath))
-                using (var input = await _client.DownloadVideoAsync(videoStreamInfo))
+                // Read the response and copy it to output stream
+                var buffer = new byte[1024];
+                int bytesRead;
+                do
                 {
-                    // Read the response and copy it to output stream
-                    var buffer = new byte[1024];
-                    int bytesRead;
-                    do
-                    {
-                        bytesRead = await input.ReadAsync(buffer, 0, buffer.Length);
-                        await output.WriteAsync(buffer, 0, bytesRead);
+                    bytesRead = await input.ReadAsync(buffer, 0, buffer.Length);
+                    await output.WriteAsync(buffer, 0, bytesRead);
 
-                        if (videoStreamInfo.FileSize > 0)
-                            Progress += 1.0*bytesRead/videoStreamInfo.FileSize;
-                    } while (bytesRead > 0);
-                }
+                    if (videoStreamInfo.FileSize > 0)
+                        Progress += 1.0*bytesRead/videoStreamInfo.FileSize;
+                } while (bytesRead > 0);
+            }
 
-                // Prompt to open
-                if (Dialogs.PromptYesNo(
-                    $"Video ({title}) has been downloaded!{Environment.NewLine}Do you want to open it?"))
-                    Process.Start(filePath);
-            }
-            catch (Exception ex)
-            {
-                Dialogs.Error(ex.Message);
-            }
             Progress = 0;
             IsBusy = false;
         }

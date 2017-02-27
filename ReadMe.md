@@ -22,6 +22,7 @@ If you want to download the demo application - navigate to the [releases](https:
 - Methods to extract video ID from URL and to validate video ID
 - Dependency injection for HTTP handler
 - Fallbacks for legacy videos
+- XML documentation
 
 **Parsed meta data:**
 
