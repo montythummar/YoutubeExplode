@@ -11,7 +11,19 @@ The library is distributed as a [nuget package](https://www.nuget.org/packages/Y
 
 If you want to download the demo application - navigate to the [releases](https://github.com/Tyrrrz/YoutubeExplode/releases)
 
-**Parsed data:**
+**Features:**
+
+- Get video meta and video streams meta
+- Strongly-typed enums for all applicable properties, along with raw strings
+- Automatically or on-demand decipher signatures for video streams
+- Automatically or on-demand get video file sizes
+- Download video to stream or to file
+- Support for both synchronous and asynchronous API wherever possible
+- Methods to extract video ID from URL and to validate video ID
+- Dependency injection for HTTP handler
+- Fallbacks for legacy videos
+
+**Parsed meta data:**
 
  - Video id, title and author
  - Search keywords
@@ -23,7 +35,7 @@ If you want to download the demo application - navigate to the [releases](https:
  - Whether this video is listed, is muted, allows ratings, allows embedding and has closed captions
  - Video streams
 
-The video stream objects include the following data:
+The video stream objects include the following meta data:
 
  - URL
  - Type
@@ -40,8 +52,6 @@ using System;
 using System.Linq;
 //using System.Threading.Tasks;
 using YoutubeExplode;
-
-...
 
 // Get client instance
 var client = new YoutubeClient();
