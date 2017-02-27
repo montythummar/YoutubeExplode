@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <SwapScramblingOperation.cs>
-//  Created By: Alexey Golub
-//  Date: 19/02/2017
-// ------------------------------------------------------------------ 
-
-using System.Text;
+﻿using System.Text;
 
 namespace YoutubeExplode.Models
 {

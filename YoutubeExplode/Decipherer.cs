@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <Decipherer.cs>
-//  Created By: Alexey Golub
-//  Date: 18/11/2016
-// ------------------------------------------------------------------ 
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;

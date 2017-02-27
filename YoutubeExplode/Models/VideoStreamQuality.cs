@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <VideoStreamQuality.cs>
-//  Created By: Alexey Golub
-//  Date: 10/08/2016
-// ------------------------------------------------------------------ 
-
-namespace YoutubeExplode.Models
+﻿namespace YoutubeExplode.Models
 {
     /// <summary>
     /// QualityString of a video stream

@@ -1,24 +1,15 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplodeDemo>
-//  File: <MainWindow.xaml.cs>
-//  Created By: Alexey Golub
-//  Date: 08/08/2016
-// ------------------------------------------------------------------ 
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Navigation;
-using YoutubeExplodeDemo.ViewModels;
+using YoutubeExplode.DemoWpf.ViewModels;
 
-namespace YoutubeExplodeDemo.Views
+namespace YoutubeExplode.DemoWpf.Views
 {
     public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
-            Closing += (s, e) => Locator.Cleanup();
         }
 
         private void tbVideoId_KeyDown(object sender, KeyEventArgs e)

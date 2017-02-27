@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <DefaultRequestHandler.cs>
-//  Created By: Alexey Golub
-//  Date: 26/12/2016
-// ------------------------------------------------------------------ 
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;

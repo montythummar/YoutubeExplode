@@ -1,22 +1,13 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplodeDemo>
-//  File: <MainViewModel.cs>
-//  Created By: Alexey Golub
-//  Date: 08/08/2016
-// ------------------------------------------------------------------ 
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Win32;
 using Tyrrrz.Extensions;
-using YoutubeExplode;
+using YoutubeExplode.DemoWpf.ViewModels.Interfaces;
 using YoutubeExplode.Models;
-using YoutubeExplodeDemo.ViewModels.Interfaces;
 
-namespace YoutubeExplodeDemo.ViewModels
+namespace YoutubeExplode.DemoWpf.ViewModels
 {
     public class MainViewModel : ViewModelBase, IMainViewModel
     {

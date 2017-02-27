@@ -1,16 +1,8 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplodeDemo>
-//  File: <FileSizeConverter.cs>
-//  Created By: Alexey Golub
-//  Date: 23/01/2017
-// ------------------------------------------------------------------ 
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace YoutubeExplodeDemo.ViewModels.Converters
+namespace YoutubeExplode.DemoWpf.ViewModels.Converters
 {
     [ValueConversion(typeof(ulong), typeof(string))]
     public class FileSizeConverter : IValueConverter

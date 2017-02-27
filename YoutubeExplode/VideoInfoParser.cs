@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <VideoInfoParser.cs>
-//  Created By: Alexey Golub
-//  Date: 08/08/2016
-// ------------------------------------------------------------------ 
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

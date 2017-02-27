@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <VideoStreamInfo.cs>
-//  Created By: Alexey Golub
-//  Date: 08/08/2016
-// ------------------------------------------------------------------ 
-
-namespace YoutubeExplode.Models
+﻿namespace YoutubeExplode.Models
 {
     /// <summary>
     /// Stream endpoint for a Youtube video

@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <YoutubeClient.cs>
-//  Created By: Alexey Golub
-//  Date: 08/08/2016
-// ------------------------------------------------------------------ 
-
-using System;
+﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;

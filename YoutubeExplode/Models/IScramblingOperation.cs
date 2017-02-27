@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <IScramblingOperation.cs>
-//  Created By: Alexey Golub
-//  Date: 19/02/2017
-// ------------------------------------------------------------------ 
-
-namespace YoutubeExplode.Models
+﻿namespace YoutubeExplode.Models
 {
     internal interface IScramblingOperation
     {

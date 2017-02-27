@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <VideoStreamType.cs>
-//  Created By: Alexey Golub
-//  Date: 10/08/2016
-// ------------------------------------------------------------------ 
-
-// ReSharper disable InconsistentNaming (File extensions)
+﻿// ReSharper disable InconsistentNaming (File extensions)
 
 namespace YoutubeExplode.Models
 {

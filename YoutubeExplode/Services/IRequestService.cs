@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <IRequestHandler.cs>
-//  Created By: Alexey Golub
-//  Date: 26/12/2016
-// ------------------------------------------------------------------ 
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 

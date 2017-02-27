@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------ 
-//  Solution: <YoutubeExplode>
-//  Project: <YoutubeExplode>
-//  File: <YoutubeErrorException.cs>
-//  Created By: Alexey Golub
-//  Date: 10/08/2016
-// ------------------------------------------------------------------ 
-
-using System;
+﻿using System;
 
 namespace YoutubeExplode.Exceptions
 {
