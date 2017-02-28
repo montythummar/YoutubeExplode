@@ -233,7 +233,7 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not have information about the player version");
 
             // Get the javascript source URL
-            string response = RequestService.GetString($"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
+            string response = RequestService.GetString($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
             if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
@@ -254,7 +254,7 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not have information about the player version");
 
             // Get the javascript source URL
-            string response = await RequestService.GetStringAsync($"https://s.ytimg.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
+            string response = await RequestService.GetStringAsync($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
             if (response.IsBlank())
                 throw new Exception("Could not get the video player source code");
 
