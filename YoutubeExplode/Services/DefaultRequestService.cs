@@ -12,11 +12,6 @@ namespace YoutubeExplode.Services
     /// </summary>
     public partial class DefaultRequestService : IRequestService
     {
-        /// <summary>
-        /// Default instance
-        /// </summary>
-        public static DefaultRequestService Instance { get; } = new DefaultRequestService();
-
         /// <inheritdoc />
         public virtual string GetString(string url)
         {
@@ -31,6 +26,29 @@ namespace YoutubeExplode.Services
                 using (var response = request.GetResponse())
                 {
                     var data = GetArray(response.GetResponseStream());
+                    return Encoding.UTF8.GetString(data);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<string> GetStringAsync(string url)
+        {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
+            try
+            {
+                var request = WebRequest.CreateHttp(url);
+                request.Method = "GET";
+
+                using (var response = await request.GetResponseAsync())
+                {
+                    var data = await GetArrayAsync(response.GetResponseStream());
                     return Encoding.UTF8.GetString(data);
                 }
             }
@@ -63,48 +81,6 @@ namespace YoutubeExplode.Services
         }
 
         /// <inheritdoc />
-        public virtual Stream DownloadFile(string url)
-        {
-            if (url.IsBlank())
-                throw new ArgumentNullException(nameof(url));
-
-            try
-            {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
-
-                return request.GetResponse().GetResponseStream();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<string> GetStringAsync(string url)
-        {
-            if (url.IsBlank())
-                throw new ArgumentNullException(nameof(url));
-
-            try
-            {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
-
-                using (var response = await request.GetResponseAsync())
-                {
-                    var data = await GetArrayAsync(response.GetResponseStream());
-                    return Encoding.UTF8.GetString(data);
-                }
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        /// <inheritdoc />
         public virtual async Task<IDictionary<string, string>> GetHeadersAsync(string url)
         {
             if (url.IsBlank())
@@ -119,6 +95,25 @@ namespace YoutubeExplode.Services
                 {
                     return WebHeadersToDictionary(response.Headers);
                 }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual Stream DownloadFile(string url)
+        {
+            if (url.IsBlank())
+                throw new ArgumentNullException(nameof(url));
+
+            try
+            {
+                var request = WebRequest.CreateHttp(url);
+                request.Method = "GET";
+
+                return request.GetResponse().GetResponseStream();
             }
             catch
             {
@@ -148,6 +143,11 @@ namespace YoutubeExplode.Services
 
     public partial class DefaultRequestService
     {
+        /// <summary>
+        /// Default instance
+        /// </summary>
+        public static DefaultRequestService Instance { get; } = new DefaultRequestService();
+
         /// <summary>
         /// Reads stream into an array
         /// </summary>

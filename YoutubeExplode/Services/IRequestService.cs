@@ -16,18 +16,6 @@ namespace YoutubeExplode.Services
         string GetString(string url);
 
         /// <summary>
-        /// Performs a HEAD request and returns header dictionary
-        /// </summary>
-        /// <returns>Header dictionary or null if the operation failed</returns>
-        IDictionary<string, string> GetHeaders(string url);
-
-        /// <summary>
-        /// Performs a GET request and returns the binary content of the response as a stream
-        /// </summary>
-        /// <returns>Response stream or null if the operation failed</returns>
-        Stream DownloadFile(string url);
-
-        /// <summary>
         /// Performs a GET request and returns the response content as a string
         /// </summary>
         /// <returns>Respose content as a string or null if the operation failed</returns>
@@ -37,7 +25,19 @@ namespace YoutubeExplode.Services
         /// Performs a HEAD request and returns header dictionary
         /// </summary>
         /// <returns>Header dictionary or null if the operation failed</returns>
+        IDictionary<string, string> GetHeaders(string url);
+
+        /// <summary>
+        /// Performs a HEAD request and returns header dictionary
+        /// </summary>
+        /// <returns>Header dictionary or null if the operation failed</returns>
         Task<IDictionary<string, string>> GetHeadersAsync(string url);
+
+        /// <summary>
+        /// Performs a GET request and returns the binary content of the response as a stream
+        /// </summary>
+        /// <returns>Response stream or null if the operation failed</returns>
+        Stream DownloadFile(string url);
 
         /// <summary>
         /// Performs a GET request and returns the binary content of the response as a stream
