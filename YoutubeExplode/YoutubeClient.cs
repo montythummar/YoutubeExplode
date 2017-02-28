@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,10 +13,7 @@ namespace YoutubeExplode
     /// </summary>
     public partial class YoutubeClient
     {
-        /// <summary>
-        /// Default instance of YoutubeClient
-        /// </summary>
-        public static YoutubeClient Instance { get; } = new YoutubeClient();
+        private readonly Dictionary<string, Decipherer> _deciphererCache = new Dictionary<string, Decipherer>();
 
         /// <summary>
         /// HTTP request handler
@@ -232,13 +230,26 @@ namespace YoutubeExplode
             if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
 
-            // Get the javascript source URL
-            string response = RequestService.GetString($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
-            if (response.IsBlank())
-                throw new Exception("Could not get the video player source code");
+            // Try get cached
+            var decipherer = _deciphererCache.GetOrDefault(videoInfo.PlayerVersion);
+
+            // If not available - get fresh
+            if (decipherer == null)
+            {
+                // Get the javascript source URL
+                string response = RequestService.GetString($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
+                if (response.IsBlank())
+                    throw new Exception("Could not get the video player source code");
+
+                // Compile decipherer
+                decipherer = Decipherer.FromPlayerSource(response);
+
+                // Cache
+                _deciphererCache.Add(videoInfo.PlayerVersion, decipherer);
+            }
 
             // Decipher
-            Decipherer.FromPlayerSource(response).UnscrambleSignatures(videoInfo);
+            decipherer.UnscrambleSignatures(videoInfo);
         }
 
         /// <summary>
@@ -253,13 +264,26 @@ namespace YoutubeExplode
             if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
 
-            // Get the javascript source URL
-            string response = await RequestService.GetStringAsync($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
-            if (response.IsBlank())
-                throw new Exception("Could not get the video player source code");
+            // Try get cached
+            var decipherer = _deciphererCache.GetOrDefault(videoInfo.PlayerVersion);
+
+            // If not available - get fresh
+            if (decipherer == null)
+            {
+                // Get the javascript source URL
+                string response = await RequestService.GetStringAsync($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
+                if (response.IsBlank())
+                    throw new Exception("Could not get the video player source code");
+
+                // Compile decipherer
+                decipherer = Decipherer.FromPlayerSource(response);
+
+                // Cache
+                _deciphererCache.Add(videoInfo.PlayerVersion, decipherer);
+            }
 
             // Decipher
-            Decipherer.FromPlayerSource(response).UnscrambleSignatures(videoInfo);
+            decipherer.UnscrambleSignatures(videoInfo);
         }
 
         /// <summary>
@@ -411,6 +435,11 @@ namespace YoutubeExplode
 
     public partial class YoutubeClient
     {
+        /// <summary>
+        /// Default instance of YoutubeClient
+        /// </summary>
+        public static YoutubeClient Instance { get; } = new YoutubeClient();
+
         /// <summary>
         /// Verifies that the given string is a valid youtube video ID
         /// </summary>
