@@ -76,17 +76,13 @@ client.DownloadVideo(streamInfo, fileName);
 
 ```
 
-**Library dependencies:**
+**Libraries used:**
+
 - [SimpleJson](https://github.com/facebook-csharp-sdk/simple-json) - lightweight JSON parser
-
-
-**Demo dependencies:**
-
- - [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) - this library
- - [GalaSoft.MVVMLight](http://www.mvvmlight.net) - MVVM rapid development
- - [MaterialDesignXAML](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) - MaterialDesign UI
- - [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions) - my set of various extensions for rapid development
- - [Tyrrrz.WpfExtensions](https://github.com/Tyrrrz/WpfExtensions) - my set of various WPF extensions for rapid development
+- [GalaSoft.MVVMLight](http://www.mvvmlight.net) - MVVM rapid development
+- [MaterialDesignXAML](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) - MaterialDesign UI
+- [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions) - my set of various extensions for rapid development
+- [Tyrrrz.WpfExtensions](https://github.com/Tyrrrz/WpfExtensions) - my set of various WPF extensions for rapid development
  
 **Screenshots:**
 
