@@ -44,7 +44,7 @@
     <Compile Include="Internal\SwapScramblingOperation.cs" />
     <Compile Include="Services\DefaultRequestService.cs" />
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
-    <Compile Include="Internal\Ext.cs" />
+    <Compile Include="Internal\Extensions.cs" />
     <Compile Include="Models\VideoInfo.cs" />
     <Compile Include="Models\VideoStreamInfo.cs" />
     <Compile Include="Models\VideoStreamQuality.cs" />

@@ -295,7 +295,7 @@ namespace YoutubeExplode
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
             if (streamInfo.Url.IsBlank())
-                throw new Exception("Given stream does not have an URL");
+                throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
@@ -317,7 +317,7 @@ namespace YoutubeExplode
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
             if (streamInfo.Url.IsBlank())
-                throw new Exception("Given stream does not have an URL");
+                throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
@@ -369,7 +369,7 @@ namespace YoutubeExplode
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
             if (streamInfo.Url.IsBlank())
-                throw new Exception("Given stream does not have an URL");
+                throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
@@ -387,7 +387,7 @@ namespace YoutubeExplode
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
             if (streamInfo.Url.IsBlank())
-                throw new Exception("Given stream does not have an URL");
+                throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
@@ -407,7 +407,7 @@ namespace YoutubeExplode
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
             if (streamInfo.Url.IsBlank())
-                throw new Exception("Given stream does not have an URL");
+                throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
@@ -428,7 +428,7 @@ namespace YoutubeExplode
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
             if (streamInfo.Url.IsBlank())
-                throw new Exception("Given stream does not have an URL");
+                throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 

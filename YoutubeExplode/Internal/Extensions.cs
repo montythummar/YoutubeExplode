@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace YoutubeExplode.Internal
 {
-    internal static class Ext
+    internal static class Extensions
     {
         public delegate T ParseDelegate<out T>(string str);
 
@@ -54,18 +54,18 @@ namespace YoutubeExplode.Internal
 
         public static string SetQueryStringParameter(this string queryString, string key, string value)
         {
-            var existingMatch = Regex.Match(queryString, $@"{key}=(.+?)(?:&|\b)");
+            // Parameter already present
+            var existingMatch = Regex.Match(queryString, $@"[?&]{key}=(.+?)(?:&|$)");
             if (existingMatch.Success)
             {
                 string existingValue = existingMatch.Groups[1].Value;
                 return queryString.Replace(existingValue, value);
             }
-            else
-            {
-                bool hasOtherParams = queryString.IndexOf('?') >= 0;
-                string separator = hasOtherParams ? "&" : "?";
-                return queryString + separator + key + "=" + value;
-            }
+
+            // Not yet present
+            bool hasOtherParams = queryString.IndexOf('?') >= 0;
+            string separator = hasOtherParams ? "&" : "?";
+            return queryString + separator + key + "=" + value;
         }
 
         public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key,
