@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -53,7 +54,7 @@ namespace YoutubeExplode.Tests.Mocks
                 return ReadResourceAsString("YoutubeExplode.Tests.Mocks.FakePlayerSourceCodeResponse.txt");
             }
 
-            return null;
+            throw new Exception("Unexpected request url");
         }
 
         public IDictionary<string, string> GetHeaders(string url)

@@ -219,7 +219,7 @@ namespace YoutubeExplode
                 decipherer = Decipherer.FromPlayerSource(response);
 
                 // Cache
-                _deciphererCache.Add(videoInfo.PlayerVersion, decipherer);
+                _deciphererCache[videoInfo.PlayerVersion] = decipherer;
             }
 
             // Decipher
@@ -251,7 +251,7 @@ namespace YoutubeExplode
                 decipherer = Decipherer.FromPlayerSource(response);
 
                 // Cache
-                _deciphererCache.Add(videoInfo.PlayerVersion, decipherer);
+                _deciphererCache[videoInfo.PlayerVersion] = decipherer;
             }
 
             // Decipher
@@ -262,39 +262,47 @@ namespace YoutubeExplode
         /// Gets and populates the total file size of the video, streamed on the given endpoint
         /// <returns>The file size of the video (in bytes)</returns>
         /// </summary>
-        public ulong GetFileSize(VideoStreamInfo stream)
+        public ulong GetFileSize(VideoStreamInfo streamInfo)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (stream.Url.IsBlank())
+            if (streamInfo == null)
+                throw new ArgumentNullException(nameof(streamInfo));
+            if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
-            if (stream.NeedsDeciphering)
+            if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the headers
-            var headers = RequestService.GetHeaders(stream.Url);
+            var headers = RequestService.GetHeaders(streamInfo.Url);
             if (headers == null)
                 throw new Exception("Could not obtain headers (HEAD request failed)");
 
-            return stream.FileSize = headers.GetOrDefault("Content-Length").ParseUlongOrDefault();
+            // Get file size header
+            if (!headers.ContainsKey("Content-Length"))
+                throw new Exception("Content-Length header not found");
+
+            return streamInfo.FileSize = headers["Content-Length"].ParseUlongOrDefault();
         }
 
         /// <inheritdoc cref="GetFileSize"/>
-        public async Task<ulong> GetFileSizeAsync(VideoStreamInfo stream)
+        public async Task<ulong> GetFileSizeAsync(VideoStreamInfo streamInfo)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (stream.Url.IsBlank())
+            if (streamInfo == null)
+                throw new ArgumentNullException(nameof(streamInfo));
+            if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
-            if (stream.NeedsDeciphering)
+            if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the headers
-            var headers = await RequestService.GetHeadersAsync(stream.Url);
+            var headers = await RequestService.GetHeadersAsync(streamInfo.Url);
             if (headers == null)
                 throw new Exception("Could not obtain headers (HEAD request failed)");
 
-            return stream.FileSize = headers.GetOrDefault("Content-Length").ParseUlongOrDefault();
+            // Get file size header
+            if (!headers.ContainsKey("Content-Length"))
+                throw new Exception("Content-Length header not found");
+
+            return streamInfo.FileSize = headers["Content-Length"].ParseUlongOrDefault();
         }
 
         /// <summary>
@@ -307,6 +315,7 @@ namespace YoutubeExplode
             if (videoInfo.Streams == null)
                 throw new Exception("There are no streams in the given video info");
 
+            // Get file sizes for all streams
             foreach (var stream in videoInfo.Streams)
                 GetFileSize(stream);
         }
@@ -319,6 +328,7 @@ namespace YoutubeExplode
             if (videoInfo.Streams == null)
                 throw new Exception("There are no streams in the given video info");
 
+            // Get file sizes for all streams
             foreach (var stream in videoInfo.Streams)
                 await GetFileSizeAsync(stream);
         }
@@ -326,47 +336,57 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads the given video stream
         /// </summary>
-        public Stream DownloadVideo(VideoStreamInfo stream)
+        public Stream DownloadVideo(VideoStreamInfo streamInfo)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (stream.Url.IsBlank())
+            if (streamInfo == null)
+                throw new ArgumentNullException(nameof(streamInfo));
+            if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
-            if (stream.NeedsDeciphering)
+            if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            return RequestService.DownloadFile(stream.Url);
+            // Get stream
+            var stream = RequestService.DownloadFile(streamInfo.Url);
+            if (stream == null)
+                throw new Exception("Could not get response stream");
+
+            return stream;
         }
 
         /// <inheritdoc cref="DownloadVideo(VideoStreamInfo)"/>
-        public async Task<Stream> DownloadVideoAsync(VideoStreamInfo stream)
+        public async Task<Stream> DownloadVideoAsync(VideoStreamInfo streamInfo)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (stream.Url.IsBlank())
+            if (streamInfo == null)
+                throw new ArgumentNullException(nameof(streamInfo));
+            if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
-            if (stream.NeedsDeciphering)
+            if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
-            return await RequestService.DownloadFileAsync(stream.Url);
+            // Get stream
+            var stream = await RequestService.DownloadFileAsync(streamInfo.Url);
+            if (stream == null)
+                throw new Exception("Could not get response stream");
+
+            return stream;
         }
 
         /// <summary>
         /// Downloads the given video stream and saves it to a file
         /// </summary>
-        public void DownloadVideo(VideoStreamInfo stream, string filePath)
+        public void DownloadVideo(VideoStreamInfo streamInfo, string filePath)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (stream.Url.IsBlank())
+            if (streamInfo == null)
+                throw new ArgumentNullException(nameof(streamInfo));
+            if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
-            if (stream.NeedsDeciphering)
+            if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the stream
-            var input = RequestService.DownloadFile(stream.Url);
+            var input = RequestService.DownloadFile(streamInfo.Url);
             if (input == null)
-                throw new Exception("Could not download the given video stream");
+                throw new Exception("Could not get response stream");
 
             // Write to file
             using (input)
@@ -375,19 +395,19 @@ namespace YoutubeExplode
         }
 
         /// <inheritdoc cref="DownloadVideo(VideoStreamInfo,string)"/>
-        public async Task DownloadVideoAsync(VideoStreamInfo stream, string filePath)
+        public async Task DownloadVideoAsync(VideoStreamInfo streamInfo, string filePath)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (stream.Url.IsBlank())
+            if (streamInfo == null)
+                throw new ArgumentNullException(nameof(streamInfo));
+            if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have an URL");
-            if (stream.NeedsDeciphering)
+            if (streamInfo.NeedsDeciphering)
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the stream
-            var input = await RequestService.DownloadFileAsync(stream.Url);
+            var input = await RequestService.DownloadFileAsync(streamInfo.Url);
             if (input == null)
-                throw new Exception("Could not download the given video stream");
+                throw new Exception("Could not get response stream");
 
             // Write to file
             using (input)
