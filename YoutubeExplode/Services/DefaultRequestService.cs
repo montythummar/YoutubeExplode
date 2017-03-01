@@ -15,7 +15,7 @@ namespace YoutubeExplode.Services
         /// <summary>
         /// Creates <see cref="WebRequest"/> for use by the other methods
         /// </summary>
-        protected virtual HttpWebRequest CreateWebRequest(string url, string method)
+        protected virtual WebRequest CreateWebRequest(string url, string method)
         {
             var request = WebRequest.CreateHttp(url);
             request.Method = method;

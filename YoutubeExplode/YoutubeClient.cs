@@ -57,10 +57,7 @@ namespace YoutubeExplode
             return jsonMatch.Success ? VideoInfoParser.ParseVideoInfoJson(jsonMatch.Groups[1].Value) : null;
         }
 
-        /// <summary>
-        /// Tries to get video info from the watch page
-        /// </summary>
-        /// <returns>Result if successful, null if not</returns>
+        /// <inheritdoc cref="GetVideoInfoFromWatchPage"/>
         protected async Task<VideoInfo> GetVideoInfoFromWatchPageAsync(string videoId)
         {
             if (videoId.IsBlank())
@@ -98,10 +95,7 @@ namespace YoutubeExplode
             return VideoInfoParser.ParseVideoInfoUrlEncoded(response);
         }
 
-        /// <summary>
-        /// Tries to get video info from the internal api
-        /// </summary>
-        /// <returns>Result if successful, null if not</returns>
+        /// <inheritdoc cref="GetVideoInfoFromInternalApi"/>
         protected async Task<VideoInfo> GetVideoInfoFromInternalApiAsync(string videoId)
         {
             if (videoId.IsBlank())
@@ -168,27 +162,7 @@ namespace YoutubeExplode
             return result;
         }
 
-        /// <summary>
-        /// Get full information about a video by its ID
-        /// </summary>
-        /// 
-        /// <param name="videoId">The ID of the video</param>
-        /// 
-        /// <param name="decipherIfNeeded">
-        /// When set to true, videos with encrypted signatures will be automatically deciphered.
-        /// This requires one extra GET request and some computational time.
-        /// If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreams"/> method.
-        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamInfo"/> by URL
-        /// </param>
-        /// 
-        /// <param name="getFileSizes">
-        /// When set to true, it will also attempt to get file sizes of all obtained streams.
-        /// This requires one extra HEAD request per stream.
-        /// If set to false, you can use <see cref="GetFileSize"/> to get file size of individual streams or <see cref="GetAllFileSizes"/> for all of them.
-        /// This parameter requires <paramref name="decipherIfNeeded"/> to be set.
-        /// </param>
-        /// 
-        /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
+        /// <inheritdoc cref="GetVideoInfo"/>
         public async Task<VideoInfo> GetVideoInfoAsync(string videoId, bool decipherIfNeeded = true, bool getFileSizes = true)
         {
             if (videoId.IsBlank())
@@ -252,9 +226,7 @@ namespace YoutubeExplode
             decipherer.UnscrambleSignatures(videoInfo);
         }
 
-        /// <summary>
-        /// Deciphers the streams in the given <see cref="VideoInfo"/>
-        /// </summary>
+        /// <inheritdoc cref="DecipherStreams"/>
         public async Task DecipherStreamsAsync(VideoInfo videoInfo)
         {
             if (videoInfo == null)
@@ -307,10 +279,7 @@ namespace YoutubeExplode
             return stream.FileSize = headers.GetOrDefault("Content-Length").ParseUlongOrDefault();
         }
 
-        /// <summary>
-        /// Gets and populates the total file size of the video, streamed on the given endpoint
-        /// <returns>The file size of the video (in bytes)</returns>
-        /// </summary>
+        /// <inheritdoc cref="GetFileSize"/>
         public async Task<ulong> GetFileSizeAsync(VideoStreamInfo stream)
         {
             if (stream == null)
@@ -342,9 +311,7 @@ namespace YoutubeExplode
                 GetFileSize(stream);
         }
 
-        /// <summary>
-        /// Gets and populates the total file sizes of all videos, streamed on endpoints of current video object
-        /// </summary>
+        /// <inheritdoc cref="GetAllFileSizes"/>
         public async Task GetAllFileSizesAsync(VideoInfo videoInfo)
         {
             if (videoInfo == null)
@@ -371,9 +338,7 @@ namespace YoutubeExplode
             return RequestService.DownloadFile(stream.Url);
         }
 
-        /// <summary>
-        /// Downloads the given video stream
-        /// </summary>
+        /// <inheritdoc cref="DownloadVideo(VideoStreamInfo)"/>
         public async Task<Stream> DownloadVideoAsync(VideoStreamInfo stream)
         {
             if (stream == null)
@@ -409,9 +374,7 @@ namespace YoutubeExplode
                 input.CopyTo(output);
         }
 
-        /// <summary>
-        /// Downloads the given video stream and saves it to a file
-        /// </summary>
+        /// <inheritdoc cref="DownloadVideo(VideoStreamInfo,string)"/>
         public async Task DownloadVideoAsync(VideoStreamInfo stream, string filePath)
         {
             if (stream == null)
