@@ -406,6 +406,8 @@ namespace YoutubeExplode
         {
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
+            if (filePath.IsBlank())
+                throw new ArgumentNullException(nameof(filePath));
             if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
@@ -427,6 +429,8 @@ namespace YoutubeExplode
         {
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
+            if (filePath.IsBlank())
+                throw new ArgumentNullException(nameof(filePath));
             if (streamInfo.Url.IsBlank())
                 throw new Exception("Given stream does not have a URL");
             if (streamInfo.NeedsDeciphering)
