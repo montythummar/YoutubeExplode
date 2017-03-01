@@ -1,4 +1,4 @@
-﻿namespace YoutubeExplode.Models
+﻿namespace YoutubeExplode.Internal
 {
     internal class SliceScramblingOperation : IScramblingOperation
     {

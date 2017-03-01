@@ -1,46 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Models;
 
-namespace YoutubeExplode
+namespace YoutubeExplode.Internal
 {
-    internal static class VideoInfoParser
+    internal static class Parser
     {
-        private static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
-        {
-            if (rawUrlEncoded.IsBlank())
-                throw new ArgumentNullException(nameof(rawUrlEncoded));
-
-            var dic = new Dictionary<string, string>();
-            var keyValuePairsRaw = rawUrlEncoded.Split("&");
-            foreach (string keyValuePairRaw in keyValuePairsRaw)
-            {
-                string keyValuePairRawDecoded = WebUtility.UrlDecode(keyValuePairRaw);
-                if (keyValuePairRawDecoded.IsBlank())
-                    continue;
-
-                // Look for the equals sign
-                int equalsPos = keyValuePairRawDecoded.IndexOf('=');
-                if (equalsPos <= 0)
-                    continue;
-
-                // Get the key and value
-                string key = keyValuePairRawDecoded.Substring(0, equalsPos);
-                string value = equalsPos < keyValuePairRawDecoded.Length
-                    ? keyValuePairRawDecoded.Substring(equalsPos + 1)
-                    : "";
-
-                // Add to dictionary
-                dic[key] = value;
-            }
-
-            return dic;
-        }
-
         private static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosUrlEncoded(string rawUrlEncoded)
         {
             if (rawUrlEncoded.IsBlank())
@@ -76,6 +44,126 @@ namespace YoutubeExplode
             }
         }
 
+        private static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
+        {
+            if (rawUrlEncoded.IsBlank())
+                throw new ArgumentNullException(nameof(rawUrlEncoded));
+
+            var dic = new Dictionary<string, string>();
+            var keyValuePairsRaw = rawUrlEncoded.Split("&");
+            foreach (string keyValuePairRaw in keyValuePairsRaw)
+            {
+                string keyValuePairRawDecoded = keyValuePairRaw.UrlDecode();
+                if (keyValuePairRawDecoded.IsBlank())
+                    continue;
+
+                // Look for the equals sign
+                int equalsPos = keyValuePairRawDecoded.IndexOf('=');
+                if (equalsPos <= 0)
+                    continue;
+
+                // Get the key and value
+                string key = keyValuePairRawDecoded.Substring(0, equalsPos);
+                string value = equalsPos < keyValuePairRawDecoded.Length
+                    ? keyValuePairRawDecoded.Substring(equalsPos + 1)
+                    : "";
+
+                // Add to dictionary
+                dic[key] = value;
+            }
+
+            return dic;
+        }
+
+        private static string GetFunctionCallFromLineJs(string rawJs)
+        {
+            if (rawJs.IsBlank())
+                throw new ArgumentNullException(nameof(rawJs));
+
+            var match = Regex.Match(rawJs, @"\w+\.(\w+)\(");
+            return match.Groups[1].Value;
+        }
+
+        private static IEnumerable<IScramblingOperation> ParseScramblingOperationsJs(string rawJs)
+        {
+            if (rawJs.IsBlank())
+                throw new ArgumentNullException(nameof(rawJs));
+
+            // Get the name of the function that handles deciphering
+            var funcNameMatch = Regex.Match(rawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(");
+            if (!funcNameMatch.Success)
+                throw new Exception("Could not find the entry function for signature deciphering");
+            string funcName = funcNameMatch.Groups[1].Value;
+
+            // Escape dollar sign
+            funcName = funcName.Replace("$", "\\$");
+
+            // Get the body of the function
+            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}",
+                RegexOptions.Singleline);
+            if (!funcBodyMatch.Success)
+                throw new Exception("Could not get the signature decipherer function body");
+            string funcBody = funcBodyMatch.Value;
+            var funcLines = funcBody.Split(";");
+
+            // Identify scrambling functions
+            string reverseFuncName = null;
+            string sliceFuncName = null;
+            string charSwapFuncName = null;
+
+            // Analyze the function body to determine the names of scrambling functions
+            foreach (var line in funcLines)
+            {
+                // Break when all functions are found
+                if (reverseFuncName.IsNotBlank() && sliceFuncName.IsNotBlank() && charSwapFuncName.IsNotBlank())
+                    break;
+
+                // Get the function called on this line
+                string calledFunctionName = GetFunctionCallFromLineJs(line);
+
+                // Compose regexes to identify what function we're dealing with
+                // -- reverse (1 param)
+                var reverseFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\)");
+                // -- slice (return or not)
+                var sliceFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.");
+                // -- swap
+                var swapFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b");
+
+                // Determine the function type and assign the name
+                if (reverseFuncRegex.Match(rawJs).Success)
+                    reverseFuncName = calledFunctionName;
+                else if (sliceFuncRegex.Match(rawJs).Success)
+                    sliceFuncName = calledFunctionName;
+                else if (swapFuncRegex.Match(rawJs).Success)
+                    charSwapFuncName = calledFunctionName;
+            }
+
+            // Analyze the function body again to determine the operation set and order
+            foreach (var line in funcLines)
+            {
+                // Get the function called on this line
+                string calledFunctionName = GetFunctionCallFromLineJs(line);
+
+                // Swap operation
+                if (calledFunctionName.EqualsInvariant(charSwapFuncName))
+                {
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    yield return new SwapScramblingOperation(index);
+                }
+                // Slice operation
+                else if (calledFunctionName.EqualsInvariant(sliceFuncName))
+                {
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    yield return new SliceScramblingOperation(index);
+                }
+                // Reverse operation
+                else if (calledFunctionName.EqualsInvariant(reverseFuncName))
+                {
+                    yield return new ReverseScramblingOperation();
+                }
+            }
+        }
+
         public static VideoInfo ParseVideoInfoJson(string rawJson)
         {
             if (rawJson.IsBlank())
@@ -94,8 +182,7 @@ namespace YoutubeExplode
             string playerJsUrl = assets?.GetOrDefault("js", "");
             if (playerJsUrl.IsNotBlank())
             {
-                var match = Regex.Match(playerJsUrl, @"player-(.+?)/",
-                    RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                var match = Regex.Match(playerJsUrl, @"player-(.+?)/");
                 if (match.Success)
                     result.PlayerVersion = match.Groups[1].Value;
             }
@@ -190,6 +277,17 @@ namespace YoutubeExplode
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
             // Return
+            return result;
+        }
+
+        public static PlayerSource ParsePlayerSourceJs(string rawJs)
+        {
+            if (rawJs.IsBlank())
+                throw new ArgumentNullException(nameof(rawJs));
+
+            var result = new PlayerSource();
+            result.ScramblingOperations = ParseScramblingOperationsJs(rawJs).ToArray();
+
             return result;
         }
     }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using YoutubeExplode.Internal;
 
 namespace YoutubeExplode.Services
 {
@@ -12,6 +13,11 @@ namespace YoutubeExplode.Services
     /// </summary>
     public partial class DefaultRequestService : IRequestService
     {
+        /// <summary>
+        /// Whether to throw an exception when a request fails
+        /// </summary>
+        public bool ShouldThrowOnErrors { get; set; }
+
         /// <summary>
         /// Creates <see cref="WebRequest"/> for use by the other methods
         /// </summary>
@@ -40,6 +46,7 @@ namespace YoutubeExplode.Services
             }
             catch
             {
+                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
@@ -62,6 +69,7 @@ namespace YoutubeExplode.Services
             }
             catch
             {
+                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
@@ -83,6 +91,7 @@ namespace YoutubeExplode.Services
             }
             catch
             {
+                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
@@ -104,6 +113,7 @@ namespace YoutubeExplode.Services
             }
             catch
             {
+                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
@@ -122,6 +132,7 @@ namespace YoutubeExplode.Services
             }
             catch
             {
+                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
@@ -140,6 +151,7 @@ namespace YoutubeExplode.Services
             }
             catch
             {
+                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }

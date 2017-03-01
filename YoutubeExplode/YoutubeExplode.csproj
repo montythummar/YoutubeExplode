@@ -37,26 +37,23 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Decipherer.cs" />
-    <Compile Include="Models\IScramblingOperation.cs" />
-    <Compile Include="Models\ReverseScramblingOperation.cs" />
-    <Compile Include="Models\SliceScramblingOperation.cs" />
-    <Compile Include="Models\SwapScramblingOperation.cs" />
+    <Compile Include="Internal\PlayerSource.cs" />
+    <Compile Include="Internal\IScramblingOperation.cs" />
+    <Compile Include="Internal\ReverseScramblingOperation.cs" />
+    <Compile Include="Internal\SliceScramblingOperation.cs" />
+    <Compile Include="Internal\SwapScramblingOperation.cs" />
     <Compile Include="Services\DefaultRequestService.cs" />
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
-    <Compile Include="Ext.cs" />
+    <Compile Include="Internal\Ext.cs" />
     <Compile Include="Models\VideoInfo.cs" />
     <Compile Include="Models\VideoStreamInfo.cs" />
     <Compile Include="Models\VideoStreamQuality.cs" />
     <Compile Include="Models\VideoStreamType.cs" />
-    <Compile Include="VideoInfoParser.cs" />
+    <Compile Include="Internal\Parser.cs" />
     <Compile Include="Services\IRequestService.cs" />
-    <Compile Include="SimpleJson.cs" />
+    <Compile Include="Internal\SimpleJson.cs" />
     <Compile Include="YoutubeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

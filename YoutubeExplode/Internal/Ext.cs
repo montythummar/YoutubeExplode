@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 
-namespace YoutubeExplode
+namespace YoutubeExplode.Internal
 {
     internal static class Ext
     {
@@ -38,6 +40,32 @@ namespace YoutubeExplode
         public static Uri ToUri(this string uri, string baseUri)
         {
             return new Uri(ToUri(baseUri), uri);
+        }
+
+        public static string UrlEncode(this string url)
+        {
+            return WebUtility.UrlEncode(url);
+        }
+
+        public static string UrlDecode(this string url)
+        {
+            return WebUtility.UrlDecode(url);
+        }
+
+        public static string SetQueryStringParameter(this string queryString, string key, string value)
+        {
+            var existingMatch = Regex.Match(queryString, $@"{key}=(.+?)(?:&|\b)");
+            if (existingMatch.Success)
+            {
+                string existingValue = existingMatch.Groups[1].Value;
+                return queryString.Replace(existingValue, value);
+            }
+            else
+            {
+                bool hasOtherParams = queryString.IndexOf('?') >= 0;
+                string separator = hasOtherParams ? "&" : "?";
+                return queryString + separator + key + "=" + value;
+            }
         }
 
         public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key,

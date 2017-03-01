@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace YoutubeExplode.Models
+namespace YoutubeExplode.Internal
 {
     internal class SwapScramblingOperation : IScramblingOperation
     {

@@ -1,4 +1,6 @@
-﻿namespace YoutubeExplode.Models
+﻿using YoutubeExplode.Internal;
+
+namespace YoutubeExplode.Models
 {
     /// <summary>
     /// Stream endpoint for a Youtube video

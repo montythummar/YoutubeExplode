@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using YoutubeExplode.Internal;
 using YoutubeExplode.Models;
 using YoutubeExplode.Services;
 
@@ -13,7 +15,7 @@ namespace YoutubeExplode
     /// </summary>
     public partial class YoutubeClient
     {
-        private readonly Dictionary<string, Decipherer> _deciphererCache = new Dictionary<string, Decipherer>();
+        private readonly Dictionary<string, PlayerSource> _playerSourceCache = new Dictionary<string, PlayerSource>();
 
         /// <summary>
         /// HTTP request handler
@@ -54,7 +56,7 @@ namespace YoutubeExplode
 
             // Parse
             var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});", RegexOptions.Multiline);
-            return jsonMatch.Success ? VideoInfoParser.ParseVideoInfoJson(jsonMatch.Groups[1].Value) : null;
+            return jsonMatch.Success ? Parser.ParseVideoInfoJson(jsonMatch.Groups[1].Value) : null;
         }
 
         /// <inheritdoc cref="GetVideoInfoFromWatchPage"/>
@@ -72,7 +74,7 @@ namespace YoutubeExplode
 
             // Parse
             var jsonMatch = Regex.Match(response, @"ytplayer\.config\s*=\s*(\{.+?\});", RegexOptions.Multiline);
-            return jsonMatch.Success ? VideoInfoParser.ParseVideoInfoJson(jsonMatch.Groups[1].Value) : null;
+            return jsonMatch.Success ? Parser.ParseVideoInfoJson(jsonMatch.Groups[1].Value) : null;
         }
 
         /// <summary>
@@ -92,7 +94,7 @@ namespace YoutubeExplode
                 throw new Exception("Could not get URL-encoded video info (GET request failed)");
 
             // Parse
-            return VideoInfoParser.ParseVideoInfoUrlEncoded(response);
+            return Parser.ParseVideoInfoUrlEncoded(response);
         }
 
         /// <inheritdoc cref="GetVideoInfoFromInternalApi"/>
@@ -109,7 +111,7 @@ namespace YoutubeExplode
                 throw new Exception("Could not get URL-encoded video info (GET request failed)");
 
             // Parse
-            return VideoInfoParser.ParseVideoInfoUrlEncoded(response);
+            return Parser.ParseVideoInfoUrlEncoded(response);
         }
 
         /// <summary>
@@ -204,26 +206,39 @@ namespace YoutubeExplode
             if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
 
-            // Try get cached
-            var decipherer = _deciphererCache.GetOrDefault(videoInfo.PlayerVersion);
+            // Check if anything needs deciphering
+            if (videoInfo.Streams == null || !videoInfo.Streams.Any())
+            {
+                videoInfo.NeedsDeciphering = false;
+                return;
+            }
 
-            // If not available - get fresh
-            if (decipherer == null)
+            // Try get cached player source
+            var playerSource = _playerSourceCache.GetOrDefault(videoInfo.PlayerVersion);
+
+            // If not available - decompile a new one
+            if (playerSource == null)
             {
                 // Get the javascript source URL
                 string response = RequestService.GetString($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
                 if (response.IsBlank())
                     throw new Exception("Could not get the video player source code");
 
-                // Compile decipherer
-                decipherer = Decipherer.FromPlayerSource(response);
+                // Decompile
+                playerSource = Parser.ParsePlayerSourceJs(response);
 
                 // Cache
-                _deciphererCache[videoInfo.PlayerVersion] = decipherer;
+                _playerSourceCache[videoInfo.PlayerVersion] = playerSource;
             }
 
             // Decipher
-            decipherer.UnscrambleSignatures(videoInfo);
+            foreach (var streamInfo in videoInfo.Streams.Where(s => s.NeedsDeciphering))
+            {
+                string newSig = playerSource.Unscramble(streamInfo.Signature);
+                streamInfo.Url = streamInfo.Url.SetQueryStringParameter("signature", newSig);
+                streamInfo.NeedsDeciphering = false;
+            }
+            videoInfo.NeedsDeciphering = false;
         }
 
         /// <inheritdoc cref="DecipherStreams"/>
@@ -236,26 +251,39 @@ namespace YoutubeExplode
             if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
 
-            // Try get cached
-            var decipherer = _deciphererCache.GetOrDefault(videoInfo.PlayerVersion);
+            // Check if anything needs deciphering
+            if (videoInfo.Streams == null || !videoInfo.Streams.Any())
+            {
+                videoInfo.NeedsDeciphering = false;
+                return;
+            }
 
-            // If not available - get fresh
-            if (decipherer == null)
+            // Try get cached player source
+            var playerSource = _playerSourceCache.GetOrDefault(videoInfo.PlayerVersion);
+
+            // If not available - decompile a new one
+            if (playerSource == null)
             {
                 // Get the javascript source URL
                 string response = await RequestService.GetStringAsync($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
                 if (response.IsBlank())
                     throw new Exception("Could not get the video player source code");
 
-                // Compile decipherer
-                decipherer = Decipherer.FromPlayerSource(response);
+                // Decompile
+                playerSource = Parser.ParsePlayerSourceJs(response);
 
                 // Cache
-                _deciphererCache[videoInfo.PlayerVersion] = decipherer;
+                _playerSourceCache[videoInfo.PlayerVersion] = playerSource;
             }
 
             // Decipher
-            decipherer.UnscrambleSignatures(videoInfo);
+            foreach (var streamInfo in videoInfo.Streams.Where(s => s.NeedsDeciphering))
+            {
+                string newSig = playerSource.Unscramble(streamInfo.Signature);
+                streamInfo.Url = streamInfo.Url.SetQueryStringParameter("signature", newSig);
+                streamInfo.NeedsDeciphering = false;
+            }
+            videoInfo.NeedsDeciphering = false;
         }
 
         /// <summary>
@@ -316,8 +344,8 @@ namespace YoutubeExplode
                 throw new Exception("There are no streams in the given video info");
 
             // Get file sizes for all streams
-            foreach (var stream in videoInfo.Streams)
-                GetFileSize(stream);
+            foreach (var streamInfo in videoInfo.Streams)
+                GetFileSize(streamInfo);
         }
 
         /// <inheritdoc cref="GetAllFileSizes"/>
@@ -329,8 +357,8 @@ namespace YoutubeExplode
                 throw new Exception("There are no streams in the given video info");
 
             // Get file sizes for all streams
-            foreach (var stream in videoInfo.Streams)
-                await GetFileSizeAsync(stream);
+            foreach (var streamInfo in videoInfo.Streams)
+                await GetFileSizeAsync(streamInfo);
         }
 
         /// <summary>
@@ -432,7 +460,7 @@ namespace YoutubeExplode
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
 
-            return !Regex.IsMatch(videoId, @"[^0-9a-zA-Z_\-]", RegexOptions.CultureInvariant);
+            return !Regex.IsMatch(videoId, @"[^0-9a-zA-Z_\-]");
         }
 
         /// <summary>
@@ -444,8 +472,7 @@ namespace YoutubeExplode
             if (videoUrl.IsBlank())
                 throw new ArgumentNullException(nameof(videoUrl));
 
-            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)",
-                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)");
             if (!match.Success)
                 throw new FormatException("Could not parse Video ID from given string");
             return match.Groups[1].Value;
@@ -461,8 +488,7 @@ namespace YoutubeExplode
                 throw new ArgumentNullException(nameof(videoUrl));
 
             videoId = default(string);
-            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)",
-                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)");
             if (match.Success)
                 videoId = match.Groups[1].Value;
             return match.Success;
