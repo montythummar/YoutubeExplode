@@ -51,7 +51,7 @@ namespace YoutubeExplode.Models
 
                 if (Type == VideoStreamType.AudioOnlyMP4 ||
                     Type == VideoStreamType.AudioOnlyWebM ||
-                    Type == VideoStreamType.AudioOnlyThirdGenerationPartnershipProject)
+                    Type == VideoStreamType.AudioOnlyTGPP)
                     Quality = VideoStreamQuality.NoVideo;
                 else
                     Quality = ParseQuality(value);
@@ -121,13 +121,13 @@ namespace YoutubeExplode.Models
             if (typeString.ContainsInvariant("video/webm"))
                 return VideoStreamType.WebM;
             if (typeString.ContainsInvariant("video/3gpp"))
-                return VideoStreamType.ThirdGenerationPartnershipProject;
+                return VideoStreamType.TGPP;
             if (typeString.ContainsInvariant("audio/mp4"))
                 return VideoStreamType.AudioOnlyMP4;
             if (typeString.ContainsInvariant("audio/webm"))
                 return VideoStreamType.AudioOnlyWebM;
             if (typeString.ContainsInvariant("audio/3gpp"))
-                return VideoStreamType.AudioOnlyThirdGenerationPartnershipProject;
+                return VideoStreamType.AudioOnlyTGPP;
 
             return VideoStreamType.Unknown;
         }
@@ -168,7 +168,7 @@ namespace YoutubeExplode.Models
                 return "mp4";
             if (type == VideoStreamType.WebM || type == VideoStreamType.AudioOnlyWebM)
                 return "webm";
-            if (type == VideoStreamType.ThirdGenerationPartnershipProject || type == VideoStreamType.AudioOnlyThirdGenerationPartnershipProject)
+            if (type == VideoStreamType.TGPP || type == VideoStreamType.AudioOnlyTGPP)
                 return "3gpp";
 
             // Default is mp4
