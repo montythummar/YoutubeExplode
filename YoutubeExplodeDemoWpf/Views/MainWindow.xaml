@@ -132,7 +132,7 @@
                     <Run Foreground="{DynamicResource PrimaryInverseTextBrush}" Text="{Binding VideoInfo.ViewCount, StringFormat=\{0:N0\}, Mode=OneWay}" />
                     <Run Text="  " />
 
-                    <Run Text="Stars:" />
+                    <Run Text="Rating:" />
                     <Run Foreground="{DynamicResource PrimaryInverseTextBrush}" Text="{Binding VideoInfo.AverageRating, StringFormat=\{0:0.##\}, Mode=OneWay}" />
                 </TextBlock>
             </Border>
@@ -141,7 +141,7 @@
             <Border Grid.Row="2" Background="Black">
                 <Image HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Source="{Binding VideoInfo.ImageHighQuality, FallbackValue={StaticResource FallbackVideoImage}, TargetNullValue={StaticResource FallbackVideoImage}}" />
+                       Source="{Binding VideoInfo.ImageHighRes, FallbackValue={StaticResource FallbackVideoImage}, TargetNullValue={StaticResource FallbackVideoImage}}" />
             </Border>
 
             <!--  Info  -->
@@ -190,10 +190,11 @@
                     <!--  Images  -->
                     <TextBlock Margin="5,2,5,2">
                         <Run Text="Images:" />
-                        <Hyperlink NavigateUri="{Binding VideoInfo.Thumbnail}" RequestNavigate="Hyperlink_OnRequestNavigate">Thumbnail</Hyperlink><Run Text="," />
-                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageHighQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image High Quality</Hyperlink><Run Text="," />
-                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageMediumQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Medium Quality</Hyperlink><Run Text="," />
-                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageLowQuality}" RequestNavigate="Hyperlink_OnRequestNavigate">Image Low Quality</Hyperlink>
+                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageThumbnail}" RequestNavigate="Hyperlink_OnRequestNavigate">Thumbnail</Hyperlink><Run Text="," />
+                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageStandardRes}" RequestNavigate="Hyperlink_OnRequestNavigate">Standard</Hyperlink><Run Text="," />
+                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageMaxRes}" RequestNavigate="Hyperlink_OnRequestNavigate">Maximum</Hyperlink><Run Text="," />
+                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageHighRes}" RequestNavigate="Hyperlink_OnRequestNavigate">High</Hyperlink><Run Text="," />
+                        <Hyperlink NavigateUri="{Binding VideoInfo.ImageMediumRes}" RequestNavigate="Hyperlink_OnRequestNavigate">Medium</Hyperlink><Run Text="," />
                     </TextBlock>
 
                     <!--  Streams  -->

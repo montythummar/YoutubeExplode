@@ -31,10 +31,6 @@ namespace YoutubeExplode.Tests
             Assert.AreEqual(36, videoInfo.Keywords.Length);
             Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
             Assert.AreEqual(2, videoInfo.Watermarks.Length);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/default.jpg", videoInfo.Thumbnail);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/hqdefault.jpg", videoInfo.ImageHighQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/mqdefault.jpg", videoInfo.ImageMediumQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/sddefault.jpg", videoInfo.ImageLowQuality);
 
             Assert.IsTrue(videoInfo.NeedsDeciphering);
             Assert.IsFalse(videoInfo.HasClosedCaptions);
@@ -75,10 +71,6 @@ namespace YoutubeExplode.Tests
             Assert.AreEqual(36, videoInfo.Keywords.Length);
             Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
             Assert.AreEqual(2, videoInfo.Watermarks.Length);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/default.jpg", videoInfo.Thumbnail);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/hqdefault.jpg", videoInfo.ImageHighQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/mqdefault.jpg", videoInfo.ImageMediumQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/sddefault.jpg", videoInfo.ImageLowQuality);
 
             Assert.IsTrue(videoInfo.NeedsDeciphering);
             Assert.IsFalse(videoInfo.HasClosedCaptions);
@@ -119,10 +111,6 @@ namespace YoutubeExplode.Tests
             Assert.AreEqual(36, videoInfo.Keywords.Length);
             Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
             Assert.AreEqual(2, videoInfo.Watermarks.Length);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/default.jpg", videoInfo.Thumbnail);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/hqdefault.jpg", videoInfo.ImageHighQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/mqdefault.jpg", videoInfo.ImageMediumQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/sddefault.jpg", videoInfo.ImageLowQuality);
 
             Assert.IsTrue(videoInfo.NeedsDeciphering);
             Assert.IsFalse(videoInfo.HasClosedCaptions);
@@ -163,10 +151,6 @@ namespace YoutubeExplode.Tests
             Assert.AreEqual(36, videoInfo.Keywords.Length);
             Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
             Assert.AreEqual(2, videoInfo.Watermarks.Length);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/default.jpg", videoInfo.Thumbnail);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/hqdefault.jpg", videoInfo.ImageHighQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/mqdefault.jpg", videoInfo.ImageMediumQuality);
-            Assert.AreEqual("https://i.ytimg.com/vi/JE1Gvzxfm1E/sddefault.jpg", videoInfo.ImageLowQuality);
 
             Assert.IsTrue(videoInfo.NeedsDeciphering);
             Assert.IsFalse(videoInfo.HasClosedCaptions);

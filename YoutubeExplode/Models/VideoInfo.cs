@@ -23,24 +23,29 @@ namespace YoutubeExplode.Models
         public string Author { get; internal set; }
 
         /// <summary>
-        /// URL for the highest thumbnail
+        /// URL for the thumbnail image
         /// </summary>
-        public string Thumbnail { get; internal set; }
+        public string ImageThumbnail => $"https://img.youtube.com/vi/{Id}/maxresdefault.jpg";
 
         /// <summary>
-        /// URL for the highest res image
+        /// URL for the default resolution image (not always available)
         /// </summary>
-        public string ImageHighQuality { get; internal set; }
+        public string ImageStandardRes => $"https://img.youtube.com/vi/{Id}/sddefault.jpg";
 
         /// <summary>
-        /// URL for the medium res image
+        /// URL for the highest resolution image (not always available)
         /// </summary>
-        public string ImageMediumQuality { get; internal set; }
+        public string ImageMaxRes => $"https://img.youtube.com/vi/{Id}/maxresdefault.jpg";
 
         /// <summary>
-        /// URL for the lowest res image
+        /// URL for the high resolution image
         /// </summary>
-        public string ImageLowQuality { get; internal set; }
+        public string ImageHighRes => $"https://img.youtube.com/vi/{Id}/hqdefault.jpg";
+
+        /// <summary>
+        /// URL for the medium resolution image
+        /// </summary>
+        public string ImageMediumRes => $"https://img.youtube.com/vi/{Id}/mqdefault.jpg";
 
         /// <summary>
         /// Collection of watermark URLs

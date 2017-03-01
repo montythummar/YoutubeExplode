@@ -202,10 +202,6 @@ namespace YoutubeExplode.Internal
             result.Id = videoInfoEncoded.GetOrDefault("video_id", "");
             result.Title = videoInfoEncoded.GetOrDefault("title", "");
             result.Author = videoInfoEncoded.GetOrDefault("author", "");
-            result.Thumbnail = videoInfoEncoded.GetOrDefault("thumbnail_url", "");
-            result.ImageHighQuality = videoInfoEncoded.GetOrDefault("iurlhq", "");
-            result.ImageMediumQuality = videoInfoEncoded.GetOrDefault("iurlmq", "");
-            result.ImageLowQuality = videoInfoEncoded.GetOrDefault("iurlsd", "");
             result.Watermarks = videoInfoEncoded.GetOrDefault("watermark", "").Split(",");
             result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetOrDefault("length_seconds", 0.0));
             result.IsListed = videoInfoEncoded.GetOrDefault("is_listed", 1) == 1;
@@ -239,8 +235,10 @@ namespace YoutubeExplode.Internal
             var videoInfoEncoded = ParseDictionaryUrlEncoded(rawUrlEncoded);
 
             // Check the status
-            if (videoInfoEncoded.GetOrDefault("status").EqualsInvariant("fail"))
-                throw new YoutubeErrorException(videoInfoEncoded.GetOrDefault("reason"));
+            string status = videoInfoEncoded.GetOrDefault("status");
+            string reason = videoInfoEncoded.GetOrDefault("reason");
+            if (status.EqualsInvariant("fail"))
+                throw new YoutubeErrorException(reason);
 
             // Prepare result
             var result = new VideoInfo();
@@ -252,10 +250,6 @@ namespace YoutubeExplode.Internal
             result.Id = videoInfoEncoded.GetOrDefault("video_id");
             result.Title = videoInfoEncoded.GetOrDefault("title");
             result.Author = videoInfoEncoded.GetOrDefault("author");
-            result.Thumbnail = videoInfoEncoded.GetOrDefault("thumbnail_url");
-            result.ImageHighQuality = videoInfoEncoded.GetOrDefault("iurlhq");
-            result.ImageMediumQuality = videoInfoEncoded.GetOrDefault("iurlmq");
-            result.ImageLowQuality = videoInfoEncoded.GetOrDefault("iurlsd");
             result.Watermarks = videoInfoEncoded.GetOrDefault("watermark").Split(",");
             result.Length = TimeSpan.FromSeconds(videoInfoEncoded.GetOrDefault("length_seconds").ParseDoubleOrDefault());
             result.IsListed = videoInfoEncoded.GetOrDefault("is_listed").ParseIntOrDefault(1) == 1;
