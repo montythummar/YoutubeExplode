@@ -88,9 +88,17 @@ namespace YoutubeExplode.Models
         public ulong ViewCount { get; internal set; }
 
         /// <summary>
-        /// Average user rating
+        /// Average user rating.
+        /// Ranges from 0 stars to 5 stars.
         /// </summary>
         public double AverageRating { get; internal set; }
+
+        /// <summary>
+        /// Normalized average user rating.
+        /// Ranges from 0 to 1.
+        /// Also represents the "thumbs up" ratio in the new rating system.
+        /// </summary>
+        public double NormalizedAverageRating => AverageRating/5;
 
         /// <summary>
         /// Video keywords used for searching
