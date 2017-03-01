@@ -12,6 +12,16 @@ namespace YoutubeExplode.Services
     /// </summary>
     public partial class DefaultRequestService : IRequestService
     {
+        /// <summary>
+        /// Creates <see cref="WebRequest"/> for use by the other methods
+        /// </summary>
+        protected virtual HttpWebRequest CreateWebRequest(string url, string method)
+        {
+            var request = WebRequest.CreateHttp(url);
+            request.Method = method;
+            return request;
+        }
+
         /// <inheritdoc />
         public virtual string GetString(string url)
         {
@@ -20,8 +30,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
+                var request = CreateWebRequest(url, "GET");
 
                 using (var response = request.GetResponse())
                 {
@@ -43,8 +52,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
+                var request = CreateWebRequest(url, "GET");
 
                 using (var response = await request.GetResponseAsync())
                 {
@@ -66,8 +74,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "HEAD";
+                var request = CreateWebRequest(url, "HEAD");
 
                 using (var response = request.GetResponse())
                 {
@@ -88,8 +95,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "HEAD";
+                var request = CreateWebRequest(url, "HEAD");
 
                 using (var response = await request.GetResponseAsync())
                 {
@@ -110,8 +116,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
+                var request = CreateWebRequest(url, "GET");
 
                 return request.GetResponse().GetResponseStream();
             }
@@ -129,8 +134,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
+                var request = CreateWebRequest(url, "GET");
 
                 return (await request.GetResponseAsync()).GetResponseStream();
             }
