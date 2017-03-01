@@ -14,6 +14,8 @@ If you want to download the demo application - navigate to the [releases](https:
 **Features:**
 
 - Get video meta and video streams meta
+- Multiple sources for video meta data (watch page, internal API)
+- Multiple sources for stream meta data (non-adaptive, adaptive embedded, adaptive dash)
 - Strongly-typed enums for all applicable properties, along with raw strings
 - Automatically or on-demand decipher signatures for video streams
 - Automatically or on-demand get video file sizes
@@ -21,7 +23,6 @@ If you want to download the demo application - navigate to the [releases](https:
 - Support for both synchronous and asynchronous API wherever possible
 - Methods to extract video ID from URL and to validate video ID
 - Dependency injection for HTTP handler
-- Fallbacks for legacy videos
 - Resource caching
 - XML documentation
 

@@ -24,6 +24,20 @@ namespace YoutubeExplode.Internal
             }
         }
 
+        public static bool IsEither<T>(this T value, params T[] potentialValues)
+        {
+            foreach (var o in potentialValues)
+            {
+                if (Equals(value, o)) return true;
+            }
+            return false;
+        }
+
+        public static bool IsInRange(this IComparable value, IComparable min, IComparable max)
+        {
+            return value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
+        }
+
         public static bool IsBlank(this string str)
         {
             return string.IsNullOrWhiteSpace(str);
@@ -46,6 +60,25 @@ namespace YoutubeExplode.Internal
             return str?.IndexOf(other, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
+        public static string SubstringUntil(this string str, string sub)
+        {
+            int index = str.IndexOf(sub, StringComparison.InvariantCultureIgnoreCase);
+            if (index < 0) return str;
+            return str.Substring(0, index);
+        }
+
+        public static string SubstringAfter(this string str, string sub)
+        {
+            int index = str.IndexOf(sub, StringComparison.InvariantCultureIgnoreCase);
+            if (index < 0) return string.Empty;
+            return str.Substring(index + sub.Length, str.Length - index - sub.Length);
+        }
+
+        public static T Parse<T>(this string str, ParseDelegate<T> handler)
+        {
+            return handler(str);
+        }
+
         public static T ParseOrDefault<T>(this string str, TryParseDelegate<T> handler, T defaultValue = default(T))
         {
             if (string.IsNullOrWhiteSpace(str))
@@ -54,11 +87,32 @@ namespace YoutubeExplode.Internal
             return handler(str, out result) ? result : defaultValue;
         }
 
+        public static double ParseDouble(this string str)
+            => Parse(str, double.Parse);
+
+        public static int ParseInt(this string str)
+            => Parse(str, int.Parse);
+
+        public static uint ParseUint(this string str)
+            => Parse(str, uint.Parse);
+
+        public static long ParseLong(this string str)
+            => Parse(str, long.Parse);
+
+        public static ulong ParseUlong(this string str)
+            => Parse(str, ulong.Parse);
+
         public static double ParseDoubleOrDefault(this string str, double defaultValue = default(double))
             => ParseOrDefault(str, double.TryParse, defaultValue);
 
         public static int ParseIntOrDefault(this string str, int defaultValue = default(int))
             => ParseOrDefault(str, int.TryParse, defaultValue);
+
+        public static uint ParseUintOrDefault(this string str, uint defaultValue = default(uint))
+            => ParseOrDefault(str, uint.TryParse, defaultValue);
+
+        public static long ParseLongOrDefault(this string str, long defaultValue = default(long))
+            => ParseOrDefault(str, long.TryParse, defaultValue);
 
         public static ulong ParseUlongOrDefault(this string str, ulong defaultValue = default(ulong))
             => ParseOrDefault(str, ulong.TryParse, defaultValue);

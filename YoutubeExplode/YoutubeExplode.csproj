@@ -35,6 +35,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Internal\PlayerSource.cs" />
@@ -42,6 +44,7 @@
     <Compile Include="Internal\ReverseScramblingOperation.cs" />
     <Compile Include="Internal\SliceScramblingOperation.cs" />
     <Compile Include="Internal\SwapScramblingOperation.cs" />
+    <Compile Include="Models\VideoStreamResolution.cs" />
     <Compile Include="Services\DefaultRequestService.cs" />
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Internal\Extensions.cs" />

@@ -21,10 +21,10 @@ namespace YoutubeExplode.DemoConsole
         /// <summary>
         /// Turns file size in bytes into human-readable string
         /// </summary>
-        private static string NormalizeFileSize(ulong fileSize)
+        private static string NormalizeFileSize(long fileSize)
         {
             string[] units = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-            decimal size = fileSize;
+            double size = fileSize;
             var unit = 0;
 
             while (size >= 1024)
@@ -57,7 +57,22 @@ namespace YoutubeExplode.DemoConsole
             for (int i = 0; i < videoInfo.Streams.Length; i++)
             {
                 var streamInfo = videoInfo.Streams[i];
-                Console.WriteLine($"\t[{i}] {streamInfo.Type} | {streamInfo.Quality} | {streamInfo.Fps} FPS | {NormalizeFileSize(streamInfo.FileSize)}");
+                string normFileSize = NormalizeFileSize(streamInfo.FileSize);
+
+                // Video+audio streams (non-adaptive)
+                if (streamInfo.HasVideo && streamInfo.HasAudio)
+                {
+                    Console.WriteLine($"\t[{i}] Mixed | {streamInfo.Type} | {streamInfo.Quality} | {normFileSize}");
+                }
+                // Video only streams
+                else if (streamInfo.HasVideo)
+                    Console.WriteLine($"\t[{i}] Video | {streamInfo.Type} | {streamInfo.Quality} | {streamInfo.Fps} FPS | {normFileSize}");
+                // Audio only streams
+                else if (streamInfo.HasAudio)
+                    Console.WriteLine($"\t[{i}] Audio | {streamInfo.Type} | {normFileSize}");
+                // This should not happen
+                else
+                    throw new IndexOutOfRangeException();
             }
 
             // Get the stream index to download

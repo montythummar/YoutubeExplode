@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Models;
 
@@ -9,41 +11,6 @@ namespace YoutubeExplode.Internal
 {
     internal static class Parser
     {
-        private static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosUrlEncoded(string rawUrlEncoded)
-        {
-            if (rawUrlEncoded.IsBlank())
-                throw new ArgumentNullException(nameof(rawUrlEncoded));
-
-            foreach (var streamRaw in rawUrlEncoded.Split(","))
-            {
-                var dic = ParseDictionaryUrlEncoded(streamRaw);
-
-                // Extract values
-                string sig = dic.GetOrDefault("s");
-                bool needsDeciphering = !sig.IsBlank();
-                string url = dic.GetOrDefault("url");
-                string type = dic.GetOrDefault("type");
-                string quality = dic.GetOrDefault("quality_label") ??
-                                 dic.GetOrDefault("quality");
-                string resolution = dic.GetOrDefault("size") ?? "0x0";
-                ulong bitrate = dic.GetOrDefault("bitrate").ParseUlongOrDefault();
-                double fps = dic.GetOrDefault("fps").ParseDoubleOrDefault();
-
-                // Yield a stream object
-                yield return new VideoStreamInfo
-                {
-                    Signature = sig,
-                    NeedsDeciphering = needsDeciphering,
-                    Url = url,
-                    TypeString = type,
-                    QualityString = quality,
-                    ResolutionString = resolution,
-                    Bitrate = bitrate,
-                    Fps = fps
-                };
-            }
-        }
-
         private static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
         {
             if (rawUrlEncoded.IsBlank())
@@ -164,6 +131,85 @@ namespace YoutubeExplode.Internal
             }
         }
 
+        public static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosUrlEncoded(string rawUrlEncoded)
+        {
+            if (rawUrlEncoded.IsBlank())
+                throw new ArgumentNullException(nameof(rawUrlEncoded));
+
+            foreach (var streamRaw in rawUrlEncoded.Split(","))
+            {
+                var dic = ParseDictionaryUrlEncoded(streamRaw);
+
+                // Extract values
+                string sig = dic.GetOrDefault("s");
+                bool needsDeciphering = sig.IsNotBlank();
+                string url = dic.GetOrDefault("url");
+                int itag = dic.GetOrDefault("itag").ParseIntOrDefault();
+                int width = (dic.GetOrDefault("size")?.SubstringUntil("x")).ParseIntOrDefault();
+                int height = (dic.GetOrDefault("size")?.SubstringAfter("x")).ParseIntOrDefault();
+                long bitrate = dic.GetOrDefault("bitrate").ParseLongOrDefault();
+                double fps = dic.GetOrDefault("fps").ParseDoubleOrDefault();
+
+                // Yield a stream object
+                yield return new VideoStreamInfo
+                {
+                    Signature = sig,
+                    NeedsDeciphering = needsDeciphering,
+                    Url = url,
+                    Itag = itag,
+                    Resolution = new VideoStreamResolution(width, height),
+                    Bitrate = bitrate,
+                    Fps = fps
+                };
+            }
+        }
+
+        public static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosMpd(string rawXml)
+        {
+            if (rawXml.IsBlank())
+                throw new ArgumentNullException(nameof(rawXml));
+
+            var root = XElement.Parse(rawXml);
+            var xStreamInfos = root.XPathSelectElements("//*[local-name() = 'Representation']");
+
+            if (xStreamInfos == null)
+                throw new Exception("Cannot find streams in input XML");
+
+            foreach (var xStreamInfo in xStreamInfos)
+            {
+                // Skip partial streams
+                string initUrl =
+                    xStreamInfo.XPathSelectElement(".//*[local-name() = 'Initialization']")?
+                        .Attribute("sourceURL")?.Value;
+                if (initUrl.IsNotBlank() && initUrl.ContainsInvariant("sq/"))
+                    continue;
+
+                // Extract values
+                string url = xStreamInfo.XPathSelectElement("*[local-name() = 'BaseURL']")?.Value;
+                int itag = (xStreamInfo.Attribute("id")?.Value).ParseIntOrDefault();
+                int width = (xStreamInfo.Attribute("width")?.Value).ParseIntOrDefault();
+                int height = (xStreamInfo.Attribute("height")?.Value).ParseIntOrDefault();
+                long bitrate = (xStreamInfo.Attribute("bandwidth")?.Value).ParseLongOrDefault();
+                double fps = (xStreamInfo.Attribute("frameRate")?.Value).ParseDoubleOrDefault();
+
+                //var sigMatch = Regex.Match(url, @"signature/(.*?)/");
+                //string sig = sigMatch.Success ? sigMatch.Groups[1].Value : null;
+                //bool needsDeciphering = sig.IsNotBlank();
+
+                // Yield a stream object
+                yield return new VideoStreamInfo
+                {
+                    Signature = null,
+                    NeedsDeciphering = false,
+                    Url = url,
+                    Itag = itag,
+                    Resolution = new VideoStreamResolution(width, height),
+                    Bitrate = bitrate,
+                    Fps = fps
+                };
+            }
+        }
+
         public static VideoInfo ParseVideoInfoJson(string rawJson)
         {
             if (rawJson.IsBlank())
@@ -209,18 +255,20 @@ namespace YoutubeExplode.Internal
             result.IsMuted = videoInfoEncoded.GetOrDefault("muted", 0) == 1;
             result.IsEmbeddingAllowed = videoInfoEncoded.GetOrDefault("allow_embed", 1) == 1;
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
-            result.ViewCount = videoInfoEncoded.GetOrDefault("view_count", 0ul);
+            result.ViewCount = videoInfoEncoded.GetOrDefault("view_count", 0L);
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating", 0.0);
             result.Keywords = videoInfoEncoded.GetOrDefault("keywords", "").Split(",");
+            result.DashMpdUrl = videoInfoEncoded.GetOrDefault("dashmpd", "");
 
             // Get the streams
+            var streams = new List<VideoStreamInfo>();
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts", "");
-            if (streamsRaw.IsBlank())
-                streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map", "");
-            result.Streams = ParseVideoStreamInfosUrlEncoded(streamsRaw).ToArray();
-
-            // Check if any of the streams need to be deciphered
-            result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
+            if (streamsRaw.IsNotBlank())
+                streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
+            streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map", "");
+            if (streamsRaw.IsNotBlank())
+                streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
+            result.Streams = streams.ToArray();
 
             // Return
             return result;
@@ -257,18 +305,20 @@ namespace YoutubeExplode.Internal
             result.IsMuted = videoInfoEncoded.GetOrDefault("muted").ParseIntOrDefault() == 1;
             result.IsEmbeddingAllowed = videoInfoEncoded.GetOrDefault("allow_embed").ParseIntOrDefault(1) == 1;
             result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
-            result.ViewCount = videoInfoEncoded.GetOrDefault("view_count").ParseUlongOrDefault();
+            result.ViewCount = videoInfoEncoded.GetOrDefault("view_count").ParseLongOrDefault();
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating").ParseDoubleOrDefault();
             result.Keywords = videoInfoEncoded.GetOrDefault("keywords").Split(",");
+            result.DashMpdUrl = videoInfoEncoded.GetOrDefault("dashmpd");
 
             // Get the streams
+            var streams = new List<VideoStreamInfo>();
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
-            if (streamsRaw.IsBlank())
-                streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map");
-            result.Streams = ParseVideoStreamInfosUrlEncoded(streamsRaw).ToArray();
-
-            // Check if any of the streams need to be deciphered
-            result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
+            if (streamsRaw.IsNotBlank())
+                streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
+            streamsRaw = videoInfoEncoded.GetOrDefault("url_encoded_fmt_stream_map");
+            if (streamsRaw.IsNotBlank())
+                streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
+            result.Streams = streams.ToArray();
 
             // Return
             return result;

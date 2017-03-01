@@ -16,6 +16,8 @@
       <frameworkAssembly assemblyName="System" />
       <frameworkAssembly assemblyName="System.Core" />
       <frameworkAssembly assemblyName="System.Net" />
+      <frameworkAssembly assemblyName="System.Xml" />
+      <frameworkAssembly assemblyName="System.Xml.Linq" />
     </frameworkAssemblies>
   </metadata>
 

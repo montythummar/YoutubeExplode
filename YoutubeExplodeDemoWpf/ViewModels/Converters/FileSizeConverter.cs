@@ -4,13 +4,13 @@ using System.Windows.Data;
 
 namespace YoutubeExplode.DemoWpf.ViewModels.Converters
 {
-    [ValueConversion(typeof(ulong), typeof(string))]
+    [ValueConversion(typeof(long), typeof(string))]
     public class FileSizeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string[] units = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-            decimal size = (ulong) value;
+            double size = (long) value;
             var unit = 0;
 
             while (size >= 1024)

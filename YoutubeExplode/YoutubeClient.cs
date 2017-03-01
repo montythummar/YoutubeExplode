@@ -39,9 +39,8 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Tries to get video info from the watch page
+        /// Get video info from the watch page
         /// </summary>
-        /// <returns>Result if successful, null if not</returns>
         protected VideoInfo GetVideoInfoFromWatchPage(string videoId)
         {
             if (videoId.IsBlank())
@@ -78,9 +77,8 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Tries to get video info from the internal api
+        /// Get video info from the internal api
         /// </summary>
-        /// <returns>Result if successful, null if not</returns>
         protected VideoInfo GetVideoInfoFromInternalApi(string videoId)
         {
             if (videoId.IsBlank())
@@ -106,12 +104,49 @@ namespace YoutubeExplode
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
             // Get
-            string response = await RequestService.GetStringAsync($"https://youtube.com/get_video_info?video_id={videoId}");
+            string response =
+                await RequestService.GetStringAsync($"https://youtube.com/get_video_info?video_id={videoId}");
             if (response.IsBlank())
                 throw new Exception("Could not get URL-encoded video info (GET request failed)");
 
             // Parse
             return Parser.ParseVideoInfoUrlEncoded(response);
+        }
+
+        /// <summary>
+        /// Get streams for the given <see cref="VideoInfo"/> from DashMpd
+        /// </summary>
+        protected IEnumerable<VideoStreamInfo> GetVideoStreamInfosFromDash(VideoInfo videoInfo)
+        {
+            if (videoInfo == null)
+                throw new ArgumentNullException(nameof(videoInfo));
+            if (videoInfo.DashMpdUrl.IsBlank())
+                throw new Exception("Given video info does not have a DashMpd URL");
+
+            // Get
+            string response = RequestService.GetString(videoInfo.DashMpdUrl);
+            if (response.IsBlank())
+                throw new Exception("Could not get DashMpd data (GET request failed)");
+
+            // Parse
+            return Parser.ParseVideoStreamInfosMpd(response);
+        }
+
+        /// <inheritdoc cref="GetVideoStreamInfosFromDash"/>
+        protected async Task<IEnumerable<VideoStreamInfo>> GetVideoStreamInfosFromDashAsync(VideoInfo videoInfo)
+        {
+            if (videoInfo == null)
+                throw new ArgumentNullException(nameof(videoInfo));
+            if (videoInfo.DashMpdUrl.IsBlank())
+                throw new Exception("Given video info does not have a DashMpd URL");
+
+            // Get
+            string response = await RequestService.GetStringAsync(videoInfo.DashMpdUrl);
+            if (response.IsBlank())
+                throw new Exception("Could not get DashMpd data (GET request failed)");
+
+            // Parse
+            return Parser.ParseVideoStreamInfosMpd(response);
         }
 
         /// <summary>
@@ -142,12 +177,31 @@ namespace YoutubeExplode
             if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
             if (getFileSizes && !decipherIfNeeded)
-                throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
+                throw new ArgumentException(
+                    $"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
 
             // Get video info
-            var result = GetVideoInfoFromWatchPage(videoId) ?? GetVideoInfoFromInternalApi(videoId);
+            var result = GetVideoInfoFromWatchPage(videoId) ??
+                         GetVideoInfoFromInternalApi(videoId);
             if (result == null)
                 throw new Exception("Could not obtain video info from either sources");
+
+            // Get additional streams from dash if available
+            if (result.DashMpdUrl.IsNotBlank())
+            {
+                var streams = GetVideoStreamInfosFromDash(result);
+                result.Streams = result.Streams.Union(streams).ToArray();
+            }
+
+            // Finalize the stream list
+            result.Streams =
+                result.Streams
+                    .OrderBy(s => s.HasVideo)
+                    .ThenBy(s => (int) s.Quality)
+                    .ThenBy(s => s.Fps)
+                    .Reverse()
+                    .ToArray();
+            result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
@@ -165,19 +219,39 @@ namespace YoutubeExplode
         }
 
         /// <inheritdoc cref="GetVideoInfo"/>
-        public async Task<VideoInfo> GetVideoInfoAsync(string videoId, bool decipherIfNeeded = true, bool getFileSizes = true)
+        public async Task<VideoInfo> GetVideoInfoAsync(string videoId, bool decipherIfNeeded = true,
+            bool getFileSizes = true)
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
             if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
             if (getFileSizes && !decipherIfNeeded)
-                throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
+                throw new ArgumentException(
+                    $"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
 
             // Get video info
-            var result = await GetVideoInfoFromWatchPageAsync(videoId) ?? await GetVideoInfoFromInternalApiAsync(videoId);
+            var result = await GetVideoInfoFromWatchPageAsync(videoId) ??
+                         await GetVideoInfoFromInternalApiAsync(videoId);
             if (result == null)
                 throw new Exception("Could not obtain video info from either sources");
+
+            // Get additional streams from dash if available
+            if (result.DashMpdUrl.IsNotBlank())
+            {
+                var streams = await GetVideoStreamInfosFromDashAsync(result);
+                result.Streams = result.Streams.Union(streams).ToArray();
+            }
+
+            // Finalize the stream list
+            result.Streams =
+                result.Streams
+                    .OrderBy(s => s.HasVideo)
+                    .ThenBy(s => (int) s.Quality)
+                    .ThenBy(s => s.Fps)
+                    .Reverse()
+                    .ToArray();
+            result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
@@ -220,7 +294,8 @@ namespace YoutubeExplode
             if (playerSource == null)
             {
                 // Get the javascript source URL
-                string response = RequestService.GetString($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
+                string response =
+                    RequestService.GetString($"https://youtube.com/yts/jsbin/player-{videoInfo.PlayerVersion}/base.js");
                 if (response.IsBlank())
                     throw new Exception("Could not get the video player source code");
 
@@ -290,7 +365,7 @@ namespace YoutubeExplode
         /// Gets and populates the total file size of the video, streamed on the given endpoint
         /// <returns>The file size of the video (in bytes)</returns>
         /// </summary>
-        public ulong GetFileSize(VideoStreamInfo streamInfo)
+        public long GetFileSize(VideoStreamInfo streamInfo)
         {
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
@@ -308,11 +383,11 @@ namespace YoutubeExplode
             if (!headers.ContainsKey("Content-Length"))
                 throw new Exception("Content-Length header not found");
 
-            return streamInfo.FileSize = headers["Content-Length"].ParseUlongOrDefault();
+            return streamInfo.FileSize = headers["Content-Length"].ParseLongOrDefault();
         }
 
         /// <inheritdoc cref="GetFileSize"/>
-        public async Task<ulong> GetFileSizeAsync(VideoStreamInfo streamInfo)
+        public async Task<long> GetFileSizeAsync(VideoStreamInfo streamInfo)
         {
             if (streamInfo == null)
                 throw new ArgumentNullException(nameof(streamInfo));
@@ -330,7 +405,7 @@ namespace YoutubeExplode
             if (!headers.ContainsKey("Content-Length"))
                 throw new Exception("Content-Length header not found");
 
-            return streamInfo.FileSize = headers["Content-Length"].ParseUlongOrDefault();
+            return streamInfo.FileSize = headers["Content-Length"].ParseLongOrDefault();
         }
 
         /// <summary>

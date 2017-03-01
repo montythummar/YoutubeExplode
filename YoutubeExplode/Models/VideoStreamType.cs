@@ -13,21 +13,6 @@ namespace YoutubeExplode.Models
         Unknown,
 
         /// <summary>
-        /// Audio-only MPEG-4 Part 14 (.mp4) video stream
-        /// </summary>
-        AudioOnlyMP4,
-
-        /// <summary>
-        /// Audio-only WebM (.webm) video stream
-        /// </summary>
-        AudioOnlyWebM,
-
-        /// <summary>
-        /// Audio-only 3rd Generation Partnership Project (.3gpp) video stream
-        /// </summary>
-        AudioOnlyTGPP,
-
-        /// <summary>
         /// MPEG-4 Part 14 (.mp4) video stream
         /// </summary>
         MP4,
@@ -40,6 +25,16 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// 3rd Generation Partnership Project (.3gpp) video stream
         /// </summary>
-        TGPP
+        TGPP,
+
+        /// <summary>
+        /// Flash video (.flv) video stream
+        /// </summary>
+        FLV,
+
+        /// <summary>
+        /// Transport stream video (.ts) video stream
+        /// </summary>
+        TS
     }
 }

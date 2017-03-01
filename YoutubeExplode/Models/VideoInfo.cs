@@ -8,6 +8,16 @@ namespace YoutubeExplode.Models
     public class VideoInfo
     {
         /// <summary>
+        /// Version of the video player, used for this video's playback
+        /// </summary>
+        internal string PlayerVersion { get; set; }
+
+        /// <summary>
+        /// Url of dash xml
+        /// </summary>
+        internal string DashMpdUrl { get; set; }
+
+        /// <summary>
         /// Video ID
         /// </summary>
         public string Id { get; internal set; }
@@ -85,7 +95,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// View count
         /// </summary>
-        public ulong ViewCount { get; internal set; }
+        public long ViewCount { get; internal set; }
 
         /// <summary>
         /// Average user rating.
@@ -109,11 +119,6 @@ namespace YoutubeExplode.Models
         /// Video streams
         /// </summary>
         public VideoStreamInfo[] Streams { get; internal set; }
-
-        /// <summary>
-        /// Version of the video player, used for this video's playback
-        /// </summary>
-        public string PlayerVersion { get; internal set; }
 
         /// <summary>
         /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
