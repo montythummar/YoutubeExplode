@@ -12,7 +12,7 @@ namespace YoutubeExplode.Tests
     public class YoutubeClientUnitTests
     {
         [TestMethod]
-        public void GetVideoInfoFromWatchPageTest()
+        public void GetVideoInfo_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -56,7 +56,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetVideoInfoFromWatchPageAsyncTest()
+        public async Task GetVideoInfoAsync_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -100,7 +100,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetVideoInfoFromInternalApiTest()
+        public void GetVideoInfo_NoJson_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -144,7 +144,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetVideoInfoFromInternalApiAsyncTest()
+        public async Task GetVideoInfoAsync_NoJson_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -188,7 +188,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void DecipherStreamsTest()
+        public void DecipherStreams_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -203,7 +203,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DecipherStreamsAsyncTest()
+        public async Task DecipherStreamsAsync_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -218,7 +218,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetFileSizeTest()
+        public void GetFileSize_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -234,7 +234,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetFileSizeAsyncTest()
+        public async Task GetFileSizeAsync_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -250,7 +250,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetAllFileSizesTest()
+        public void GetAllFileSizes_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -268,7 +268,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetAllFileSizesAsyncTest()
+        public async Task GetAllFileSizesAsync_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -286,7 +286,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void DownloadVideoTest()
+        public void DownloadVideo_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -302,7 +302,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoAsyncTest()
+        public async Task DownloadVideoAsync_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -318,7 +318,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void DownloadVideoToFileTest()
+        public void DownloadVideoToFile_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);
@@ -339,7 +339,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoToFileAsyncTest()
+        public async Task DownloadVideoToFileAsync_Normal_Test()
         {
             var requestService = new FakeRequestService();
             var client = new YoutubeClient(requestService);

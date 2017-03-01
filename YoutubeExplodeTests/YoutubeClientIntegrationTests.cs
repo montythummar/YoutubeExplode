@@ -12,12 +12,10 @@ namespace YoutubeExplode.Tests
     public class YoutubeClientIntegrationTests
     {
         [TestMethod]
-        public void GetVideoInfoFromWatchPageTest()
+        public void GetVideoInfo_Normal_Test()
         {
             var client = new YoutubeClient();
 
-            // This video supports adaptive streams and is parseable from watch page
-            // Needs deciphering
             var videoInfo = client.GetVideoInfo("9bZkp7q19f0", false, false);
 
             Assert.IsNotNull(videoInfo);
@@ -51,12 +49,10 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetVideoInfoFromWatchPageAsyncTest()
+        public async Task GetVideoInfoAsync_Normal_Test()
         {
             var client = new YoutubeClient();
 
-            // This video supports adaptive streams and is parseable from watch page
-            // Needs deciphering
             var videoInfo = await client.GetVideoInfoAsync("9bZkp7q19f0", false, false);
 
             Assert.IsNotNull(videoInfo);
@@ -90,12 +86,84 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetVideoInfoFromInternalApiTest()
+        public void GetVideoInfo_NoAdaptive_Test()
         {
             var client = new YoutubeClient();
 
-            // This video doesn't support adaptive streams and can't be parsed from watch page
-            // Doesn't need deciphering
+            var videoInfo = client.GetVideoInfo("LsNPjFXIPT8", false, false);
+
+            Assert.IsNotNull(videoInfo);
+            Assert.AreEqual("LsNPjFXIPT8", videoInfo.Id);
+            Assert.AreEqual("kyoumei no true force iyasine", videoInfo.Title);
+            Assert.AreEqual("Tyrrrz", videoInfo.Author);
+            Assert.AreEqual(TimeSpan.FromSeconds(103), videoInfo.Length);
+            Assert.IsTrue(0d <= videoInfo.AverageRating);
+            Assert.IsTrue(1ul <= videoInfo.ViewCount);
+            Assert.AreEqual(0, videoInfo.Keywords.Length);
+            Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
+            Assert.AreEqual(2, videoInfo.Watermarks.Length);
+
+            Assert.IsFalse(videoInfo.NeedsDeciphering);
+            Assert.IsFalse(videoInfo.HasClosedCaptions);
+            Assert.IsTrue(videoInfo.IsEmbeddingAllowed);
+            Assert.IsTrue(videoInfo.IsListed);
+            Assert.IsTrue(videoInfo.IsRatingAllowed);
+            Assert.IsFalse(videoInfo.IsMuted);
+
+            Assert.IsNotNull(videoInfo.Streams);
+            Assert.AreEqual(5, videoInfo.Streams.Length);
+            foreach (var stream in videoInfo.Streams)
+            {
+                Assert.IsNotNull(stream.Url);
+                Assert.IsNotNull(stream.TypeString);
+                Assert.IsNull(stream.Signature);
+                Assert.IsNotNull(stream.FileExtension);
+                Assert.IsFalse(stream.NeedsDeciphering);
+            }
+        }
+
+        [TestMethod]
+        public async Task GetVideoInfoAsync_NoAdaptive_Test()
+        {
+            var client = new YoutubeClient();
+
+            var videoInfo = await client.GetVideoInfoAsync("LsNPjFXIPT8", false, false);
+
+            Assert.IsNotNull(videoInfo);
+            Assert.AreEqual("LsNPjFXIPT8", videoInfo.Id);
+            Assert.AreEqual("kyoumei no true force iyasine", videoInfo.Title);
+            Assert.AreEqual("Tyrrrz", videoInfo.Author);
+            Assert.AreEqual(TimeSpan.FromSeconds(103), videoInfo.Length);
+            Assert.IsTrue(0d <= videoInfo.AverageRating);
+            Assert.IsTrue(1ul <= videoInfo.ViewCount);
+            Assert.AreEqual(0, videoInfo.Keywords.Length);
+            Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
+            Assert.AreEqual(2, videoInfo.Watermarks.Length);
+
+            Assert.IsFalse(videoInfo.NeedsDeciphering);
+            Assert.IsFalse(videoInfo.HasClosedCaptions);
+            Assert.IsTrue(videoInfo.IsEmbeddingAllowed);
+            Assert.IsTrue(videoInfo.IsListed);
+            Assert.IsTrue(videoInfo.IsRatingAllowed);
+            Assert.IsFalse(videoInfo.IsMuted);
+
+            Assert.IsNotNull(videoInfo.Streams);
+            Assert.AreEqual(5, videoInfo.Streams.Length);
+            foreach (var stream in videoInfo.Streams)
+            {
+                Assert.IsNotNull(stream.Url);
+                Assert.IsNotNull(stream.TypeString);
+                Assert.IsNull(stream.Signature);
+                Assert.IsNotNull(stream.FileExtension);
+                Assert.IsFalse(stream.NeedsDeciphering);
+            }
+        }
+
+        [TestMethod]
+        public void GetVideoInfo_NoJsonNoAdaptive_Test()
+        {
+            var client = new YoutubeClient();
+
             var videoInfo = client.GetVideoInfo("6MtLqOErEeo", false, false);
 
             Assert.IsNotNull(videoInfo);
@@ -130,12 +198,10 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetVideoInfoFromInternalApiAsyncTest()
+        public async Task GetVideoInfoAsync_NoJsonNoAdaptive_Test()
         {
             var client = new YoutubeClient();
 
-            // This video doesn't support adaptive streams and can't be parsed from watch page
-            // Doesn't need deciphering
             var videoInfo = await client.GetVideoInfoAsync("6MtLqOErEeo", false, false);
 
             Assert.IsNotNull(videoInfo);
@@ -170,85 +236,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetVideoInfoLegacyStreamsTest()
-        {
-            var client = new YoutubeClient();
-
-            // This video doesn't support adaptive streams and is parseable from watch page
-            // Doesn't need deciphering
-            var videoInfo = client.GetVideoInfo("LsNPjFXIPT8", false, false);
-
-            Assert.IsNotNull(videoInfo);
-            Assert.AreEqual("LsNPjFXIPT8", videoInfo.Id);
-            Assert.AreEqual("kyoumei no true force iyasine", videoInfo.Title);
-            Assert.AreEqual("Tyrrrz", videoInfo.Author);
-            Assert.AreEqual(TimeSpan.FromSeconds(103), videoInfo.Length);
-            Assert.IsTrue(0d <= videoInfo.AverageRating);
-            Assert.IsTrue(1ul <= videoInfo.ViewCount);
-            Assert.AreEqual(0, videoInfo.Keywords.Length);
-            Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
-            Assert.AreEqual(2, videoInfo.Watermarks.Length);
-
-            Assert.IsFalse(videoInfo.NeedsDeciphering);
-            Assert.IsFalse(videoInfo.HasClosedCaptions);
-            Assert.IsTrue(videoInfo.IsEmbeddingAllowed);
-            Assert.IsTrue(videoInfo.IsListed);
-            Assert.IsTrue(videoInfo.IsRatingAllowed);
-            Assert.IsFalse(videoInfo.IsMuted);
-
-            Assert.IsNotNull(videoInfo.Streams);
-            Assert.AreEqual(5, videoInfo.Streams.Length);
-            foreach (var stream in videoInfo.Streams)
-            {
-                Assert.IsNotNull(stream.Url);
-                Assert.IsNotNull(stream.TypeString);
-                Assert.IsNull(stream.Signature);
-                Assert.IsNotNull(stream.FileExtension);
-                Assert.IsFalse(stream.NeedsDeciphering);
-            }
-        }
-
-        [TestMethod]
-        public async Task GetVideoInfoLegacyStreamsAsyncTest()
-        {
-            var client = new YoutubeClient();
-
-            // This video doesn't support adaptive streams and is parseable from watch page
-            // Doesn't need deciphering
-            var videoInfo = await client.GetVideoInfoAsync("LsNPjFXIPT8", false, false);
-
-            Assert.IsNotNull(videoInfo);
-            Assert.AreEqual("LsNPjFXIPT8", videoInfo.Id);
-            Assert.AreEqual("kyoumei no true force iyasine", videoInfo.Title);
-            Assert.AreEqual("Tyrrrz", videoInfo.Author);
-            Assert.AreEqual(TimeSpan.FromSeconds(103), videoInfo.Length);
-            Assert.IsTrue(0d <= videoInfo.AverageRating);
-            Assert.IsTrue(1ul <= videoInfo.ViewCount);
-            Assert.AreEqual(0, videoInfo.Keywords.Length);
-            Assert.IsTrue(videoInfo.Keywords.All(k => !string.IsNullOrWhiteSpace(k)));
-            Assert.AreEqual(2, videoInfo.Watermarks.Length);
-
-            Assert.IsFalse(videoInfo.NeedsDeciphering);
-            Assert.IsFalse(videoInfo.HasClosedCaptions);
-            Assert.IsTrue(videoInfo.IsEmbeddingAllowed);
-            Assert.IsTrue(videoInfo.IsListed);
-            Assert.IsTrue(videoInfo.IsRatingAllowed);
-            Assert.IsFalse(videoInfo.IsMuted);
-
-            Assert.IsNotNull(videoInfo.Streams);
-            Assert.AreEqual(5, videoInfo.Streams.Length);
-            foreach (var stream in videoInfo.Streams)
-            {
-                Assert.IsNotNull(stream.Url);
-                Assert.IsNotNull(stream.TypeString);
-                Assert.IsNull(stream.Signature);
-                Assert.IsNotNull(stream.FileExtension);
-                Assert.IsFalse(stream.NeedsDeciphering);
-            }
-        }
-
-        [TestMethod]
-        public void DecipherStreamsTest()
+        public void DecipherStreams_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -266,7 +254,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DecipherStreamsAsyncTest()
+        public async Task DecipherStreamsAsync_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -284,7 +272,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetFileSizeTest()
+        public void GetFileSize_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -297,7 +285,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetFileSizeAsyncTest()
+        public async Task GetFileSizeAsync_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -310,7 +298,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void GetAllFileSizesTest()
+        public void GetAllFileSizes_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -325,7 +313,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task GetAllFileSizesAsyncTest()
+        public async Task GetAllFileSizesAsync_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -340,7 +328,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void DownloadVideoTest()
+        public void DownloadVideo_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -356,7 +344,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoAsyncTest()
+        public async Task DownloadVideoAsync_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -372,7 +360,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public void DownloadVideoToFileTest()
+        public void DownloadVideoToFile_Normal_Test()
         {
             var client = new YoutubeClient();
 
@@ -393,7 +381,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoToFileAsyncTest()
+        public async Task DownloadVideoToFileAsync_Normal_Test()
         {
             var client = new YoutubeClient();
 
