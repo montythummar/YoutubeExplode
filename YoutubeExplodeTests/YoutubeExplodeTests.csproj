@@ -54,9 +54,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Mocks\FakeRequestService.cs" />
     <Compile Include="YoutubeClientIntegrationTests.cs" />
-    <Compile Include="YoutubeClientUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -64,13 +62,6 @@
       <Project>{70e7df6a-bcfc-4818-ba0d-20f3e111345d}</Project>
       <Name>YoutubeExplode</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Mocks\FakePlayerSourceCodeResponse.txt" />
-    <EmbeddedResource Include="Mocks\FakeWatchPageResponse.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Mocks\FakeInternalApiResponse.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

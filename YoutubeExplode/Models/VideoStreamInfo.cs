@@ -48,17 +48,20 @@ namespace YoutubeExplode.Models
         public bool IsLiveStream => GetIsLiveStream(Itag);
 
         /// <summary>
-        /// Video resolution
+        /// Video resolution.
+        /// Some streams may not have this property.
         /// </summary>
         public VideoStreamResolution Resolution { get; internal set; }
 
         /// <summary>
-        /// Video bitrate (bits per second)
+        /// Video bitrate (bits per second).
+        /// Some streams may not have this property.
         /// </summary>
         public long Bitrate { get; internal set; }
 
         /// <summary>
-        /// Frame update frequency of this video
+        /// Frame update frequency of this video.
+        /// Some streams may not have this property.
         /// </summary>
         public double Fps { get; internal set; }
 
