@@ -3,20 +3,10 @@
 namespace YoutubeExplode.Models
 {
     /// <summary>
-    /// Youtube Video info
+    /// Youtube video meta data
     /// </summary>
     public class VideoInfo
     {
-        /// <summary>
-        /// Version of the video player, used for this video's playback
-        /// </summary>
-        internal string PlayerVersion { get; set; }
-
-        /// <summary>
-        /// Url of dash xml
-        /// </summary>
-        internal string DashMpdUrl { get; set; }
-
         /// <summary>
         /// Video ID
         /// </summary>
@@ -31,6 +21,34 @@ namespace YoutubeExplode.Models
         /// Video author
         /// </summary>
         public string Author { get; internal set; }
+
+        /// <summary>
+        /// Length of the video
+        /// </summary>
+        public TimeSpan Length { get; internal set; }
+
+        /// <summary>
+        /// View count
+        /// </summary>
+        public long ViewCount { get; internal set; }
+
+        /// <summary>
+        /// Average user rating.
+        /// Ranges from 0 stars to 5 stars.
+        /// </summary>
+        public double AverageRating { get; internal set; }
+
+        /// <summary>
+        /// Normalized average user rating.
+        /// Ranges from 0 to 1.
+        /// Also represents the "thumbs up" ratio in the new rating system.
+        /// </summary>
+        public double NormalizedAverageRating => AverageRating / 5;
+
+        /// <summary>
+        /// Keywords used for searching
+        /// </summary>
+        public string[] Keywords { get; set; }
 
         /// <summary>
         /// URL for the thumbnail image
@@ -63,57 +81,29 @@ namespace YoutubeExplode.Models
         public string[] Watermarks { get; internal set; }
 
         /// <summary>
-        /// Length of the video
-        /// </summary>
-        public TimeSpan Length { get; internal set; }
-
-        /// <summary>
         /// Whether this video is listed publicly
         /// </summary>
         public bool IsListed { get; internal set; }
 
         /// <summary>
-        /// Whether it's allowed to leave user rating on this video
+        /// Whether it is allowed to leave user rating on this video
         /// </summary>
         public bool IsRatingAllowed { get; internal set; }
 
         /// <summary>
-        /// Whether the audio of this video has been muted
+        /// Whether the audio has been muted on this video
         /// </summary>
         public bool IsMuted { get; internal set; }
 
         /// <summary>
-        /// Whether it's allowed to embed this video outside of youtube
+        /// Whether it is allowed to embed this video outside of youtube
         /// </summary>
         public bool IsEmbeddingAllowed { get; internal set; }
 
         /// <summary>
         /// Whether this video has closed captions
         /// </summary>
-        public bool HasClosedCaptions { get; internal set; }
-
-        /// <summary>
-        /// View count
-        /// </summary>
-        public long ViewCount { get; internal set; }
-
-        /// <summary>
-        /// Average user rating.
-        /// Ranges from 0 stars to 5 stars.
-        /// </summary>
-        public double AverageRating { get; internal set; }
-
-        /// <summary>
-        /// Normalized average user rating.
-        /// Ranges from 0 to 1.
-        /// Also represents the "thumbs up" ratio in the new rating system.
-        /// </summary>
-        public double NormalizedAverageRating => AverageRating/5;
-
-        /// <summary>
-        /// Video keywords used for searching
-        /// </summary>
-        public string[] Keywords { get; set; }
+        public bool HasClosedCaptions => CaptionTracks != null && CaptionTracks.Length > 0;
 
         /// <summary>
         /// Video streams
@@ -121,9 +111,24 @@ namespace YoutubeExplode.Models
         public VideoStreamInfo[] Streams { get; internal set; }
 
         /// <summary>
+        /// Closed captions
+        /// </summary>
+        public VideoCaptionTrackInfo[] CaptionTracks { get; internal set; }
+
+        /// <summary>
         /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
         /// </summary>
         public bool NeedsDeciphering { get; internal set; }
+
+        /// <summary>
+        /// Version of the video player, used for this video's playback
+        /// </summary>
+        internal string PlayerVersion { get; set; }
+
+        /// <summary>
+        /// Url of dash xml
+        /// </summary>
+        internal string DashMpdUrl { get; set; }
 
         internal VideoInfo() { }
     }

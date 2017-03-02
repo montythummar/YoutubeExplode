@@ -13,47 +13,54 @@ If you want to download the demo application - navigate to the [releases](https:
 
 **Features:**
 
-- Get video meta and video streams meta
-- Multiple sources for video meta data (watch page, internal API)
-- Multiple sources for stream meta data (non-adaptive, adaptive embedded, adaptive dash)
-- Strongly-typed enums for all applicable properties, along with raw strings
-- Automatically or on-demand decipher signatures for video streams
-- Automatically or on-demand get video file sizes
-- Download video to stream or to file
-- Support for both synchronous and asynchronous API wherever possible
-- Methods to extract video ID from URL and to validate video ID
-- Dependency injection for HTTP handler
-- Resource caching
-- XML documentation
+- Gets video meta and video streams meta
+- Supports video meta data from different sources: watch page, internal API
+- Supports stream meta data from different sources: non-adaptive, adaptive embedded, adaptive dash
+- Meta data properties are exposed via enums and other strong types
+- Deciphers signatures for video streams automatically or on-demand
+- Gets file sizes for video streams automatically or on-demand
+- Downloads video to stream or to file
+- Exposes `async` API as well as standard synchronous API without wrappers
+- Exposes static methods to extract video ID from URL and to validate video ID
+- Allows substituting default HTTP handler
+- Caches decompiled player sources to increase performance
+- XML documentation for every public member
 
 **Parsed meta data:**
 
  - Video id, title and author
- - Search keywords
  - Length
  - View count
  - Rating
+ - Search keywords
  - URLs of thumbnail, high/medium/low quality images
  - URLS of watermarks
- - Whether this video is listed, is muted, allows ratings, allows embedding and has closed captions
+ - Is listed, is muted, allows ratings, allows embedding, has closed captions
  - Video streams
+ - Caption tracks
 
-The video stream objects include the following meta data:
+Video stream objects include the following meta data:
 
  - URL
  - Type
  - Quality
  - Resolution
- - Bitrate (bits/s)
+ - Bitrate
  - FPS
- - File size (bytes)
+ - File size
+
+Caption track objects include the following meta data:
+
+ - URL
+ - Language
 
 **Usage:**
+
+Check out `YoutubeExplodeDemoConsole` or `YoutubeExplodeDemoWpf` projects for real examples.
 
 ```c#
 using System;
 using System.Linq;
-//using System.Threading.Tasks;
 using YoutubeExplode;
 
 // Get client instance

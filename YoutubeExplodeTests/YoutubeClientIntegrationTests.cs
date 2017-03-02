@@ -200,6 +200,9 @@ namespace YoutubeExplode.Tests
                 Assert.IsNotNull(stream.FileExtension);
                 Assert.IsFalse(stream.NeedsDeciphering);
             }
+
+            Assert.IsNotNull(videoInfo.CaptionTracks);
+            Assert.AreEqual(1, videoInfo.CaptionTracks.Length);
         }
 
         [TestMethod]
@@ -239,6 +242,9 @@ namespace YoutubeExplode.Tests
                 Assert.IsNotNull(stream.FileExtension);
                 Assert.IsFalse(stream.NeedsDeciphering);
             }
+
+            Assert.IsNotNull(videoInfo.CaptionTracks);
+            Assert.AreEqual(1, videoInfo.CaptionTracks.Length);
         }
 
         [TestMethod]

@@ -3,7 +3,7 @@
 namespace YoutubeExplode.Models
 {
     /// <summary>
-    /// Stream endpoint for a Youtube video
+    /// Youtube video stream meta data
     /// </summary>
     public partial class VideoStreamInfo
     {
@@ -90,7 +90,7 @@ namespace YoutubeExplode.Models
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{Type} | {Quality}";
+            return $"{AdaptiveMode} | {Type} | {Quality}";
         }
     }
 

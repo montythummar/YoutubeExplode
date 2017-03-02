@@ -136,7 +136,7 @@ namespace YoutubeExplode.Internal
             if (rawUrlEncoded.IsBlank())
                 throw new ArgumentNullException(nameof(rawUrlEncoded));
 
-            foreach (var streamRaw in rawUrlEncoded.Split(","))
+            foreach (string streamRaw in rawUrlEncoded.Split(","))
             {
                 var dic = ParseDictionaryUrlEncoded(streamRaw);
 
@@ -150,7 +150,7 @@ namespace YoutubeExplode.Internal
                 long bitrate = dic.GetOrDefault("bitrate").ParseLongOrDefault();
                 double fps = dic.GetOrDefault("fps").ParseDoubleOrDefault();
 
-                // Yield a stream object
+                // Yield
                 yield return new VideoStreamInfo
                 {
                     Signature = sig,
@@ -164,12 +164,12 @@ namespace YoutubeExplode.Internal
             }
         }
 
-        public static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosMpd(string rawXml)
+        public static IEnumerable<VideoStreamInfo> ParseVideoStreamInfosMpd(string rawMpd)
         {
-            if (rawXml.IsBlank())
-                throw new ArgumentNullException(nameof(rawXml));
+            if (rawMpd.IsBlank())
+                throw new ArgumentNullException(nameof(rawMpd));
 
-            var root = XElement.Parse(rawXml);
+            var root = XElement.Parse(rawMpd);
             var xStreamInfos = root.XPathSelectElements("//*[local-name() = 'Representation']");
 
             if (xStreamInfos == null)
@@ -206,6 +206,28 @@ namespace YoutubeExplode.Internal
                     Resolution = new VideoStreamResolution(width, height),
                     Bitrate = bitrate,
                     Fps = fps
+                };
+            }
+        }
+
+        private static IEnumerable<VideoCaptionTrackInfo> ParseVideoCaptionTrackInfosUrlEncoded(string rawUrlEncoded)
+        {
+            if (rawUrlEncoded.IsBlank())
+                throw new ArgumentNullException(nameof(rawUrlEncoded));
+
+            foreach (string captionRaw in rawUrlEncoded.Split(","))
+            {
+                var dic = ParseDictionaryUrlEncoded(captionRaw);
+
+                // Extract values
+                string url = dic.GetOrDefault("u");
+                string lang = dic.GetOrDefault("lc");
+
+                // Yield
+                yield return new VideoCaptionTrackInfo
+                {
+                    Url = url,
+                    Language = lang
                 };
             }
         }
@@ -254,7 +276,6 @@ namespace YoutubeExplode.Internal
             result.IsRatingAllowed = videoInfoEncoded.GetOrDefault("allow_ratings", 1) == 1;
             result.IsMuted = videoInfoEncoded.GetOrDefault("muted", 0) == 1;
             result.IsEmbeddingAllowed = videoInfoEncoded.GetOrDefault("allow_embed", 1) == 1;
-            result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfoEncoded.GetOrDefault("view_count", 0L);
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating", 0.0);
             result.Keywords = videoInfoEncoded.GetOrDefault("keywords", "").Split(",");
@@ -269,6 +290,13 @@ namespace YoutubeExplode.Internal
             if (streamsRaw.IsNotBlank())
                 streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
             result.Streams = streams.ToArray();
+
+            // Get the captions
+            var captions = new List<VideoCaptionTrackInfo>();
+            string captionsRaw = videoInfoEncoded.GetOrDefault("caption_tracks", "");
+            if (captionsRaw.IsNotBlank())
+                captions.AddRange(ParseVideoCaptionTrackInfosUrlEncoded(captionsRaw));
+            result.CaptionTracks = captions.ToArray();
 
             // Return
             return result;
@@ -304,7 +332,6 @@ namespace YoutubeExplode.Internal
             result.IsRatingAllowed = videoInfoEncoded.GetOrDefault("allow_ratings").ParseIntOrDefault(1) == 1;
             result.IsMuted = videoInfoEncoded.GetOrDefault("muted").ParseIntOrDefault() == 1;
             result.IsEmbeddingAllowed = videoInfoEncoded.GetOrDefault("allow_embed").ParseIntOrDefault(1) == 1;
-            result.HasClosedCaptions = videoInfoEncoded.ContainsKey("caption_audio_tracks");
             result.ViewCount = videoInfoEncoded.GetOrDefault("view_count").ParseLongOrDefault();
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating").ParseDoubleOrDefault();
             result.Keywords = videoInfoEncoded.GetOrDefault("keywords").Split(",");
@@ -319,6 +346,13 @@ namespace YoutubeExplode.Internal
             if (streamsRaw.IsNotBlank())
                 streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
             result.Streams = streams.ToArray();
+
+            // Get the captions
+            var captions = new List<VideoCaptionTrackInfo>();
+            string captionsRaw = videoInfoEncoded.GetOrDefault("caption_tracks");
+            if (captionsRaw.IsNotBlank())
+                captions.AddRange(ParseVideoCaptionTrackInfosUrlEncoded(captionsRaw));
+            result.CaptionTracks = captions.ToArray();
 
             // Return
             return result;

@@ -44,6 +44,7 @@
     <Compile Include="Internal\ReverseScramblingOperation.cs" />
     <Compile Include="Internal\SliceScramblingOperation.cs" />
     <Compile Include="Internal\SwapScramblingOperation.cs" />
+    <Compile Include="Models\VideoCaptionTrackInfo.cs" />
     <Compile Include="Models\VideoStreamAdaptiveMode.cs" />
     <Compile Include="Models\VideoStreamResolution.cs" />
     <Compile Include="Services\DefaultRequestService.cs" />
