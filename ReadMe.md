@@ -75,11 +75,13 @@ Console.WriteLine($"Author: {videoInfo.Author}");
 Console.WriteLine($"Length: {videoInfo.Length}");
 
 // Download the highest quality video stream to file
-var streamInfo = videoInfo.Streams.OrderBy(s => (int) s.Quality).First();
+var streamInfo = videoInfo.Streams.OrderBy(s => (int) s.Quality).Last();
 string fileName = $"{videoInfo.Id}_{streamInfo.Quality}.{streamInfo.FileExtension}";
 using (var input = await client.DownloadVideo(streamInfo))
 using (var output = new File.Create(fileName))
     await input.CopyToAsync(output);
+
+client.Dispose();
 
 ```
 
