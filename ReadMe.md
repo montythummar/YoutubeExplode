@@ -2,14 +2,14 @@ YoutubeExplode
 ===================
 
 
-Light-weight .NET library that parses out various public information on Youtube videos, including download URLs. Works with signed videos.
+Light-weight .NET library that parses public meta data on Youtube videos.
 
 
 **Download:**
 
 The library is distributed as a [nuget package](https://www.nuget.org/packages/YoutubeExplode): `Install-Package YoutubeExplode`
 
-If you want to download the demo application - navigate to the [releases](https://github.com/Tyrrrz/YoutubeExplode/releases)
+You can also find the last stable version in [releases](https://github.com/Tyrrrz/YoutubeExplode/releases)
 
 **Features:**
 
@@ -20,7 +20,7 @@ If you want to download the demo application - navigate to the [releases](https:
 - Deciphers signatures for video streams automatically or on-demand
 - Gets file sizes for video streams automatically or on-demand
 - Downloads video to stream or to file
-- Exposes `async` API as well as standard synchronous API without wrappers
+- Exposes _async_ API as well as standard synchronous API without wrappers
 - Exposes static methods to extract video ID from URL and to validate video ID
 - Allows substituting default HTTP handler
 - Caches decompiled player sources to increase performance
