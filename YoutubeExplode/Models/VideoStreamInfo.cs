@@ -28,14 +28,9 @@ namespace YoutubeExplode.Models
         public int Itag { get; internal set; }
 
         /// <summary>
-        /// Whether this video contains video
+        /// Adaptive mode
         /// </summary>
-        public bool HasVideo => GetHasVideo(Itag);
-
-        /// <summary>
-        /// Whether this video contains audio
-        /// </summary>
-        public bool HasAudio => GetHasAudio(Itag);
+        public VideoStreamAdaptiveMode AdaptiveMode => GetAdaptiveMode(Itag);
 
         /// <summary>
         /// Whether this video is a 3D video
@@ -96,17 +91,15 @@ namespace YoutubeExplode.Models
 
     public partial class VideoStreamInfo
     {
-        private static bool GetHasVideo(int itag)
+        private static VideoStreamAdaptiveMode GetAdaptiveMode(int itag)
         {
-            return itag.IsEither(17, 36, 5, 18, 22, 43, 82, 83, 84, 85, 100, 160, 133, 134, 135, 136, 298, 137, 299, 264,
-                266, 138, 278, 242, 243, 244, 247, 248, 271, 313, 272, 302, 308, 315, 330, 331, 332, 333, 334, 335, 336,
-                337, 91, 92, 93, 94, 95, 96);
-        }
+            if (itag.IsEither(160, 133, 134, 135, 136, 298, 137, 299, 264, 266, 138, 278, 242, 243, 244, 247, 248, 271,
+                313, 272, 302, 303, 308, 315, 330, 331, 332, 333, 334, 335, 336, 337))
+                return VideoStreamAdaptiveMode.Video;
+            if (itag.IsEither(140, 141, 171, 249, 250, 251))
+                return VideoStreamAdaptiveMode.Audio;
 
-        private static bool GetHasAudio(int itag)
-        {
-            return itag.IsEither(17, 36, 5, 18, 22, 43, 82, 83, 84, 85, 100, 140, 141, 171, 249, 250, 251, 91, 92, 93,
-                94, 95, 96, 127, 128);
+            return VideoStreamAdaptiveMode.None;
         }
 
         private static bool GetIs3D(int itag)

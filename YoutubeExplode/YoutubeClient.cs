@@ -196,10 +196,8 @@ namespace YoutubeExplode
             // Finalize the stream list
             result.Streams =
                 result.Streams
-                    .OrderBy(s => s.HasVideo)
-                    .ThenBy(s => (int) s.Quality)
-                    .ThenBy(s => s.Fps)
-                    .Reverse()
+                    .OrderByDescending(s => (int) s.Quality)
+                    .ThenByDescending(s => s.Fps)
                     .ToArray();
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
@@ -246,10 +244,8 @@ namespace YoutubeExplode
             // Finalize the stream list
             result.Streams =
                 result.Streams
-                    .OrderBy(s => s.HasVideo)
-                    .ThenBy(s => (int) s.Quality)
-                    .ThenBy(s => s.Fps)
-                    .Reverse()
+                    .OrderByDescending(s => (int) s.Quality)
+                    .ThenByDescending(s => s.Fps)
                     .ToArray();
             result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
