@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Tyrrrz.Extensions;
+using YoutubeExplode.Models;
 
 namespace YoutubeExplode.DemoConsole
 {
@@ -60,15 +61,15 @@ namespace YoutubeExplode.DemoConsole
                 string normFileSize = NormalizeFileSize(streamInfo.FileSize);
 
                 // Video+audio streams (non-adaptive)
-                if (streamInfo.HasVideo && streamInfo.HasAudio)
+                if (streamInfo.AdaptiveMode == VideoStreamAdaptiveMode.None)
                 {
                     Console.WriteLine($"\t[{i}] Mixed | {streamInfo.Type} | {streamInfo.Quality} | {normFileSize}");
                 }
                 // Video only streams
-                else if (streamInfo.HasVideo)
+                else if (streamInfo.AdaptiveMode == VideoStreamAdaptiveMode.Video)
                     Console.WriteLine($"\t[{i}] Video | {streamInfo.Type} | {streamInfo.Quality} | {streamInfo.Fps} FPS | {normFileSize}");
                 // Audio only streams
-                else if (streamInfo.HasAudio)
+                else if (streamInfo.AdaptiveMode == VideoStreamAdaptiveMode.Audio)
                     Console.WriteLine($"\t[{i}] Audio | {streamInfo.Type} | {normFileSize}");
                 // This should not happen
                 else
