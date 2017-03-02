@@ -65,9 +65,9 @@ namespace YoutubeExplode.DemoWpf.ViewModels
         public RelayCommand<VideoStreamInfo> OpenVideoCommand { get; }
         public RelayCommand<VideoStreamInfo> DownloadVideoCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(YoutubeClient client)
         {
-            _client = new YoutubeClient();
+            _client = client;
 
             // Commands
             GetVideoInfoCommand = new RelayCommand(GetVideoInfoAsync, () => !IsBusy);

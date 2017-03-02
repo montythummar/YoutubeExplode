@@ -13,27 +13,18 @@ namespace YoutubeExplode.Services
         /// Performs a GET request and returns the response content as a string
         /// </summary>
         /// <returns>Respose content as a string or null if the operation failed</returns>
-        string GetString(string url);
-
-        /// <inheritdoc cref="GetString"/>
         Task<string> GetStringAsync(string url);
 
         /// <summary>
-        /// Performs a HEAD request and returns header dictionary
+        /// Performs a HEAD request and returns response headers as a dictionary
         /// </summary>
         /// <returns>Header dictionary or null if the operation failed</returns>
-        IDictionary<string, string> GetHeaders(string url);
-
-        /// <inheritdoc cref="GetHeaders"/>
         Task<IDictionary<string, string>> GetHeadersAsync(string url);
 
         /// <summary>
-        /// Performs a GET request and returns the binary content of the response as a stream
+        /// Performs a GET request and returns the response content as a stream
         /// </summary>
         /// <returns>Response stream or null if the operation failed</returns>
-        Stream DownloadFile(string url);
-
-        /// <inheritdoc cref="DownloadFile"/>
-        Task<Stream> DownloadFileAsync(string url);
+        Task<Stream> GetStreamAsync(string url);
     }
 }

@@ -11,7 +11,14 @@ namespace YoutubeExplode.DemoWpf
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
+            SimpleIoc.Default.Register(() => new YoutubeClient());
+
             SimpleIoc.Default.Register<IMainViewModel, MainViewModel>();
+        }
+
+        public static void Cleanup()
+        {
+            Resolve<YoutubeClient>().Dispose();
         }
 
         public static T Resolve<T>() => ServiceLocator.Current.GetInstance<T>();

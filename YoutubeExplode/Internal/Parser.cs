@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Models;
 
@@ -93,22 +92,22 @@ namespace YoutubeExplode.Internal
                 throw new ArgumentNullException(nameof(rawMpd));
 
             var root = XElement.Parse(rawMpd);
-            var xStreamInfos = root.XPathSelectElements("//*[local-name() = 'Representation']");
+            var ns = root.Name.Namespace;
+            var xStreamInfos = root.Descendants(ns + "Representation");
 
             if (xStreamInfos == null)
-                throw new Exception("Cannot find streams in input XML");
+                throw new Exception("Cannot find streams in input MPD");
 
             foreach (var xStreamInfo in xStreamInfos)
             {
-                // Skip partial streams
+                // Skip partial streams (but shoud I? :thinking:)
                 string initUrl =
-                    xStreamInfo.XPathSelectElement(".//*[local-name() = 'Initialization']")?
-                        .Attribute("sourceURL")?.Value;
+                    xStreamInfo.Descendants(ns + "Initialization").FirstOrDefault()?.Attribute("sourceURL")?.Value;
                 if (initUrl.IsNotBlank() && initUrl.ContainsInvariant("sq/"))
                     continue;
 
                 // Extract values
-                string url = xStreamInfo.XPathSelectElement("*[local-name() = 'BaseURL']")?.Value;
+                string url = xStreamInfo.Element(ns + "BaseURL")?.Value;
                 int itag = (xStreamInfo.Attribute("id")?.Value).ParseIntOrDefault();
                 int width = (xStreamInfo.Attribute("width")?.Value).ParseIntOrDefault();
                 int height = (xStreamInfo.Attribute("height")?.Value).ParseIntOrDefault();

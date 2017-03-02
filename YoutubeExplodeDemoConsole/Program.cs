@@ -43,6 +43,9 @@ namespace YoutubeExplode.DemoConsole
             Console.WindowWidth = 86;
             Console.WindowHeight = 40;
 
+            // Client
+            var client = new YoutubeClient();
+
             // Get the video ID
             Console.WriteLine("Enter Youtube video ID or URL:");
             string id = Console.ReadLine();
@@ -52,7 +55,7 @@ namespace YoutubeExplode.DemoConsole
             Console.WriteLine();
 
             // Get the video info
-            var videoInfo = YoutubeClient.Instance.GetVideoInfo(id);
+            var videoInfo = client.GetVideoInfoAsync(id).Result;
 
             // Output some meta data
             Console.WriteLine($"{videoInfo.Title} | {videoInfo.ViewCount:N0} views | {videoInfo.AverageRating:0.##}* rating");
@@ -91,10 +94,13 @@ namespace YoutubeExplode.DemoConsole
             string fileName = $"{videoInfo.Title}.{selectedStream.FileExtension}".Without(Path.GetInvalidFileNameChars());
 
             // Download video
-            YoutubeClient.Instance.DownloadVideo(selectedStream, fileName);
+            using (var input = client.DownloadVideoAsync(selectedStream).Result)
+            using (var output = File.Create(fileName))
+                input.CopyTo(output);
 
             Console.WriteLine("Done!");
             Console.ReadKey();
+            client.Dispose();
         }
     }
 }

@@ -132,13 +132,13 @@
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\YoutubeExplode\YoutubeExplode.csproj">
-      <Project>{70e7df6a-bcfc-4818-ba0d-20f3e111345d}</Project>
-      <Name>YoutubeExplode</Name>
-    </ProjectReference>
+    <Resource Include="favicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="favicon.ico" />
+    <ProjectReference Include="..\YoutubeExplode\YoutubeExplode.csproj">
+      <Project>{2019e360-0e05-4824-9ede-7723af45e10c}</Project>
+      <Name>YoutubeExplode</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

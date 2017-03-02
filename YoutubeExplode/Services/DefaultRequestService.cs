@@ -2,64 +2,40 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 using YoutubeExplode.Internal;
 
 namespace YoutubeExplode.Services
 {
     /// <summary>
-    /// Uses <see cref="WebRequest"/> for handling requests
+    /// Uses <see cref="HttpClient"/> for handling requests
     /// </summary>
-    public partial class DefaultRequestService : IRequestService
+    public partial class DefaultRequestService : IRequestService, IDisposable
     {
         /// <summary>
-        /// Whether to throw an exception when a request fails
+        /// Http client in use by the class
         /// </summary>
-        public bool ShouldThrowOnErrors { get; set; }
+        public HttpClient HttpClient { get; set; }
 
         /// <summary>
-        /// Cookie container for sharing cookies among requests
+        /// Creates an instance of <see cref="DefaultRequestService"/>
         /// </summary>
-        public CookieContainer CookieContainer { get; set; }
-
-        /// <summary>
-        /// Creates <see cref="WebRequest"/> for use by the other methods
-        /// </summary>
-        protected virtual WebRequest CreateWebRequest(string url, string method)
+        public DefaultRequestService()
         {
-            var request = WebRequest.CreateHttp(url);
-            request.Method = method;
-            request.UserAgent = "YoutubeExplode (github.com/Tyrrrz/YoutubeExplode)";
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            if (CookieContainer != null)
-                request.CookieContainer = CookieContainer;
-
-            return request;
+            var httpClientHandler = new HttpClientHandler();
+            if (httpClientHandler.SupportsAutomaticDecompression)
+                httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            httpClientHandler.UseCookies = false;
+            HttpClient = new HttpClient(httpClientHandler);
         }
 
-        /// <inheritdoc />
-        public virtual string GetString(string url)
+        /// <summary>
+        /// Creates an instance of <see cref="DefaultRequestService"/> with a custom <see cref="HttpClient"/>
+        /// </summary>
+        public DefaultRequestService(HttpClient client)
         {
-            if (url.IsBlank())
-                throw new ArgumentNullException(nameof(url));
-
-            try
-            {
-                var request = CreateWebRequest(url, "GET");
-
-                using (var response = request.GetResponse())
-                {
-                    var data = GetArray(response.GetResponseStream());
-                    return Encoding.UTF8.GetString(data);
-                }
-            }
-            catch
-            {
-                if (ShouldThrowOnErrors) throw;
-                return null;
-            }
+            HttpClient = client;
         }
 
         /// <inheritdoc />
@@ -70,39 +46,10 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = CreateWebRequest(url, "GET");
-
-                using (var response = await request.GetResponseAsync())
-                {
-                    var data = await GetArrayAsync(response.GetResponseStream());
-                    return Encoding.UTF8.GetString(data);
-                }
+                return await HttpClient.GetStringAsync(url);
             }
             catch
             {
-                if (ShouldThrowOnErrors) throw;
-                return null;
-            }
-        }
-
-        /// <inheritdoc />
-        public virtual IDictionary<string, string> GetHeaders(string url)
-        {
-            if (url.IsBlank())
-                throw new ArgumentNullException(nameof(url));
-
-            try
-            {
-                var request = CreateWebRequest(url, "HEAD");
-
-                using (var response = request.GetResponse())
-                {
-                    return WebHeadersToDictionary(response.Headers);
-                }
-            }
-            catch
-            {
-                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
@@ -115,113 +62,47 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = CreateWebRequest(url, "HEAD");
-
-                using (var response = await request.GetResponseAsync())
-                {
-                    return WebHeadersToDictionary(response.Headers);
-                }
+                var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
+                return NormalizeResponseHeaders(response);
             }
             catch
             {
-                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
 
         /// <inheritdoc />
-        public virtual Stream DownloadFile(string url)
+        public virtual async Task<Stream> GetStreamAsync(string url)
         {
             if (url.IsBlank())
                 throw new ArgumentNullException(nameof(url));
 
             try
             {
-                var request = CreateWebRequest(url, "GET");
-
-                return request.GetResponse().GetResponseStream();
+                return await HttpClient.GetStreamAsync(url);
             }
             catch
             {
-                if (ShouldThrowOnErrors) throw;
                 return null;
             }
         }
 
         /// <inheritdoc />
-        public virtual async Task<Stream> DownloadFileAsync(string url)
+        public virtual void Dispose()
         {
-            if (url.IsBlank())
-                throw new ArgumentNullException(nameof(url));
-
-            try
-            {
-                var request = CreateWebRequest(url, "GET");
-
-                return (await request.GetResponseAsync()).GetResponseStream();
-            }
-            catch
-            {
-                if (ShouldThrowOnErrors) throw;
-                return null;
-            }
+            HttpClient.Dispose();
         }
     }
 
     public partial class DefaultRequestService
     {
-        /// <summary>
-        /// Default instance
-        /// </summary>
-        public static DefaultRequestService Instance { get; } = new DefaultRequestService();
-
-        /// <summary>
-        /// Reads stream into an array
-        /// </summary>
-        protected static byte[] GetArray(Stream input)
+        private static IDictionary<string, string> NormalizeResponseHeaders(HttpResponseMessage response)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
-            using (input)
-            using (var ms = new MemoryStream())
-            {
-                input.CopyTo(ms);
-                return ms.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Reads stream into an array
-        /// </summary>
-        protected static async Task<byte[]> GetArrayAsync(Stream input)
-        {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
-            using (input)
-            using (var ms = new MemoryStream())
-            {
-                await input.CopyToAsync(ms);
-                return ms.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Converts <see cref="WebHeaderCollection"/> to <see cref="IDictionary{TKey,TValue}" />
-        /// </summary>
-        protected static IDictionary<string, string> WebHeadersToDictionary(WebHeaderCollection headers)
-        {
-            if (headers == null)
-                throw new ArgumentNullException(nameof(headers));
-
-            var result = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            for (int i = 0; i < headers.Count; i++)
-            {
-                string headerName = headers.GetKey(i);
-                string headerValue = headers.Get(i);
-                result.Add(headerName, headerValue);
-            }
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var header in response.Headers)
+                result.Add(header.Key, header.Value.JoinToString(" "));
+            foreach (var header in response.Content.Headers)
+                result.Add(header.Key, header.Value.JoinToString(" "));
             return result;
         }
     }

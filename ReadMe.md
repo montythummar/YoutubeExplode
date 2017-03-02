@@ -2,7 +2,7 @@ YoutubeExplode
 ===================
 
 
-Light-weight .NET library that parses public meta data on Youtube videos.
+Zero-dependency .NET library that parses public meta data on Youtube videos
 
 
 **Download:**
@@ -14,17 +14,17 @@ You can also find the last stable version in [releases](https://github.com/Tyrrr
 **Features:**
 
 - Gets video meta and video streams meta
-- Supports video meta data from different sources: watch page, internal API
-- Supports stream meta data from different sources: non-adaptive, adaptive embedded, adaptive dash
+- Supports stream meta data from multiple sources: non-adaptive, adaptive embedded, adaptive dash
 - Meta data properties are exposed via enums and other strong types
 - Deciphers signatures for video streams automatically or on-demand
 - Gets file sizes for video streams automatically or on-demand
-- Downloads video to stream or to file
-- Exposes _async_ API as well as standard synchronous API without wrappers
+- Downloads video to stream
 - Exposes static methods to extract video ID from URL and to validate video ID
-- Allows substituting default HTTP handler
-- Caches decompiled player sources to increase performance
+- Asynchronous API
+- Caches consistent resources to increase performance
+- Allows substitution of the default HTTP handler to implement custom logic
 - XML documentation for every public member
+- Built against .NET Standard 1.1 and supports most concrete .NET Frameworks (refer to [this](https://github.com/dotnet/standard/blob/master/docs/versions.md))
 
 **Parsed meta data:**
 
@@ -63,24 +63,23 @@ using System;
 using System.Linq;
 using YoutubeExplode;
 
-// Get client instance
+// Create client instance
 var client = new YoutubeClient();
-//       ... YoutubeClient.Instance;
 
-// Get info
-var videoInfo = client.GetVideoInfo("bx_KorIwABQ");
-//          ... await client.GetVideoInfoAsync("bx_KorIwABQ");
+// Get video info
+var videoInfo = await client.GetVideoInfoAsync("bx_KorIwABQ");
 
 // Output some of it to console
 Console.WriteLine($"Title: {videoInfo.Title}");
 Console.WriteLine($"Author: {videoInfo.Author}");
 Console.WriteLine($"Length: {videoInfo.Length}");
 
-// Download the first video stream to file
-var streamInfo = videoInfo.Streams.First();
+// Download the highest quality video stream to file
+var streamInfo = videoInfo.Streams.OrderBy(s => (int) s.Quality).First();
 string fileName = $"{videoInfo.Id}_{streamInfo.Quality}.{streamInfo.FileExtension}";
-client.DownloadVideo(streamInfo, fileName);
-// await client.DownloadVideoAsync(streamInfo, fileName);
+using (var input = await client.DownloadVideo(streamInfo))
+using (var output = new File.Create(fileName))
+    await input.CopyToAsync(output);
 
 ```
 

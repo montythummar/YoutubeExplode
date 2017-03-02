@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>YoutubeExplode</id>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
     <authors>Tyrrrz</authors>
     <owners>Tyrrrz</owners>
     <licenseUrl>https://github.com/Tyrrrz/YoutubeExplode/blob/master/License.txt</licenseUrl>
@@ -11,18 +11,10 @@
     <description>Youtube parser</description>
     <copyright>Copyright (C) Alexey Golub 2016-2017</copyright>
     <tags>youtube parse download video</tags>
-
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System" />
-      <frameworkAssembly assemblyName="System.Core" />
-      <frameworkAssembly assemblyName="System.Net" />
-      <frameworkAssembly assemblyName="System.Xml" />
-      <frameworkAssembly assemblyName="System.Xml.Linq" />
-    </frameworkAssemblies>
   </metadata>
 
   <files>
-    <file src="YoutubeExplode\bin\Release\YoutubeExplode.dll" target="lib\net45\YoutubeExplode.dll" />
-    <file src="YoutubeExplode\bin\Release\YoutubeExplode.xml" target="lib\net45\YoutubeExplode.xml" />
+    <file src="YoutubeExplode\bin\Release\YoutubeExplode.dll" target="lib\netstandard1.1\YoutubeExplode.dll" />
+    <file src="YoutubeExplode\bin\Release\YoutubeExplode.xml" target="lib\netstandard1.1\YoutubeExplode.xml" />
   </files>
 </package>

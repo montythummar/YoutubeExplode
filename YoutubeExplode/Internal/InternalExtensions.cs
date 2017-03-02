@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace YoutubeExplode.Internal
@@ -52,24 +53,24 @@ namespace YoutubeExplode.Internal
         {
             if (str == null)
                 return other == null;
-            return str.Equals(other, StringComparison.InvariantCultureIgnoreCase);
+            return str.Equals(other, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool ContainsInvariant(this string str, string other)
         {
-            return str?.IndexOf(other, StringComparison.InvariantCultureIgnoreCase) >= 0;
+            return str?.IndexOf(other, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         public static string SubstringUntil(this string str, string sub)
         {
-            int index = str.IndexOf(sub, StringComparison.InvariantCultureIgnoreCase);
+            int index = str.IndexOf(sub, StringComparison.OrdinalIgnoreCase);
             if (index < 0) return str;
             return str.Substring(0, index);
         }
 
         public static string SubstringAfter(this string str, string sub)
         {
-            int index = str.IndexOf(sub, StringComparison.InvariantCultureIgnoreCase);
+            int index = str.IndexOf(sub, StringComparison.OrdinalIgnoreCase);
             if (index < 0) return string.Empty;
             return str.Substring(index + sub.Length, str.Length - index - sub.Length);
         }
@@ -119,7 +120,10 @@ namespace YoutubeExplode.Internal
 
         public static string Reverse(this string str)
         {
-            return new string(str.Reverse<char>().ToArray());
+            var sb = new StringBuilder(str.Length);
+            for (int i = str.Length - 1; i >= 0; i--)
+                sb.Append(str[i]);
+            return sb.ToString();
         }
 
         public static Uri ToUri(this string uri)
@@ -156,6 +160,11 @@ namespace YoutubeExplode.Internal
             bool hasOtherParams = queryString.IndexOf('?') >= 0;
             string separator = hasOtherParams ? "&" : "?";
             return queryString + separator + key + "=" + value;
+        }
+
+        public static string JoinToString<T>(this IEnumerable<T> enumerable, string separator)
+        {
+            return string.Join(separator, enumerable);
         }
 
         public static string[] Split(this string input, params string[] separators)
