@@ -40,6 +40,8 @@ namespace YoutubeExplode.DemoConsole
         public static void Main(string[] args)
         {
             Console.Title = "YoutubeExplode Demo";
+            Console.WindowWidth = 86;
+            Console.WindowHeight = 40;
 
             // Get the video ID
             Console.WriteLine("Enter Youtube video ID or URL:");
