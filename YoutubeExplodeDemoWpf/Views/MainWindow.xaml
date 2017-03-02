@@ -77,7 +77,7 @@
 
         <!--  Video info  -->
         <Grid Grid.Row="2"
-              Background="White"
+              Background="{DynamicResource MaterialDesignPaper}"
               Visibility="{Binding IsVideoInfoAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
