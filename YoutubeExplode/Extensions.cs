@@ -23,9 +23,8 @@ namespace YoutubeExplode
             var stream = client.DownloadVideo(streamInfo);
 
             // Output to fiile
-            Directory.CreateDirectory(filePath);
             using (stream)
-            using (var fileStream = File.Open(filePath, FileMode.CreateNew, FileAccess.Write))
+            using (var fileStream = File.Create(filePath))
                 stream.CopyTo(fileStream);
         }
 
@@ -41,9 +40,8 @@ namespace YoutubeExplode
             var stream = await client.DownloadVideoAsync(streamInfo);
 
             // Output to fiile
-            Directory.CreateDirectory(filePath);
             using (stream)
-            using (var fileStream = File.Open(filePath, FileMode.CreateNew, FileAccess.Write))
+            using (var fileStream = File.Create(filePath))
                 await stream.CopyToAsync(fileStream);
         }
     }
