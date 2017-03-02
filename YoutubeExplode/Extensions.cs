@@ -14,7 +14,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads video to file
         /// </summary>
-        public static void Download(this YoutubeClient client, VideoStreamInfo streamInfo, string filePath)
+        public static void DownloadVideo(this YoutubeClient client, VideoStreamInfo streamInfo, string filePath)
         {
             if (filePath.IsBlank())
                 throw new ArgumentNullException(nameof(filePath));
@@ -32,7 +32,7 @@ namespace YoutubeExplode
         /// <summary>
         /// Downloads video to file
         /// </summary>
-        public static async Task DownloadAsync(this YoutubeClient client, VideoStreamInfo streamInfo, string filePath)
+        public static async Task DownloadVideoAsync(this YoutubeClient client, VideoStreamInfo streamInfo, string filePath)
         {
             if (filePath.IsBlank())
                 throw new ArgumentNullException(nameof(filePath));

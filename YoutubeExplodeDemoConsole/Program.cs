@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Tyrrrz.Extensions;
+using YoutubeExplode;
 using YoutubeExplode.Models;
 
 namespace YoutubeExplode.DemoConsole
