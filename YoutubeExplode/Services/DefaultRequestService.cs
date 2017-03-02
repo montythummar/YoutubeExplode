@@ -19,12 +19,21 @@ namespace YoutubeExplode.Services
         public bool ShouldThrowOnErrors { get; set; }
 
         /// <summary>
+        /// Cookie container for sharing cookies among requests
+        /// </summary>
+        public CookieContainer CookieContainer { get; set; }
+
+        /// <summary>
         /// Creates <see cref="WebRequest"/> for use by the other methods
         /// </summary>
         protected virtual WebRequest CreateWebRequest(string url, string method)
         {
             var request = WebRequest.CreateHttp(url);
             request.Method = method;
+
+            if (CookieContainer != null)
+                request.CookieContainer = CookieContainer;
+
             return request;
         }
 
