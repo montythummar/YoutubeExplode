@@ -39,6 +39,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="Internal\PlayerSource.cs" />
     <Compile Include="Internal\IScramblingOperation.cs" />
     <Compile Include="Internal\ReverseScramblingOperation.cs" />
@@ -49,14 +50,13 @@
     <Compile Include="Models\VideoStreamResolution.cs" />
     <Compile Include="Services\DefaultRequestService.cs" />
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
-    <Compile Include="Internal\Extensions.cs" />
+    <Compile Include="Internal\InternalExtensions.cs" />
     <Compile Include="Models\VideoInfo.cs" />
     <Compile Include="Models\VideoStreamInfo.cs" />
     <Compile Include="Models\VideoStreamQuality.cs" />
     <Compile Include="Models\VideoStreamType.cs" />
     <Compile Include="Internal\Parser.cs" />
     <Compile Include="Services\IRequestService.cs" />
-    <Compile Include="Internal\SimpleJson.cs" />
     <Compile Include="YoutubeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

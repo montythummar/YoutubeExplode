@@ -28,31 +28,31 @@ You can also find the last stable version in [releases](https://github.com/Tyrrr
 
 **Parsed meta data:**
 
- - Video id, title and author
- - Length
- - View count
- - Rating
- - Search keywords
- - URLs of thumbnail, high/medium/low quality images
- - URLS of watermarks
- - Is listed, is muted, allows ratings, allows embedding, has closed captions
- - Video streams
- - Caption tracks
+- Video id, title and author
+- Length
+- View count
+- Rating
+- Search keywords
+- URLs of thumbnail, high/medium/low quality images
+- URLS of watermarks
+- Is listed, is muted, allows ratings, allows embedding, has closed captions
+- Video streams
+- Caption tracks
 
 Video stream objects include the following meta data:
 
- - URL
- - Type
- - Quality
- - Resolution
- - Bitrate
- - FPS
- - File size
+- URL
+- Type
+- Quality
+- Resolution
+- Bitrate
+- FPS
+- File size
 
 Caption track objects include the following meta data:
 
- - URL
- - Language
+- URL
+- Language
 
 **Usage:**
 
@@ -86,7 +86,12 @@ client.DownloadVideo(streamInfo, fileName);
 
 **Libraries used:**
 
-- [SimpleJson](https://github.com/facebook-csharp-sdk/simple-json) - lightweight JSON parser
+Console demo:
+
+- [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions) - my set of various extensions for rapid development
+
+Wpf demo:
+
 - [GalaSoft.MVVMLight](http://www.mvvmlight.net) - MVVM rapid development
 - [MaterialDesignXAML](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit) - MaterialDesign UI
 - [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions) - my set of various extensions for rapid development

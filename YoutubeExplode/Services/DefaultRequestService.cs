@@ -30,6 +30,8 @@ namespace YoutubeExplode.Services
         {
             var request = WebRequest.CreateHttp(url);
             request.Method = method;
+            request.UserAgent = "YoutubeExplode (github.com/Tyrrrz/YoutubeExplode)";
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             if (CookieContainer != null)
                 request.CookieContainer = CookieContainer;

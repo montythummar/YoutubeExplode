@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace YoutubeExplode.Internal
 {
-    internal static class Extensions
+    internal static class InternalExtensions
     {
         public delegate T ParseDelegate<out T>(string str);
 
@@ -178,6 +178,13 @@ namespace YoutubeExplode.Internal
             var result = GetOrDefault(dic, key);
             if (result == null) return defaultValue;
             return ConvertOrDefault(result, defaultValue);
+        }
+
+        public static IEnumerable<T> With<T>(this IEnumerable<T> e1, IEnumerable<T> e2)
+        {
+            var list = e1.ToList();
+            list.AddRange(e2);
+            return list;
         }
     }
 }
