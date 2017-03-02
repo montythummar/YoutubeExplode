@@ -199,7 +199,6 @@ namespace YoutubeExplode
                     .OrderByDescending(s => (int) s.Quality)
                     .ThenByDescending(s => s.Fps)
                     .ToArray();
-            result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
@@ -247,7 +246,6 @@ namespace YoutubeExplode
                     .OrderByDescending(s => (int) s.Quality)
                     .ThenByDescending(s => s.Fps)
                     .ToArray();
-            result.NeedsDeciphering = result.Streams.Any(s => s.NeedsDeciphering);
 
             // Decipher
             if (result.NeedsDeciphering && decipherIfNeeded)
@@ -276,13 +274,6 @@ namespace YoutubeExplode
             if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
 
-            // Check if anything needs deciphering
-            if (videoInfo.Streams == null || !videoInfo.Streams.Any())
-            {
-                videoInfo.NeedsDeciphering = false;
-                return;
-            }
-
             // Try get cached player source
             var playerSource = _playerSourceCache.GetOrDefault(videoInfo.PlayerVersion);
 
@@ -309,7 +300,6 @@ namespace YoutubeExplode
                 streamInfo.Url = streamInfo.Url.SetQueryStringParameter("signature", newSig);
                 streamInfo.NeedsDeciphering = false;
             }
-            videoInfo.NeedsDeciphering = false;
         }
 
         /// <inheritdoc cref="DecipherStreams"/>
@@ -321,13 +311,6 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not need to be deciphered");
             if (videoInfo.PlayerVersion.IsBlank())
                 throw new Exception("Given video info does not have information about the player version");
-
-            // Check if anything needs deciphering
-            if (videoInfo.Streams == null || !videoInfo.Streams.Any())
-            {
-                videoInfo.NeedsDeciphering = false;
-                return;
-            }
 
             // Try get cached player source
             var playerSource = _playerSourceCache.GetOrDefault(videoInfo.PlayerVersion);
@@ -354,7 +337,6 @@ namespace YoutubeExplode
                 streamInfo.Url = streamInfo.Url.SetQueryStringParameter("signature", newSig);
                 streamInfo.NeedsDeciphering = false;
             }
-            videoInfo.NeedsDeciphering = false;
         }
 
         /// <summary>

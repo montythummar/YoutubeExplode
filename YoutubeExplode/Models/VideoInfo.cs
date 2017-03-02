@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace YoutubeExplode.Models
 {
@@ -118,7 +119,7 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
         /// </summary>
-        public bool NeedsDeciphering { get; internal set; }
+        public bool NeedsDeciphering => Streams != null && Streams.Any(s => s.NeedsDeciphering);
 
         /// <summary>
         /// Version of the video player, used for this video's playback
