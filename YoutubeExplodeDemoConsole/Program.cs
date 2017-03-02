@@ -19,20 +19,6 @@ namespace YoutubeExplode.DemoConsole
             return id;
         }
 
-        private static string NormalizeQuality(VideoStreamQuality quality)
-        {
-            if (quality == VideoStreamQuality.Low144) return "144p";
-            if (quality == VideoStreamQuality.Low240) return "240p";
-            if (quality == VideoStreamQuality.Medium360) return "360p";
-            if (quality == VideoStreamQuality.Medium480) return "480p";
-            if (quality == VideoStreamQuality.High720) return "720p";
-            if (quality == VideoStreamQuality.High1080) return "1080p";
-            if (quality == VideoStreamQuality.High1440) return "1440p";
-            if (quality == VideoStreamQuality.High2160) return "2160p";
-            if (quality == VideoStreamQuality.High3072) return "3072p";
-            return "???";
-        }
-
         /// <summary>
         /// Turns file size in bytes into human-readable string
         /// </summary>
@@ -72,17 +58,16 @@ namespace YoutubeExplode.DemoConsole
             for (int i = 0; i < videoInfo.Streams.Length; i++)
             {
                 var streamInfo = videoInfo.Streams[i];
-                string normQuality = NormalizeQuality(streamInfo.Quality);
                 string normFileSize = NormalizeFileSize(streamInfo.FileSize);
 
                 // Video+audio streams (non-adaptive)
                 if (streamInfo.AdaptiveMode == VideoStreamAdaptiveMode.None)
                 {
-                    Console.WriteLine($"\t[{i}] Mixed | {streamInfo.Type} | {normQuality} | {normFileSize}");
+                    Console.WriteLine($"\t[{i}] Mixed | {streamInfo.Type} | {streamInfo.QualityLabel} | {normFileSize}");
                 }
                 // Video only streams
                 else if (streamInfo.AdaptiveMode == VideoStreamAdaptiveMode.Video)
-                    Console.WriteLine($"\t[{i}] Video | {streamInfo.Type} | {normQuality} | {streamInfo.Fps} FPS | {normFileSize}");
+                    Console.WriteLine($"\t[{i}] Video | {streamInfo.Type} | {streamInfo.QualityLabel} | {streamInfo.Fps} FPS | {normFileSize}");
                 // Audio only streams
                 else if (streamInfo.AdaptiveMode == VideoStreamAdaptiveMode.Audio)
                     Console.WriteLine($"\t[{i}] Audio | {streamInfo.Type} | {normFileSize}");

@@ -33,6 +33,16 @@ namespace YoutubeExplode.Models
         public VideoStreamAdaptiveMode AdaptiveMode => GetAdaptiveMode(Itag);
 
         /// <summary>
+        /// Type of the video stream
+        /// </summary>
+        public VideoStreamType Type => GetType(Itag);
+
+        /// <summary>
+        /// Quality of the video stream
+        /// </summary>
+        public VideoStreamQuality Quality => GetQuality(Itag);
+
+        /// <summary>
         /// Whether this video is a 3D video
         /// </summary>
         public bool Is3D => GetIs3D(Itag);
@@ -61,14 +71,9 @@ namespace YoutubeExplode.Models
         public double Fps { get; internal set; }
 
         /// <summary>
-        /// Type of the video stream
+        /// Quality label
         /// </summary>
-        public VideoStreamType Type => GetType(Itag);
-
-        /// <summary>
-        /// Quality of the video stream
-        /// </summary>
-        public VideoStreamQuality Quality => GetQuality(Itag);
+        public string QualityLabel => GetQualityLabel(Quality);
 
         /// <summary>
         /// File extension of the video file, based on its type
@@ -151,6 +156,20 @@ namespace YoutubeExplode.Models
                 return VideoStreamQuality.High3072;
 
             return VideoStreamQuality.Unknown;
+        }
+
+        private static string GetQualityLabel(VideoStreamQuality quality)
+        {
+            if (quality == VideoStreamQuality.Low144) return "144p";
+            if (quality == VideoStreamQuality.Low240) return "240p";
+            if (quality == VideoStreamQuality.Medium360) return "360p";
+            if (quality == VideoStreamQuality.Medium480) return "480p";
+            if (quality == VideoStreamQuality.High720) return "720p";
+            if (quality == VideoStreamQuality.High1080) return "1080p";
+            if (quality == VideoStreamQuality.High1440) return "1440p";
+            if (quality == VideoStreamQuality.High2160) return "2160p";
+            if (quality == VideoStreamQuality.High3072) return "3072p";
+            return "???";
         }
 
         private static string GetExtension(VideoStreamType type)

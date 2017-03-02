@@ -93,7 +93,6 @@
     </ApplicationDefinition>
     <Compile Include="Locator.cs" />
     <Compile Include="ViewModels\Converters\FileSizeConverter.cs" />
-    <Compile Include="ViewModels\Converters\VideoStreamQualityConverter.cs" />
     <Compile Include="ViewModels\Interfaces\IMainViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">

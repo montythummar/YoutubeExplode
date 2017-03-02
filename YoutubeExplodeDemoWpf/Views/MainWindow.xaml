@@ -274,7 +274,7 @@
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
                                                         <Run />
                                                         <Run Text="Quality:" />
-                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Converter={StaticResource VideoStreamQualityConverter}, Mode=OneWay}" />
+                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding QualityLabel, Mode=OneWay}" />
                                                         <Run />
                                                         <Run Text="Size:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
@@ -301,7 +301,7 @@
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
                                                         <Run />
                                                         <Run Text="Quality:" />
-                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Converter={StaticResource VideoStreamQualityConverter}, Mode=OneWay}" />
+                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding QualityLabel, Mode=OneWay}" />
                                                         <Run />
                                                         <Run Text="FPS:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Fps, Mode=OneWay}" />

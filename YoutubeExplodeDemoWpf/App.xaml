@@ -134,7 +134,6 @@
             </Style>
 
             <converters:FileSizeConverter x:Key="FileSizeConverter" />
-            <converters:VideoStreamQualityConverter x:Key="VideoStreamQualityConverter" />
 
             <demoWpf:Locator x:Key="Locator" d:IsDataSource="True" />
         </ResourceDictionary>
