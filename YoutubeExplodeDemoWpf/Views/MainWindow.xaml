@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:YoutubeExplode.Models;assembly=YoutubeExplode"
         Title="YoutubeExplode Demo"
-        Width="700"
+        Width="720"
         Height="670"
         Background="{DynamicResource MaterialDesignPaper}"
         DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
@@ -269,15 +269,13 @@
                                                                              VerticalAlignment="Center"
                                                                              Kind="MusicNote"
                                                                              ToolTip="Stream has audio" />
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Margin="2,0,0,0" VerticalAlignment="Center">
                                                         <Run Text="Type:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Quality:" />
-                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Converter={StaticResource VideoStreamQualityConverter}, Mode=OneWay}" />
+                                                        <Run />
                                                         <Run Text="Size:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
                                                     </TextBlock>
@@ -298,27 +296,22 @@
                                                                              Kind="MusicNoteOff"
                                                                              Opacity="0.3"
                                                                              ToolTip="Stream doesn't have audio" />
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Margin="2,0,0,0" VerticalAlignment="Center">
                                                         <Run Text="Type:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Quality:" />
-                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Quality, Converter={StaticResource VideoStreamQualityConverter}, Mode=OneWay}" />
+                                                        <Run />
                                                         <Run Text="FPS:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Fps, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Resolution:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Resolution, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Bitrate:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Bitrate, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}it/s, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Size:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
                                                     </TextBlock>
@@ -339,15 +332,13 @@
                                                                              VerticalAlignment="Center"
                                                                              Kind="MusicNote"
                                                                              ToolTip="Stream has audio" />
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Margin="2,0,0,0" VerticalAlignment="Center">
                                                         <Run Text="Type:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Bitrate:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Bitrate, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}it/s, Mode=OneWay}" />
-                                                    </TextBlock>
-                                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                        <Run />
                                                         <Run Text="Size:" />
                                                         <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
                                                     </TextBlock>
