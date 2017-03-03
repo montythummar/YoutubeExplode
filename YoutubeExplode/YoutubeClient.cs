@@ -15,19 +15,15 @@ namespace YoutubeExplode
     /// </summary>
     public partial class YoutubeClient : IDisposable
     {
+        private readonly IRequestService _requestService;
         private readonly Dictionary<string, PlayerSource> _playerSourceCache = new Dictionary<string, PlayerSource>();
-
-        /// <summary>
-        /// HTTP request handler
-        /// </summary>
-        public IRequestService RequestService { get; set; }
 
         /// <summary>
         /// Construct with custom services
         /// </summary>
         public YoutubeClient(IRequestService requestService)
         {
-            RequestService = requestService;
+            _requestService = requestService;
         }
 
         /// <summary>
@@ -51,7 +47,7 @@ namespace YoutubeExplode
             {
                 // Get the javascript source URL
                 string response =
-                    await RequestService.GetStringAsync($"https://www.youtube.com/yts/jsbin/player-{version}/base.js");
+                    await _requestService.GetStringAsync($"https://www.youtube.com/yts/jsbin/player-{version}/base.js");
                 if (response.IsBlank())
                     throw new Exception("Could not get the video player source code");
 
@@ -117,7 +113,7 @@ namespace YoutubeExplode
 
             // Get video info
             string eurl = $"https://youtube.googleapis.com/v/{videoId}".UrlEncode();
-            string response = await RequestService.GetStringAsync($"https://www.youtube.com/get_video_info?video_id={videoId}&sts=17221&eurl={eurl}");
+            string response = await _requestService.GetStringAsync($"https://www.youtube.com/get_video_info?video_id={videoId}&sts=17221&eurl={eurl}");
             if (response.IsBlank())
                 throw new Exception("Could not get video info");
 
@@ -127,7 +123,7 @@ namespace YoutubeExplode
                 throw new Exception("Could not parse video info");
 
             // Get player version
-            response = await RequestService.GetStringAsync($"https://www.youtube.com/watch?v={videoId}&gl=US&hl=en&has_verified=1&bpctr=9999999999");
+            response = await _requestService.GetStringAsync($"https://www.youtube.com/watch?v={videoId}&gl=US&hl=en&has_verified=1&bpctr=9999999999");
             if (response.IsBlank())
                 throw new Exception("Could not get player version");
 
@@ -138,7 +134,7 @@ namespace YoutubeExplode
             if (result.DashMpdUrl.IsNotBlank())
             {
                 // Get
-                response = await RequestService.GetStringAsync(result.DashMpdUrl);
+                response = await _requestService.GetStringAsync(result.DashMpdUrl);
 
                 // Parse
                 if (response.IsNotBlank()) // doesn't throw because dash streams are not very important
@@ -201,7 +197,7 @@ namespace YoutubeExplode
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get the headers
-            var headers = await RequestService.GetHeadersAsync(streamInfo.Url);
+            var headers = await _requestService.GetHeadersAsync(streamInfo.Url);
             if (headers == null)
                 throw new Exception("Could not obtain headers (HEAD request failed)");
 
@@ -225,7 +221,7 @@ namespace YoutubeExplode
                 throw new Exception("Given stream's signature needs to be deciphered first");
 
             // Get stream
-            var stream = await RequestService.GetStreamAsync(streamInfo.Url);
+            var stream = await _requestService.GetStreamAsync(streamInfo.Url);
             if (stream == null)
                 throw new Exception("Could not get response stream");
 
@@ -235,7 +231,7 @@ namespace YoutubeExplode
         /// <inheritdoc />
         public virtual void Dispose()
         {
-            (RequestService as IDisposable)?.Dispose();
+            (_requestService as IDisposable)?.Dispose();
         }
     }
 

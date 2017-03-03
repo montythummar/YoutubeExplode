@@ -9,14 +9,11 @@ using YoutubeExplode.Internal;
 namespace YoutubeExplode.Services
 {
     /// <summary>
-    /// Uses <see cref="HttpClient"/> for handling requests
+    /// Uses <see cref="_httpClient"/> for handling requests
     /// </summary>
     public partial class DefaultRequestService : IRequestService, IDisposable
     {
-        /// <summary>
-        /// Http client in use by the class
-        /// </summary>
-        public HttpClient HttpClient { get; set; }
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Creates an instance of <see cref="DefaultRequestService"/>
@@ -28,17 +25,17 @@ namespace YoutubeExplode.Services
                 httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             httpClientHandler.UseCookies = false;
 
-            HttpClient = new HttpClient(httpClientHandler);
-            HttpClient.DefaultRequestHeaders.Add("User-Agent", "YoutubeExplode (github.com/Tyrrrz/YoutubeExplode)");
-            HttpClient.DefaultRequestHeaders.Add("Connection", "Close");
+            _httpClient = new HttpClient(httpClientHandler);
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "YoutubeExplode (github.com/Tyrrrz/YoutubeExplode)");
+            _httpClient.DefaultRequestHeaders.Add("Connection", "Close");
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="DefaultRequestService"/> with a custom <see cref="HttpClient"/>
+        /// Creates an instance of <see cref="DefaultRequestService"/> with a custom <see cref="_httpClient"/>
         /// </summary>
         public DefaultRequestService(HttpClient client)
         {
-            HttpClient = client;
+            _httpClient = client;
         }
 
         /// <inheritdoc />
@@ -49,7 +46,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                return await HttpClient.GetStringAsync(url);
+                return await _httpClient.GetStringAsync(url);
             }
             catch
             {
@@ -66,7 +63,7 @@ namespace YoutubeExplode.Services
             try
             {
                 using (var request = new HttpRequestMessage(HttpMethod.Head, url))
-                using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+                using (var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
                     return NormalizeResponseHeaders(response);
             }
             catch
@@ -83,7 +80,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                return await HttpClient.GetStreamAsync(url);
+                return await _httpClient.GetStreamAsync(url);
             }
             catch
             {
@@ -94,7 +91,7 @@ namespace YoutubeExplode.Services
         /// <inheritdoc />
         public virtual void Dispose()
         {
-            HttpClient.Dispose();
+            _httpClient.Dispose();
         }
     }
 
