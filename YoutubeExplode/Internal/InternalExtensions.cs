@@ -58,7 +58,7 @@ namespace YoutubeExplode.Internal
 
         public static bool ContainsInvariant(this string str, string other)
         {
-            return str?.IndexOf(other, StringComparison.OrdinalIgnoreCase) >= 0;
+            return str.IndexOf(other, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         public static string SubstringUntil(this string str, string sub)
