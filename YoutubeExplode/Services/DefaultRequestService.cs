@@ -27,7 +27,10 @@ namespace YoutubeExplode.Services
             if (httpClientHandler.SupportsAutomaticDecompression)
                 httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             httpClientHandler.UseCookies = false;
+
             HttpClient = new HttpClient(httpClientHandler);
+            HttpClient.DefaultRequestHeaders.Add("User-Agent", "YoutubeExplode (github.com/Tyrrrz/YoutubeExplode)");
+            HttpClient.DefaultRequestHeaders.Add("Connection", "Close");
         }
 
         /// <summary>
@@ -62,9 +65,9 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Head, url);
-                var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                return NormalizeResponseHeaders(response);
+                using (var request = new HttpRequestMessage(HttpMethod.Head, url))
+                using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+                    return NormalizeResponseHeaders(response);
             }
             catch
             {
