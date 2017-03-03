@@ -141,7 +141,7 @@ namespace YoutubeExplode
                 response = await RequestService.GetStringAsync(result.DashMpdUrl);
 
                 // Parse
-                if (response.IsNotBlank()) // TODO: why does it return 403 sometimes?
+                if (response.IsNotBlank()) // doesn't throw because dash streams are not very important
                 {
                     var dashStreams = Parser.ParseVideoStreamInfosMpd(response);
                     result.Streams = result.Streams.With(dashStreams).ToArray();

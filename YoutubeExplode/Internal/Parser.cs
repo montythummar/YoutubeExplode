@@ -182,6 +182,10 @@ namespace YoutubeExplode.Internal
             result.Keywords = videoInfoEncoded.GetOrDefault("keywords").Split(",");
             result.DashMpdUrl = videoInfoEncoded.GetOrDefault("dashmpd");
 
+            // HACK: If dashmpd url has signature - ignore it
+            if (result.DashMpdUrl.IsNotBlank() && result.DashMpdUrl.ContainsInvariant("/s/"))
+                result.DashMpdUrl = null;
+
             // Get the streams
             var streams = new List<VideoStreamInfo>();
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
