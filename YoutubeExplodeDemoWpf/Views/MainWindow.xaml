@@ -34,13 +34,9 @@
         </Grid.RowDefinitions>
 
         <!--  Toolbar  -->
-        <Border Grid.Row="0" Background="{DynamicResource PrimaryHueMidBrush}">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="5"
-                                  Direction="270"
-                                  Opacity=".5"
-                                  ShadowDepth="2" />
-            </Border.Effect>
+        <materialDesign:ColorZone Grid.Row="0"
+                                  materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                  Mode="PrimaryMid">
             <StackPanel Orientation="Vertical">
                 <!--  Query  -->
                 <materialDesign:Card Padding="0">
@@ -79,7 +75,7 @@
                              Minimum="0"
                              Value="{Binding Progress, Mode=OneWay}" />
             </StackPanel>
-        </Border>
+        </materialDesign:ColorZone>
 
         <!--  Video info  -->
         <ScrollViewer Grid.Row="1"
@@ -108,15 +104,14 @@
             <materialDesign:Card>
                 <StackPanel Orientation="Vertical">
                     <!--  Title  -->
-                    <Border Margin="0,0,0,5"
-                            Padding="10"
-                            Background="{DynamicResource PrimaryHueMidBrush}"
-                            TextElement.Foreground="{DynamicResource PrimaryHueMidForegroundBrush}">
+                    <materialDesign:ColorZone Margin="0,0,0,5"
+                                              Padding="10"
+                                              Mode="PrimaryMid">
                         <TextBlock HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    Text="{Binding VideoInfo.Title}" />
-                    </Border>
+                    </materialDesign:ColorZone>
 
                     <!--  Image and details  -->
                     <Grid>
