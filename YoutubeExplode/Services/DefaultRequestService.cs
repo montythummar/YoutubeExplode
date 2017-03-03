@@ -62,7 +62,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
+                var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, url), HttpCompletionOption.ResponseHeadersRead);
                 return NormalizeResponseHeaders(response);
             }
             catch
