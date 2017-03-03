@@ -126,16 +126,6 @@ namespace YoutubeExplode.Internal
             return sb.ToString();
         }
 
-        public static Uri ToUri(this string uri)
-        {
-            return new UriBuilder(uri).Uri;
-        }
-
-        public static Uri ToUri(this string uri, string baseUri)
-        {
-            return new Uri(ToUri(baseUri), uri);
-        }
-
         public static string UrlEncode(this string url)
         {
             return WebUtility.UrlEncode(url);
@@ -172,6 +162,29 @@ namespace YoutubeExplode.Internal
             return input.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static IEnumerable<T> With<T>(this IEnumerable<T> e1, IEnumerable<T> e2)
+        {
+            var list = e1.ToList();
+            list.AddRange(e2);
+            return list;
+        }
+
+        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> enumerable, int count)
+        {
+            if (count == 0)
+                return Enumerable.Empty<T>();
+
+            return enumerable.Reverse().Take(count).Reverse();
+        }
+
+        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
+        {
+            if (count == 0)
+                return enumerable;
+
+            return enumerable.Reverse().Skip(count).Reverse();
+        }
+
         public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key,
             TValue defaultValue = default(TValue))
         {
@@ -187,13 +200,6 @@ namespace YoutubeExplode.Internal
             var result = GetOrDefault(dic, key);
             if (result == null) return defaultValue;
             return ConvertOrDefault(result, defaultValue);
-        }
-
-        public static IEnumerable<T> With<T>(this IEnumerable<T> e1, IEnumerable<T> e2)
-        {
-            var list = e1.ToList();
-            list.AddRange(e2);
-            return list;
         }
     }
 }

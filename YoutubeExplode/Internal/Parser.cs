@@ -217,6 +217,9 @@ namespace YoutubeExplode.Internal
             if (rawJs.IsBlank())
                 throw new ArgumentNullException(nameof(rawJs));
 
+            // Inspiration and sources:
+            // https://github.com/flagbug/YoutubeExtractor/blob/master/YoutubeExtractor/YoutubeExtractor/Decipherer.cs
+
             // Get the name of the function that handles deciphering
             var funcNameMatch = Regex.Match(rawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(");
             if (!funcNameMatch.Success)
@@ -227,12 +230,11 @@ namespace YoutubeExplode.Internal
             funcName = funcName.Replace("$", "\\$");
 
             // Get the body of the function
-            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}",
-                RegexOptions.Singleline);
+            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}", RegexOptions.Singleline);
             if (!funcBodyMatch.Success)
                 throw new Exception("Could not get the signature decipherer function body");
             string funcBody = funcBodyMatch.Value;
-            var funcLines = funcBody.Split(";");
+            var funcLines = funcBody.Split(";").Skip(1).SkipLast(1).ToArray();
 
             // Identify scrambling functions
             string reverseFuncName = null;
@@ -240,7 +242,7 @@ namespace YoutubeExplode.Internal
             string charSwapFuncName = null;
 
             // Analyze the function body to determine the names of scrambling functions
-            foreach (var line in funcLines)
+            foreach (string line in funcLines)
             {
                 // Break when all functions are found
                 if (reverseFuncName.IsNotBlank() && sliceFuncName.IsNotBlank() && charSwapFuncName.IsNotBlank())
@@ -250,11 +252,11 @@ namespace YoutubeExplode.Internal
                 string calledFunctionName = GetFunctionCallFromLineJs(line);
 
                 // Compose regexes to identify what function we're dealing with
-                // -- reverse (1 param)
+                // -- reverse (0 params)
                 var reverseFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\)");
-                // -- slice (return or not)
+                // -- slice (1 param)
                 var sliceFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.");
-                // -- swap
+                // -- swap (1 param)
                 var swapFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b");
 
                 // Determine the function type and assign the name
@@ -267,25 +269,25 @@ namespace YoutubeExplode.Internal
             }
 
             // Analyze the function body again to determine the operation set and order
-            foreach (var line in funcLines)
+            foreach (string line in funcLines)
             {
                 // Get the function called on this line
                 string calledFunctionName = GetFunctionCallFromLineJs(line);
 
                 // Swap operation
-                if (calledFunctionName.EqualsInvariant(charSwapFuncName))
+                if (calledFunctionName == charSwapFuncName)
                 {
                     int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
                     yield return new SwapScramblingOperation(index);
                 }
                 // Slice operation
-                else if (calledFunctionName.EqualsInvariant(sliceFuncName))
+                else if (calledFunctionName == sliceFuncName)
                 {
                     int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
                     yield return new SliceScramblingOperation(index);
                 }
                 // Reverse operation
-                else if (calledFunctionName.EqualsInvariant(reverseFuncName))
+                else if (calledFunctionName == reverseFuncName)
                 {
                     yield return new ReverseScramblingOperation();
                 }

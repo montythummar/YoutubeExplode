@@ -57,6 +57,7 @@ namespace YoutubeExplode
 
                 // Decompile
                 playerSource = Parser.ParsePlayerSourceJs(response);
+                playerSource.Version = version;
 
                 // Cache
                 _playerSourceCache[version] = playerSource;
@@ -140,7 +141,7 @@ namespace YoutubeExplode
                 response = await RequestService.GetStringAsync(result.DashMpdUrl);
 
                 // Parse
-                if (response.IsNotBlank())
+                if (response.IsNotBlank()) // TODO: why does it return 403 sometimes?
                 {
                     var dashStreams = Parser.ParseVideoStreamInfosMpd(response);
                     result.Streams = result.Streams.With(dashStreams).ToArray();
