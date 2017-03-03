@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Tyrrrz.Extensions;
 
 namespace YoutubeExplode.Tests
 {
@@ -128,7 +127,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoAsync_UnsignedUnrestricted_Test()
+        public async Task DownloadVideoAsync_UnsignedUnrestrictedNonAdaptive_Test()
         {
             var videoInfo = await _client.GetVideoInfoAsync("LsNPjFXIPT8");
             var streamInfo = videoInfo.Streams.OrderBy(s => s.FileSize).First();
@@ -141,7 +140,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoAsync_SignedUnrestricted_Test()
+        public async Task DownloadVideoAsync_SignedUnrestrictedAdaptive_Test()
         {
             var videoInfo = await _client.GetVideoInfoAsync("9bZkp7q19f0");
             var streamInfo = videoInfo.Streams.OrderBy(s => s.FileSize).First();
@@ -154,7 +153,7 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
-        public async Task DownloadVideoAsync_SignedRestricted_Test()
+        public async Task DownloadVideoAsync_SignedRestrictedAdaptive_Test()
         {
             var videoInfo = await _client.GetVideoInfoAsync("SkRSXFQerZs");
             var streamInfo = videoInfo.Streams.OrderBy(s => s.FileSize).First();
