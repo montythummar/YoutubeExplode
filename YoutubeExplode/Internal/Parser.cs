@@ -230,11 +230,8 @@ namespace YoutubeExplode.Internal
                 throw new Exception("Could not find the entry function for signature deciphering");
             string funcName = funcNameMatch.Groups[1].Value;
 
-            // Escape dollar sign
-            funcName = funcName.Replace("$", "\\$");
-
             // Get the body of the function
-            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + funcName + @"=function\(\w+\)\{.*?\}", RegexOptions.Singleline);
+            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + Regex.Escape(funcName) + @"=function\(\w+\)\{.*?\}", RegexOptions.Singleline);
             if (!funcBodyMatch.Success)
                 throw new Exception("Could not get the signature decipherer function body");
             string funcBody = funcBodyMatch.Value;
@@ -257,11 +254,11 @@ namespace YoutubeExplode.Internal
 
                 // Compose regexes to identify what function we're dealing with
                 // -- reverse (0 params)
-                var reverseFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\)");
+                var reverseFuncRegex = new Regex($@"{Regex.Escape(calledFunctionName)}:\bfunction\b\(\w+\)");
                 // -- slice (1 param)
-                var sliceFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.");
+                var sliceFuncRegex = new Regex($@"{Regex.Escape(calledFunctionName)}:\bfunction\b\([a],b\).(\breturn\b)?.?\w+\.");
                 // -- swap (1 param)
-                var swapFuncRegex = new Regex($@"{calledFunctionName}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b");
+                var swapFuncRegex = new Regex($@"{Regex.Escape(calledFunctionName)}:\bfunction\b\(\w+\,\w\).\bvar\b.\bc=a\b");
 
                 // Determine the function type and assign the name
                 if (reverseFuncRegex.Match(rawJs).Success)
