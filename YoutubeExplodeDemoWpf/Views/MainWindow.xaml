@@ -96,7 +96,7 @@
                                     <Storyboard TargetProperty="Opacity">
                                         <DoubleAnimation From="0"
                                                          To="1"
-                                                         Duration="0:0:1" />
+                                                         Duration="0:0:0.5" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
