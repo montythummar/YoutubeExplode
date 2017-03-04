@@ -40,8 +40,8 @@ namespace YoutubeExplode.DemoConsole
         public static void Main(string[] args)
         {
             Console.Title = "YoutubeExplode Demo";
-            Console.WindowWidth = 86;
-            Console.WindowHeight = 40;
+            Console.WindowWidth = 85;
+            Console.WindowHeight = 38;
 
             // Client
             var client = new YoutubeClient();

@@ -7,8 +7,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:YoutubeExplode.Models;assembly=YoutubeExplode"
         Title="YoutubeExplode Demo"
-        Width="720"
+        Width="710"
         Height="670"
+        MinWidth="710"
         Background="{DynamicResource MaterialDesignPaper}"
         DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
         FocusManager.FocusedElement="{Binding ElementName=VideoIdTextBox}"
@@ -110,27 +111,37 @@
                         <TextBlock HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    FontSize="16"
-                                   Text="{Binding VideoInfo.Title}" />
+                                   Text="{Binding VideoInfo.Title}"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="NoWrap" />
                     </materialDesign:ColorZone>
 
                     <!--  Image and details  -->
-                    <Grid>
+                    <Grid Height="135">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="3*" />
                         </Grid.ColumnDefinitions>
 
                         <!--  Image  -->
                         <Image Grid.Column="0"
-                               Margin="5,2,5,2"
+                               Margin="5,0,5,0"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Top"
                                Source="{Binding VideoInfo.ImageHighRes, FallbackValue={StaticResource FallbackVideoImage}, TargetNullValue={StaticResource FallbackVideoImage}}" />
 
                         <!--  Details  -->
-                        <StackPanel Grid.Column="1" Orientation="Vertical">
+                        <Grid Grid.Column="1" Margin="5,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
                             <!--  Author, Length, Views, Rating  -->
-                            <TextBlock Margin="5,2,5,2"
+                            <TextBlock Grid.Row="0"
                                        TextTrimming="CharacterEllipsis"
                                        TextWrapping="Wrap">
                                 <Run Text="Author:" />
@@ -150,15 +161,16 @@
                             </TextBlock>
 
                             <!--  Separator  -->
-                            <Rectangle Height="1"
-                                       Margin="20,2,20,2"
+                            <Rectangle Grid.Row="1"
+                                       Height="1"
+                                       Margin="20,5,20,5"
                                        HorizontalAlignment="Stretch"
                                        Fill="{DynamicResource MiscBrush}"
                                        Opacity="0.5"
                                        Stroke="{DynamicResource MiscBrush}" />
 
                             <!--  Flags  -->
-                            <WrapPanel Margin="5,2,5,2" Orientation="Horizontal">
+                            <WrapPanel Grid.Row="2" Orientation="Horizontal">
                                 <TextBlock Text="Flags:" />
                                 <CheckBox Margin="5,0,0,0"
                                           VerticalAlignment="Center"
@@ -193,26 +205,27 @@
                             </WrapPanel>
 
                             <!--  Separator  -->
-                            <Rectangle Height="1"
-                                       Margin="20,2,20,2"
+                            <Rectangle Grid.Row="3"
+                                       Height="1"
+                                       Margin="20,5,20,5"
                                        HorizontalAlignment="Stretch"
                                        Fill="{DynamicResource MiscBrush}"
                                        Opacity="0.5"
                                        Stroke="{DynamicResource MiscBrush}" />
 
                             <!--  Keywords  -->
-                            <TextBlock Margin="5,2,5,2"
+                            <TextBlock Grid.Row="4"
                                        TextTrimming="CharacterEllipsis"
                                        TextWrapping="Wrap">
                                 <Run Text="Keywords:" />
                                 <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding VideoInfo.Keywords, Converter={StaticResource ArrayToStringConverter}, Mode=OneWay}" />
                             </TextBlock>
-                        </StackPanel>
+                        </Grid>
                     </Grid>
 
                     <!--  Separator  -->
                     <Rectangle Height="1"
-                               Margin="20,5,20,5"
+                               Margin="20,7,20,5"
                                HorizontalAlignment="Stretch"
                                Fill="{DynamicResource MiscBrush}"
                                Opacity="0.5"
@@ -238,7 +251,7 @@
                                             <ContentPresenter.Resources>
                                                 <!--  Non-adaptive  -->
                                                 <DataTemplate x:Key="NonAdaptivePresenter">
-                                                    <WrapPanel Orientation="Horizontal">
+                                                    <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
                                                         <materialDesign:PackIcon Width="20"
                                                                                  Height="20"
                                                                                  VerticalAlignment="Center"
@@ -249,7 +262,10 @@
                                                                                  VerticalAlignment="Center"
                                                                                  Kind="VolumeHigh"
                                                                                  ToolTip="Stream contains audio" />
-                                                        <TextBlock Margin="2,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock Margin="2,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   TextWrapping="NoWrap">
                                                             <Run Text="Type:" />
                                                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
                                                             <Run />
@@ -259,12 +275,12 @@
                                                             <Run Text="Size:" />
                                                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
                                                         </TextBlock>
-                                                    </WrapPanel>
+                                                    </StackPanel>
                                                 </DataTemplate>
 
                                                 <!--  Video only  -->
                                                 <DataTemplate x:Key="AdaptiveVideoPresenter">
-                                                    <WrapPanel Orientation="Horizontal">
+                                                    <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
                                                         <materialDesign:PackIcon Width="20"
                                                                                  Height="20"
                                                                                  VerticalAlignment="Center"
@@ -276,7 +292,10 @@
                                                                                  Kind="VolumeOff"
                                                                                  Opacity="0.3"
                                                                                  ToolTip="Stream doesn't contain audio" />
-                                                        <TextBlock Margin="2,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock Margin="2,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   TextWrapping="NoWrap">
                                                             <Run Text="Type:" />
                                                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
                                                             <Run />
@@ -292,12 +311,12 @@
                                                             <Run Text="Size:" />
                                                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
                                                         </TextBlock>
-                                                    </WrapPanel>
+                                                    </StackPanel>
                                                 </DataTemplate>
 
                                                 <!--  Audio only  -->
                                                 <DataTemplate x:Key="AdaptiveAudioPresenter">
-                                                    <WrapPanel Orientation="Horizontal">
+                                                    <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
                                                         <materialDesign:PackIcon Width="20"
                                                                                  Height="20"
                                                                                  VerticalAlignment="Center"
@@ -309,7 +328,10 @@
                                                                                  VerticalAlignment="Center"
                                                                                  Kind="VolumeHigh"
                                                                                  ToolTip="Stream contains audio" />
-                                                        <TextBlock Margin="2,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock Margin="2,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   TextWrapping="NoWrap">
                                                             <Run Text="Type:" />
                                                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Type, Mode=OneWay}" />
                                                             <Run />
@@ -319,7 +341,7 @@
                                                             <Run Text="Size:" />
                                                             <Run Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}, StringFormat=\{0\}, Mode=OneWay}" />
                                                         </TextBlock>
-                                                    </WrapPanel>
+                                                    </StackPanel>
                                                 </DataTemplate>
                                             </ContentPresenter.Resources>
 
