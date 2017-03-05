@@ -8,11 +8,37 @@ namespace YoutubeExplode.Tests
         [TestMethod]
         public void ValidateVideoId_Test()
         {
-            string validVideoId = "cpm00Hv1Umg";
-            string invalidVideoId = "sdpj#$e]";
+            string[] validVideoIds =
+            {
+                "cpm00Hv1Umg",
+                "aI5pUqiVJdw",
+                "9onx5sgnkPQ",
+                "lg0s242Hg-8",
+                "fIDyDVzlqN4",
+                "JE1Gvzxfm1E",
+                "OpV62-86Fv4",
+                "UnUkNfX8v1E",
+                "aGTz8o_fey8",
+                "10V6xet5ODk"
+            };
+            string[] invalidVideoIds =
+            {
+                null,
+                "",
+                "@pm!!Hv#Lmg",
+                "lg0s242Hg#8",
+                "f`DyDVzlqN`",
+                "JE1Gv[]fm1E",
+                "***62-86Fv4",
+                "U  kNfX8v1E",
+                "aGяк8o_fey8",
+                "10Vあxet5ODk"
+            };
 
-            Assert.IsTrue(YoutubeClient.ValidateVideoId(validVideoId));
-            Assert.IsFalse(YoutubeClient.ValidateVideoId(invalidVideoId));
+            foreach (string validId in validVideoIds)
+                Assert.IsTrue(YoutubeClient.ValidateVideoId(validId));
+            foreach (string invalidId in invalidVideoIds)
+                Assert.IsFalse(YoutubeClient.ValidateVideoId(invalidId));
         }
 
         [TestMethod]

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Tyrrrz.Extensions;
 
 namespace YoutubeExplode.Tests
 {
@@ -46,8 +47,7 @@ namespace YoutubeExplode.Tests
             Assert.IsFalse(videoInfo.IsMuted);
 
             Assert.IsNotNull(videoInfo.Streams);
-            Assert.IsTrue(0 < videoInfo.Streams.Length);
-            //Assert.AreEqual(9, videoInfo.Streams.Length);
+            Assert.IsTrue(9 <= videoInfo.Streams.Length); // MPD streams are inconsistent
             foreach (var streamInfo in videoInfo.Streams)
             {
                 Assert.IsNotNull(streamInfo.Url);
@@ -58,7 +58,7 @@ namespace YoutubeExplode.Tests
         [TestMethod]
         public async Task GetVideoInfoAsync_SignedUnrestrictedAdaptive_Test()
         {
-            var videoInfo = await _client.GetVideoInfoAsync("TZRvO0S-TLU");
+            var videoInfo = await _client.GetVideoInfoAsync("TZRvO0S-TLU", false, false);
 
             Assert.IsNotNull(videoInfo);
             Assert.AreEqual("TZRvO0S-TLU", videoInfo.Id);
@@ -80,8 +80,7 @@ namespace YoutubeExplode.Tests
             Assert.IsFalse(videoInfo.IsMuted);
 
             Assert.IsNotNull(videoInfo.Streams);
-            Assert.IsTrue(0 < videoInfo.Streams.Length);
-            //Assert.AreEqual(22, videoInfo.Streams.Length);
+            Assert.IsTrue(22 <= videoInfo.Streams.Length); // MPD streams are inconsistent
             foreach (var streamInfo in videoInfo.Streams)
             {
                 Assert.IsNotNull(streamInfo.Signature);
@@ -95,7 +94,7 @@ namespace YoutubeExplode.Tests
         [TestMethod]
         public async Task GetVideoInfoAsync_SignedRestrictedAdaptive_Test()
         {
-            var videoInfo = await _client.GetVideoInfoAsync("SkRSXFQerZs");
+            var videoInfo = await _client.GetVideoInfoAsync("SkRSXFQerZs", false, false);
 
             Assert.IsNotNull(videoInfo);
             Assert.AreEqual("SkRSXFQerZs", videoInfo.Id);
@@ -117,8 +116,7 @@ namespace YoutubeExplode.Tests
             Assert.IsFalse(videoInfo.IsMuted);
 
             Assert.IsNotNull(videoInfo.Streams);
-            Assert.IsTrue(0 < videoInfo.Streams.Length);
-            //Assert.AreEqual(22, videoInfo.Streams.Length);
+            Assert.IsTrue(22 <= videoInfo.Streams.Length); // MPD streams are inconsistent
             foreach (var streamInfo in videoInfo.Streams)
             {
                 Assert.IsNotNull(streamInfo.Url);
@@ -127,41 +125,86 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
+        public async Task GetFileSizeAsync_UnsignedUnrestrictedNonAdaptive_Test()
+        {
+            var videoInfo = await _client.GetVideoInfoAsync("LsNPjFXIPT8", true, false);
+
+            foreach (var streamInfo in videoInfo.Streams)
+            {
+                long size = await _client.GetFileSizeAsync(streamInfo);
+                Assert.IsTrue(0 <= size);
+                Assert.IsTrue(0 <= streamInfo.FileSize);
+            }
+        }
+
+        [TestMethod]
+        public async Task GetFileSizeAsync_SignedUnrestrictedAdaptive_Test()
+        {
+            var videoInfo = await _client.GetVideoInfoAsync("9bZkp7q19f0", true, false);
+
+            foreach (var streamInfo in videoInfo.Streams)
+            {
+                long size = await _client.GetFileSizeAsync(streamInfo);
+                Assert.IsTrue(0 <= size);
+                Assert.IsTrue(0 <= streamInfo.FileSize);
+            }
+        }
+
+        [TestMethod]
+        public async Task GetFileSizeAsync_SignedRestrictedAdaptive_Test()
+        {
+            var videoInfo = await _client.GetVideoInfoAsync("SkRSXFQerZs", true, false);
+
+            foreach (var streamInfo in videoInfo.Streams)
+            {
+                long size = await _client.GetFileSizeAsync(streamInfo);
+                Assert.IsTrue(0 <= size);
+                Assert.IsTrue(0 <= streamInfo.FileSize);
+            }
+        }
+
+        [TestMethod]
         public async Task DownloadVideoAsync_UnsignedUnrestrictedNonAdaptive_Test()
         {
-            var videoInfo = await _client.GetVideoInfoAsync("LsNPjFXIPT8");
-            var streamInfo = videoInfo.Streams.OrderBy(s => s.FileSize).First();
-            using (var stream = await _client.DownloadVideoAsync(streamInfo))
+            var videoInfo = await _client.GetVideoInfoAsync("LsNPjFXIPT8", true, false);
+
+            foreach (var streamInfo in videoInfo.Streams)
             {
-                // Read some bytes
-                var buffer = new byte[5];
-                await stream.ReadAsync(buffer, 0, 5);
+                using (var stream = await _client.DownloadVideoAsync(streamInfo))
+                {
+                    var buffer = new byte[1337];
+                    await stream.ReadAsync(buffer, 0, buffer.Length);
+                }
             }
         }
 
         [TestMethod]
         public async Task DownloadVideoAsync_SignedUnrestrictedAdaptive_Test()
         {
-            var videoInfo = await _client.GetVideoInfoAsync("9bZkp7q19f0");
-            var streamInfo = videoInfo.Streams.OrderBy(s => s.FileSize).First();
-            using (var stream = await _client.DownloadVideoAsync(streamInfo))
+            var videoInfo = await _client.GetVideoInfoAsync("9bZkp7q19f0", true, false);
+
+            foreach (var streamInfo in videoInfo.Streams)
             {
-                // Read some bytes
-                var buffer = new byte[5];
-                await stream.ReadAsync(buffer, 0, 5);
+                using (var stream = await _client.DownloadVideoAsync(streamInfo))
+                {
+                    var buffer = new byte[1337];
+                    await stream.ReadAsync(buffer, 0, buffer.Length);
+                }
             }
         }
 
         [TestMethod]
         public async Task DownloadVideoAsync_SignedRestrictedAdaptive_Test()
         {
-            var videoInfo = await _client.GetVideoInfoAsync("SkRSXFQerZs");
-            var streamInfo = videoInfo.Streams.OrderBy(s => s.FileSize).First();
-            using (var stream = await _client.DownloadVideoAsync(streamInfo))
+            var videoInfo = await _client.GetVideoInfoAsync("SkRSXFQerZs", true, false);
+
+            foreach (var streamInfo in videoInfo.Streams)
             {
-                // Read some bytes
-                var buffer = new byte[5];
-                await stream.ReadAsync(buffer, 0, 5);
+                using (var stream = await _client.DownloadVideoAsync(streamInfo))
+                {
+                    var buffer = new byte[1337];
+                    await stream.ReadAsync(buffer, 0, buffer.Length);
+                }
             }
         }
     }

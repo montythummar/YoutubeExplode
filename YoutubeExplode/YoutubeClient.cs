@@ -244,7 +244,7 @@ namespace YoutubeExplode
         public static bool ValidateVideoId(string videoId)
         {
             if (videoId.IsBlank())
-                throw new ArgumentNullException(nameof(videoId));
+                return false;
 
             return !Regex.IsMatch(videoId, @"[^0-9a-zA-Z_\-]");
         }
@@ -270,10 +270,11 @@ namespace YoutubeExplode
         /// <returns>Whether the execution was successful or not</returns>
         public static bool TryParseVideoId(string videoUrl, out string videoId)
         {
-            if (videoUrl.IsBlank())
-                throw new ArgumentNullException(nameof(videoUrl));
-
             videoId = default(string);
+
+            if (videoUrl.IsBlank())
+                return false;
+
             var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)");
             if (match.Success)
                 videoId = match.Groups[1].Value;
