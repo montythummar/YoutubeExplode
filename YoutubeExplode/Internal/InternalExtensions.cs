@@ -136,9 +136,10 @@ namespace YoutubeExplode.Internal
             return WebUtility.UrlDecode(url);
         }
 
-        public static string SetQueryStringParameter(this string queryString, string key, string value)
+        public static string SetQueryStringParameter(this string uri, string key, string value)
         {
-            var existingMatch = Regex.Match(queryString, $@"[?&]({key}=.*?)(?:&|$)");
+            // Find existing parameter
+            var existingMatch = Regex.Match(uri, $@"[?&]({key}(?:=.*?)?)(?:&|$)");
 
             // Parameter already set to something
             if (existingMatch.Success)
@@ -146,23 +147,24 @@ namespace YoutubeExplode.Internal
                 var group = existingMatch.Groups[1];
 
                 // Remove existing
-                queryString = queryString.Remove(group.Index, group.Length);
+                uri = uri.Remove(group.Index, group.Length);
 
                 // Insert new one
-                queryString = queryString.Insert(group.Index, $"{key}={value}");
-                return queryString;
+                uri = uri.Insert(group.Index, value != null ? $"{key}={value}" : $"{key}=");
+
+                return uri;
             }
             // Parameter hasn't been set yet
             else
             {
                 // See if there are other parameters
-                bool hasOtherParams = queryString.IndexOf('?') >= 0;
+                bool hasOtherParams = uri.IndexOf('?') >= 0;
 
                 // Prepend either & or ? depending on that
                 string separator = hasOtherParams ? "&" : "?";
 
                 // Assemble new query string
-                return queryString + separator + key + "=" + value;
+                return uri + separator + key + "=" + value;
             }
         }
 
