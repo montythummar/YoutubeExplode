@@ -29,7 +29,8 @@ namespace YoutubeExplode.Internal
         {
             foreach (var o in potentialValues)
             {
-                if (Equals(value, o)) return true;
+                if (Equals(value, o))
+                    return true;
             }
             return false;
         }
@@ -63,14 +64,14 @@ namespace YoutubeExplode.Internal
 
         public static string SubstringUntil(this string str, string sub)
         {
-            int index = str.IndexOf(sub, StringComparison.OrdinalIgnoreCase);
+            int index = str.IndexOf(sub, StringComparison.Ordinal);
             if (index < 0) return str;
             return str.Substring(0, index);
         }
 
         public static string SubstringAfter(this string str, string sub)
         {
-            int index = str.IndexOf(sub, StringComparison.OrdinalIgnoreCase);
+            int index = str.IndexOf(sub, StringComparison.Ordinal);
             if (index < 0) return string.Empty;
             return str.Substring(index + sub.Length, str.Length - index - sub.Length);
         }
@@ -138,6 +139,9 @@ namespace YoutubeExplode.Internal
 
         public static string SetQueryStringParameter(this string uri, string key, string value)
         {
+            if (value == null)
+                value = string.Empty;
+
             // Find existing parameter
             var existingMatch = Regex.Match(uri, $@"[?&]({key}=?.*?)(?:&|$)");
 
@@ -150,7 +154,7 @@ namespace YoutubeExplode.Internal
                 uri = uri.Remove(group.Index, group.Length);
 
                 // Insert new one
-                uri = uri.Insert(group.Index, value != null ? $"{key}={value}" : $"{key}=");
+                uri = uri.Insert(group.Index, $"{key}={value}");
 
                 return uri;
             }
