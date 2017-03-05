@@ -250,21 +250,6 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Parses video ID from a youtube video URL
-        /// </summary>
-        /// <returns>Video ID</returns>
-        public static string ParseVideoId(string videoUrl)
-        {
-            if (videoUrl.IsBlank())
-                throw new ArgumentNullException(nameof(videoUrl));
-
-            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)");
-            if (!match.Success)
-                throw new FormatException("Could not parse Video ID from given string");
-            return match.Groups[1].Value;
-        }
-
-        /// <summary>
         /// Tries to parse video ID from a youtube video URL
         /// </summary>
         /// <returns>Whether the execution was successful or not</returns>
@@ -275,10 +260,40 @@ namespace YoutubeExplode
             if (videoUrl.IsBlank())
                 return false;
 
-            var match = Regex.Match(videoUrl, @"[?&]v=(.+?)(?:&|$)");
-            if (match.Success)
-                videoId = match.Groups[1].Value;
-            return match.Success;
+            // https://www.youtube.com/watch?v=yIVRs6YSbOM
+            string regularMatch = new Regex(@"youtube\..+?/watch\?.*?v=(.+?)(?:&|$)").MatchOrNull(videoUrl, 1);
+            if (regularMatch.IsNotBlank() && ValidateVideoId(regularMatch))
+            {
+                videoId = regularMatch;
+                return true;
+            }
+
+            // https://youtu.be/yIVRs6YSbOM
+            string shortMatch = new Regex(@"youtu.be/(.+?)(?:&|$)").MatchOrNull(videoUrl, 1);
+            if (shortMatch.IsNotBlank() && ValidateVideoId(shortMatch))
+            {
+                videoId = shortMatch;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Parses video ID from a youtube video URL
+        /// </summary>
+        /// <returns>Video ID</returns>
+        public static string ParseVideoId(string videoUrl)
+        {
+            if (videoUrl.IsBlank())
+                throw new ArgumentNullException(nameof(videoUrl));
+
+            string result;
+            bool success = TryParseVideoId(videoUrl, out result);
+            if (success)
+                return result;
+
+            throw new FormatException("Could not parse Video ID from given string");
         }
     }
 }

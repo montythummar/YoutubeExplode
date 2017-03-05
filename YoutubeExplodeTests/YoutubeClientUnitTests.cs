@@ -35,37 +35,86 @@ namespace YoutubeExplode.Tests
                 "10Vあxet5ODk"
             };
 
-            foreach (string validId in validVideoIds)
-                Assert.IsTrue(YoutubeClient.ValidateVideoId(validId));
-            foreach (string invalidId in invalidVideoIds)
-                Assert.IsFalse(YoutubeClient.ValidateVideoId(invalidId));
+            foreach (string id in validVideoIds)
+                Assert.IsTrue(YoutubeClient.ValidateVideoId(id));
+            foreach (string id in invalidVideoIds)
+                Assert.IsFalse(YoutubeClient.ValidateVideoId(id));
         }
 
         [TestMethod]
         public void ParseVideoId_Test()
         {
-            string videoUrl = "https://www.youtube.com/watch?v=cpm00Hv1Umg";
+            string[] urls =
+            {
+                "https://www.youtube.com/watch?v=cpm00Hv1Umg",
+                "https://youtu.be/yIVRs6YSbOM",
+                "https://www.youtube.com.ua/watch?v=10V6xet5ODk",
+                "https://www.youtube.co.il/watch?v=OpV62-86Fv4",
+                "https://www.youtube.be/watch?v=Nsib94LHi9I&gl=BE"
+            };
+            string[] ids =
+            {
+                "cpm00Hv1Umg",
+                "yIVRs6YSbOM",
+                "10V6xet5ODk",
+                "OpV62-86Fv4",
+                "Nsib94LHi9I"
+            };
 
-            string parsed = YoutubeClient.ParseVideoId(videoUrl);
-
-            Assert.AreEqual("cpm00Hv1Umg", parsed);
+            for (int i = 0; i < urls.Length; i++)
+            {
+                string url = urls[i];
+                string id = ids[i];
+                string parsed = YoutubeClient.ParseVideoId(url);
+                Assert.AreEqual(id, parsed);
+            }
         }
 
         [TestMethod]
         public void TryParseVideoId_Test()
         {
-            string validVideoUrl = "https://www.youtube.com/watch?v=cpm00Hv1Umg";
-            string invalidVideoUrl = "https://www.youtube.com/";
+            string[] validUrls =
+            {
+                "https://www.youtube.com/watch?v=cpm00Hv1Umg",
+                "https://youtu.be/yIVRs6YSbOM",
+                "https://www.youtube.com.ua/watch?v=10V6xet5ODk",
+                "https://www.youtube.co.il/watch?v=OpV62-86Fv4",
+                "https://www.youtube.be/watch?v=Nsib94LHi9I&gl=BE"
+            };
+            string[] validIds =
+            {
+                "cpm00Hv1Umg",
+                "yIVRs6YSbOM",
+                "10V6xet5ODk",
+                "OpV62-86Fv4",
+                "Nsib94LHi9I"
+            };
 
-            string parsedValid;
-            string parsedInvalid;
+            for (int i = 0; i < validUrls.Length; i++)
+            {
+                string url = validUrls[i];
+                string id = validIds[i];
+                string parsed;
+                bool success = YoutubeClient.TryParseVideoId(url, out parsed);
+                Assert.IsTrue(success);
+                Assert.AreEqual(id, parsed);
+            }
 
-            bool valid = YoutubeClient.TryParseVideoId(validVideoUrl, out parsedValid);
-            bool invalid = YoutubeClient.TryParseVideoId(invalidVideoUrl, out parsedInvalid);
+            string[] invalidUrls =
+            {
+                null,
+                "",
+                "https://www.youtube.com",
+                "https://www.youtube.com/watch?v=@pm!!Hv#Lmg",
+                "https://www.youtube.com/qweasd?v=Nsib94LHi9I"
+            };
 
-            Assert.IsTrue(valid);
-            Assert.IsFalse(invalid);
-            Assert.AreEqual("cpm00Hv1Umg", parsedValid);
+            foreach (string url in invalidUrls)
+            {
+                string parsed;
+                bool success = YoutubeClient.TryParseVideoId(url, out parsed);
+                Assert.IsFalse(success);
+            }
         }
     }
 }
