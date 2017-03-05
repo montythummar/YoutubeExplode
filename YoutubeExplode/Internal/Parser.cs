@@ -15,11 +15,11 @@ namespace YoutubeExplode.Internal
             if (rawHtml.IsBlank())
                 throw new ArgumentNullException(nameof(rawHtml));
 
-            var match = Regex.Match(rawHtml, @"<script\s*src=""/yts/jsbin/player-(.*?)/base.js", RegexOptions.Multiline);
-            if (!match.Success)
+            string version = new Regex(@"<script\s*src=""/yts/jsbin/player-(.*?)/base.js", RegexOptions.Multiline).MatchOrNull(rawHtml, 1);
+            if (version.IsBlank())
                 throw new Exception("Could not parse player version");
 
-            return match.Groups[1].Value;
+            return version;
         }
 
         public static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
@@ -214,8 +214,7 @@ namespace YoutubeExplode.Internal
             if (rawJs.IsBlank())
                 throw new ArgumentNullException(nameof(rawJs));
 
-            var match = Regex.Match(rawJs, @"\w+\.(\w+)\(");
-            return match.Groups[1].Value;
+            return new Regex(@"\w+\.(\w+)\(").MatchOrNull(rawJs, 1);
         }
 
         public static IEnumerable<IScramblingOperation> ParseScramblingOperationsJs(string rawJs)
@@ -280,13 +279,13 @@ namespace YoutubeExplode.Internal
                 // Swap operation
                 if (calledFunctionName == charSwapFuncName)
                 {
-                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    int index = new Regex(@"\(\w+,(\d+)\)").MatchOrNull(line, 1).ParseIntOrDefault();
                     yield return new SwapScramblingOperation(index);
                 }
                 // Slice operation
                 else if (calledFunctionName == sliceFuncName)
                 {
-                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    int index = new Regex(@"\(\w+,(\d+)\)").MatchOrNull(line, 1).ParseIntOrDefault();
                     yield return new SliceScramblingOperation(index);
                 }
                 // Reverse operation
