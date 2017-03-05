@@ -139,7 +139,7 @@ namespace YoutubeExplode.Internal
         public static string SetQueryStringParameter(this string uri, string key, string value)
         {
             // Find existing parameter
-            var existingMatch = Regex.Match(uri, $@"[?&]({key}(?:=.*?)?)(?:&|$)");
+            var existingMatch = Regex.Match(uri, $@"[?&]({key}=?.*?)(?:&|$)");
 
             // Parameter already set to something
             if (existingMatch.Success)
