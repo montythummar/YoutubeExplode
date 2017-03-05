@@ -138,18 +138,32 @@ namespace YoutubeExplode.Internal
 
         public static string SetQueryStringParameter(this string queryString, string key, string value)
         {
-            // Parameter already present
-            var existingMatch = Regex.Match(queryString, $@"[?&]{key}=(.+?)(?:&|$)");
+            var existingMatch = Regex.Match(queryString, $@"[?&]({key}=.*?)(?:&|$)");
+
+            // Parameter already set to something
             if (existingMatch.Success)
             {
-                string existingValue = existingMatch.Groups[1].Value;
-                return queryString.Replace(existingValue, value);
-            }
+                var group = existingMatch.Groups[1];
 
-            // Not yet present
-            bool hasOtherParams = queryString.IndexOf('?') >= 0;
-            string separator = hasOtherParams ? "&" : "?";
-            return queryString + separator + key + "=" + value;
+                // Remove existing
+                queryString = queryString.Remove(group.Index, group.Length);
+
+                // Insert new one
+                queryString = queryString.Insert(group.Index, $"{key}={value}");
+                return queryString;
+            }
+            // Parameter hasn't been set yet
+            else
+            {
+                // See if there are other parameters
+                bool hasOtherParams = queryString.IndexOf('?') >= 0;
+
+                // Prepend either & or ? depending on that
+                string separator = hasOtherParams ? "&" : "?";
+
+                // Assemble new query string
+                return queryString + separator + key + "=" + value;
+            }
         }
 
         public static string JoinToString<T>(this IEnumerable<T> enumerable, string separator)
@@ -210,18 +224,18 @@ namespace YoutubeExplode.Internal
             return null;
         }
 
-        public static string MatchOrNull(this Regex regex, string input, string group)
+        public static string MatchOrNull(this Regex regex, string input, int group)
         {
             var match = regex.Match(input);
-            if (match.Success)
+            if (match.Success && match.Groups[group].Success)
                 return match.Groups[group].Value;
             return null;
         }
 
-        public static string MatchOrNull(this Regex regex, string input, int group)
+        public static string MatchOrNull(this Regex regex, string input, string group)
         {
             var match = regex.Match(input);
-            if (match.Success)
+            if (match.Success && match.Groups[group].Success)
                 return match.Groups[group].Value;
             return null;
         }
