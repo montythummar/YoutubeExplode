@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace YoutubeExplode.Internal
 {
-    internal static class InternalExtensions
+    internal static class Extensions
     {
         public delegate T ParseDelegate<out T>(string str);
 
@@ -143,7 +143,7 @@ namespace YoutubeExplode.Internal
                 value = string.Empty;
 
             // Find existing parameter
-            var existingMatch = Regex.Match(uri, $@"[?&]({key}=?.*?)(?:&|$)");
+            var existingMatch = Regex.Match(uri, $@"[?&]({Regex.Escape(key)}=?.*?)(?:&|$)");
 
             // Parameter already set to something
             if (existingMatch.Success)

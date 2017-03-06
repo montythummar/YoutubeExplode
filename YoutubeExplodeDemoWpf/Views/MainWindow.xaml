@@ -36,6 +36,7 @@
 
         <!--  Toolbar  -->
         <materialDesign:ColorZone Grid.Row="0"
+                                  Panel.ZIndex="1"
                                   materialDesign:ShadowAssist.ShadowDepth="Depth2"
                                   Mode="PrimaryMid">
             <StackPanel Orientation="Vertical">
@@ -81,6 +82,7 @@
         <!--  Video info  -->
         <ScrollViewer Grid.Row="1"
                       Padding="10,0,10,0"
+                      Panel.ZIndex="0"
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       Visibility="{Binding IsVideoInfoAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
