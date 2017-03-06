@@ -146,8 +146,10 @@ namespace YoutubeExplode
 
             // Finalize the stream list
             result.Streams = result.Streams
-                .OrderByDescending(s => (int) s.Quality)
-                .ThenByDescending(s => s.Fps)
+                .Distinct(s => s.Itag) // only one stream per itag
+                .OrderByDescending(s => s.Quality) // sort by quality
+                .ThenByDescending(s => s.Bitrate) // then by bitrate
+                .ThenByDescending(s => s.Type) // then by type
                 .ToArray();
 
             // Decipher

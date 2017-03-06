@@ -182,6 +182,16 @@ namespace YoutubeExplode.Internal
             return input.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static IEnumerable<TSource> Distinct<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> selector)
+        {
+            var existing = new HashSet<TKey>();
+            foreach (var element in enumerable)
+            {
+                if (existing.Add(selector(element)))
+                    yield return element;
+            }
+        }
+
         public static IEnumerable<T> With<T>(this IEnumerable<T> e1, IEnumerable<T> e2)
         {
             var list = e1.ToList();
