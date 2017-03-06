@@ -44,6 +44,7 @@
     <Compile Include="Exceptions\YoutubeErrorException.cs" />
     <Compile Include="Internal\Extensions.cs" />
     <Compile Include="Internal\IScramblingOperation.cs" />
+    <Compile Include="Internal\ItagHelper.cs" />
     <Compile Include="Internal\Parser.cs" />
     <Compile Include="Internal\PlayerSource.cs" />
     <Compile Include="Internal\ReverseScramblingOperation.cs" />
