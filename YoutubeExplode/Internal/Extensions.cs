@@ -137,7 +137,7 @@ namespace YoutubeExplode.Internal
             return WebUtility.UrlDecode(url);
         }
 
-        public static string SetQueryStringParameter(this string uri, string key, string value)
+        public static string SetQueryParameter(this string uri, string key, string value)
         {
             if (value == null)
                 value = string.Empty;
@@ -165,7 +165,7 @@ namespace YoutubeExplode.Internal
                 bool hasOtherParams = uri.IndexOf('?') >= 0;
 
                 // Prepend either & or ? depending on that
-                string separator = hasOtherParams ? "&" : "?";
+                char separator = hasOtherParams ? '&' : '?';
 
                 // Assemble new query string
                 return uri + separator + key + "=" + value;

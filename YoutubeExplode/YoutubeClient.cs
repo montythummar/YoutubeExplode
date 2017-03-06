@@ -76,7 +76,7 @@ namespace YoutubeExplode
             {
                 string sig = streamInfo.Signature;
                 string newSig = playerSource.Unscramble(sig);
-                streamInfo.Url = streamInfo.Url.SetQueryStringParameter("signature", newSig);
+                streamInfo.Url = streamInfo.Url.SetQueryParameter("signature", newSig);
                 streamInfo.NeedsDeciphering = false;
             }
         }
