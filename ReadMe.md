@@ -16,8 +16,8 @@ You can also find the last stable version in [releases](https://github.com/Tyrrr
 - Gets video meta and video streams meta
 - Supports stream meta data from multiple sources: non-adaptive, adaptive embedded, adaptive dash
 - Meta data properties are exposed via enums and other strong types
-- Deciphers signatures for video streams automatically or on-demand
-- Gets file sizes for video streams automatically or on-demand
+- Deciphers signatures for video streams
+- Gets file sizes for video streams
 - Downloads video to stream
 - Exposes static methods to extract video ID from URL and to validate video ID
 - Asynchronous API
