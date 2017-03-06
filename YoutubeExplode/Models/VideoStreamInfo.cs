@@ -73,12 +73,12 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Quality label
         /// </summary>
-        public string QualityLabel => ItagHelper.GetQualityLabel(Quality);
+        public string QualityLabel => ItagHelper.GetQualityLabel(Itag);
 
         /// <summary>
         /// File extension of the video file, based on its type
         /// </summary>
-        public string FileExtension => ItagHelper.GetExtension(Type);
+        public string FileExtension => ItagHelper.GetExtension(Itag);
 
         /// <summary>
         /// File size (in bytes) of the video

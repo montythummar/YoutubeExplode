@@ -66,8 +66,10 @@ namespace YoutubeExplode.Internal
             return VideoStreamQuality.Unknown;
         }
 
-        public static string GetQualityLabel(VideoStreamQuality quality)
+        public static string GetQualityLabel(int itag)
         {
+            var quality = GetQuality(itag);
+
             if (quality == VideoStreamQuality.Low144) return "144p";
             if (quality == VideoStreamQuality.Low240) return "240p";
             if (quality == VideoStreamQuality.Medium360) return "360p";
@@ -81,8 +83,10 @@ namespace YoutubeExplode.Internal
             return null;
         }
 
-        public static string GetExtension(VideoStreamType type)
+        public static string GetExtension(int itag)
         {
+            var type = GetType(itag);
+
             if (type == VideoStreamType.MP4)
                 return "mp4";
             if (type == VideoStreamType.WebM)
