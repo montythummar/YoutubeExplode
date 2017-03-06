@@ -231,29 +231,5 @@ namespace YoutubeExplode.Internal
             if (result == null) return defaultValue;
             return ConvertOrDefault(result, defaultValue);
         }
-
-        public static string MatchOrNull(this Regex regex, string input)
-        {
-            var match = regex.Match(input);
-            if (match.Success)
-                return match.Value;
-            return null;
-        }
-
-        public static string MatchOrNull(this Regex regex, string input, int group)
-        {
-            var match = regex.Match(input);
-            if (match.Success && match.Groups[group].Success)
-                return match.Groups[group].Value;
-            return null;
-        }
-
-        public static string MatchOrNull(this Regex regex, string input, string group)
-        {
-            var match = regex.Match(input);
-            if (match.Success && match.Groups[group].Success)
-                return match.Groups[group].Value;
-            return null;
-        }
     }
 }

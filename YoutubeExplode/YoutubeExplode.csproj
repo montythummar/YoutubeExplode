@@ -50,6 +50,7 @@
     <Compile Include="Internal\SliceScramblingOperation.cs" />
     <Compile Include="Internal\SwapScramblingOperation.cs" />
     <Compile Include="Models\VideoCaptionTrackInfo.cs" />
+    <Compile Include="Models\VideoDashManifestInfo.cs" />
     <Compile Include="Models\VideoInfo.cs" />
     <Compile Include="Models\VideoStreamAdaptiveMode.cs" />
     <Compile Include="Models\VideoStreamInfo.cs" />

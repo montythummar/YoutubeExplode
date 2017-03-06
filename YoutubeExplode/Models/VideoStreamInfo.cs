@@ -8,19 +8,19 @@ namespace YoutubeExplode.Models
     public partial class VideoStreamInfo
     {
         /// <summary>
-        /// Video signature
+        /// URL of the stream
+        /// </summary>
+        public string Url { get; internal set; }
+
+        /// <summary>
+        /// Signature
         /// </summary>
         public string Signature { get; internal set; }
 
         /// <summary>
-        /// Whether or not this stream's signature needs to be deciphered before the stream can be accessed
+        /// Whether the signature needs to be deciphered before manifest can be accessed by URL
         /// </summary>
         public bool NeedsDeciphering { get; internal set; }
-
-        /// <summary>
-        /// URL of the stream
-        /// </summary>
-        public string Url { get; internal set; }
 
         /// <summary>
         /// Internal type id

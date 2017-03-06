@@ -15,7 +15,7 @@ namespace YoutubeExplode.Internal
             if (rawHtml.IsBlank())
                 throw new ArgumentNullException(nameof(rawHtml));
 
-            string version = new Regex(@"<script\s*src=""/yts/jsbin/player-(.*?)/base.js", RegexOptions.Multiline).MatchOrNull(rawHtml, 1);
+            string version = Regex.Match(rawHtml, @"<script\s*src=""/yts/jsbin/player-(.*?)/base.js", RegexOptions.Multiline).Groups[1].Value;
             if (version.IsBlank())
                 throw new Exception("Could not parse player version");
 
@@ -63,9 +63,9 @@ namespace YoutubeExplode.Internal
                 var dic = ParseDictionaryUrlEncoded(streamRaw);
 
                 // Extract values
+                string url = dic.GetOrDefault("url");
                 string sig = dic.GetOrDefault("s");
                 bool needsDeciphering = sig.IsNotBlank();
-                string url = dic.GetOrDefault("url");
                 int itag = dic.GetOrDefault("itag").ParseIntOrDefault();
                 int width = (dic.GetOrDefault("size")?.SubstringUntil("x")).ParseIntOrDefault();
                 int height = (dic.GetOrDefault("size")?.SubstringAfter("x")).ParseIntOrDefault();
@@ -75,9 +75,9 @@ namespace YoutubeExplode.Internal
                 // Yield
                 yield return new VideoStreamInfo
                 {
+                    Url = url,
                     Signature = sig,
                     NeedsDeciphering = needsDeciphering,
-                    Url = url,
                     Itag = itag,
                     Resolution = new VideoStreamResolution(width, height),
                     Bitrate = bitrate,
@@ -117,9 +117,9 @@ namespace YoutubeExplode.Internal
                 // Yield
                 yield return new VideoStreamInfo
                 {
+                    Url = url,
                     Signature = null,
                     NeedsDeciphering = false,
-                    Url = url,
                     Itag = itag,
                     Resolution = new VideoStreamResolution(width, height),
                     Bitrate = bitrate,
@@ -182,13 +182,19 @@ namespace YoutubeExplode.Internal
             result.ViewCount = videoInfoEncoded.GetOrDefault("view_count").ParseLongOrDefault();
             result.AverageRating = videoInfoEncoded.GetOrDefault("avg_rating").ParseDoubleOrDefault();
             result.Keywords = videoInfoEncoded.GetOrDefault("keywords").Split(",");
-            result.DashMpdUrl = videoInfoEncoded.GetOrDefault("dashmpd");
 
-            // HACK: If dashmpd url has signature - ignore it
-            if (result.DashMpdUrl.IsNotBlank() && result.DashMpdUrl.ContainsInvariant("/s/"))
-                result.DashMpdUrl = null;
+            // Dash manifest
+            string dashMpdUrl = videoInfoEncoded.GetOrDefault("dashmpd");
+            if (dashMpdUrl.IsNotBlank())
+            {
+                var dashManifest = new VideoDashManifestInfo();
+                dashManifest.Url = dashMpdUrl;
+                dashManifest.Signature = Regex.Match(dashMpdUrl, @"/s/(.+?)(?:/|$)").Groups[1].Value;
+                dashManifest.NeedsDeciphering = dashManifest.Signature.IsNotBlank();
+                result.DashManifest = dashManifest;
+            }
 
-            // Get the streams
+            // Get the embedded stream meta data
             var streams = new List<VideoStreamInfo>();
             string streamsRaw = videoInfoEncoded.GetOrDefault("adaptive_fmts");
             if (streamsRaw.IsNotBlank())
@@ -198,7 +204,7 @@ namespace YoutubeExplode.Internal
                 streams.AddRange(ParseVideoStreamInfosUrlEncoded(streamsRaw));
             result.Streams = streams.ToArray();
 
-            // Get the captions
+            // Get the caption track meta data
             var captions = new List<VideoCaptionTrackInfo>();
             string captionsRaw = videoInfoEncoded.GetOrDefault("caption_tracks");
             if (captionsRaw.IsNotBlank())
@@ -214,7 +220,7 @@ namespace YoutubeExplode.Internal
             if (rawJs.IsBlank())
                 throw new ArgumentNullException(nameof(rawJs));
 
-            return new Regex(@"\w+\.(\w+)\(").MatchOrNull(rawJs, 1);
+            return Regex.Match(rawJs, @"\w+\.(\w+)\(").Groups[1].Value;
         }
 
         public static IEnumerable<IScramblingOperation> ParseScramblingOperationsJs(string rawJs)
@@ -279,13 +285,13 @@ namespace YoutubeExplode.Internal
                 // Swap operation
                 if (calledFunctionName == charSwapFuncName)
                 {
-                    int index = new Regex(@"\(\w+,(\d+)\)").MatchOrNull(line, 1).ParseIntOrDefault();
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
                     yield return new SwapScramblingOperation(index);
                 }
                 // Slice operation
                 else if (calledFunctionName == sliceFuncName)
                 {
-                    int index = new Regex(@"\(\w+,(\d+)\)").MatchOrNull(line, 1).ParseIntOrDefault();
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
                     yield return new SliceScramblingOperation(index);
                 }
                 // Reverse operation

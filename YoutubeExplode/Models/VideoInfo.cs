@@ -44,7 +44,7 @@ namespace YoutubeExplode.Models
         /// Ranges from 0 to 1.
         /// Also represents the "thumbs up" ratio in the new rating system.
         /// </summary>
-        public double NormalizedAverageRating => AverageRating / 5;
+        public double NormalizedAverageRating => AverageRating/5;
 
         /// <summary>
         /// Keywords used for searching
@@ -119,7 +119,15 @@ namespace YoutubeExplode.Models
         /// <summary>
         /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
         /// </summary>
-        public bool NeedsDeciphering => Streams != null && Streams.Any(s => s.NeedsDeciphering);
+        public bool NeedsDeciphering
+        {
+            get
+            {
+                return
+                    (Streams != null && Streams.Any(s => s.NeedsDeciphering)) ||
+                    (DashManifest != null && DashManifest.NeedsDeciphering);
+            }
+        }
 
         /// <summary>
         /// Version of the video player, used for this video's playback
@@ -127,9 +135,9 @@ namespace YoutubeExplode.Models
         internal string PlayerVersion { get; set; }
 
         /// <summary>
-        /// Url of dash xml
+        /// Dash manifest meta data
         /// </summary>
-        internal string DashMpdUrl { get; set; }
+        internal VideoDashManifestInfo DashManifest { get; set; }
 
         internal VideoInfo() { }
     }

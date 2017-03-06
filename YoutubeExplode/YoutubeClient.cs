@@ -19,6 +19,11 @@ namespace YoutubeExplode
         private readonly Dictionary<string, PlayerSource> _playerSourceCache = new Dictionary<string, PlayerSource>();
 
         /// <summary>
+        /// Whether to get file sizes of video streams (one HEAD request per stream)
+        /// </summary>
+        public bool ShouldGetVideoFileSizes { get; set; } = true;
+
+        /// <summary>
         /// Construct with custom services
         /// </summary>
         public YoutubeClient(IRequestService requestService)
@@ -62,16 +67,17 @@ namespace YoutubeExplode
             return playerSource;
         }
 
-        private void UnscrambleVideoInfo(PlayerSource playerSource, VideoInfo videoInfo)
+        private async Task DecipherAsync(VideoInfo videoInfo)
         {
-            if (playerSource == null)
-                throw new ArgumentNullException(nameof(playerSource));
             if (videoInfo == null)
                 throw new ArgumentNullException(nameof(videoInfo));
             if (!videoInfo.NeedsDeciphering)
                 throw new Exception("Given video info does not need to be deciphered");
 
-            // Decipher streams
+            // Get player source
+            var playerSource = await GetPlayerSourceAsync(videoInfo.PlayerVersion);
+
+            // Unscramble streams
             foreach (var streamInfo in videoInfo.Streams.Where(s => s.NeedsDeciphering))
             {
                 string sig = streamInfo.Signature;
@@ -79,37 +85,28 @@ namespace YoutubeExplode
                 streamInfo.Url = streamInfo.Url.SetQueryParameter("signature", newSig);
                 streamInfo.NeedsDeciphering = false;
             }
+
+            // Unscramble dash manifest
+            if (videoInfo.DashManifest != null && videoInfo.DashManifest.NeedsDeciphering)
+            {
+                string sig = videoInfo.DashManifest.Signature;
+                string newSig = playerSource.Unscramble(sig);
+                videoInfo.DashManifest.Url = videoInfo.DashManifest.Url.Replace($"/s/{sig}", $"/signature/{newSig}");
+                videoInfo.DashManifest.NeedsDeciphering = false;
+            }
         }
 
         /// <summary>
         /// Get full information about a video by its ID
         /// </summary>
-        /// 
         /// <param name="videoId">The ID of the video</param>
-        /// 
-        /// <param name="decipherIfNeeded">
-        /// When set to true, videos with encrypted signatures will be automatically deciphered.
-        /// This requires one extra GET request and some computational time.
-        /// If set to false, the <see cref="VideoInfo"/> will need to be deciphered manually using <see cref="DecipherStreamsAsync"/> method.
-        /// Non-deciphered <see cref="VideoInfo"/> objects are still fully usable, but it will not be possible to access its <see cref="VideoStreamInfo"/> by URL
-        /// </param>
-        /// 
-        /// <param name="getFileSizes">
-        /// When set to true, it will also attempt to get file sizes of all obtained streams.
-        /// This requires one extra HEAD request per stream.
-        /// If set to false, you can use <see cref="GetFileSizeAsync"/> to get file size of individual streams.
-        /// This parameter requires <paramref name="decipherIfNeeded"/> to be set.
-        /// </param>
-        /// 
         /// <returns><see cref="VideoInfo"/> object with the information on the given video</returns>
-        public async Task<VideoInfo> GetVideoInfoAsync(string videoId, bool decipherIfNeeded = true, bool getFileSizes = true)
+        public async Task<VideoInfo> GetVideoInfoAsync(string videoId)
         {
             if (videoId.IsBlank())
                 throw new ArgumentNullException(nameof(videoId));
             if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
-            if (getFileSizes && !decipherIfNeeded)
-                throw new ArgumentException($"{nameof(getFileSizes)} flag can only be set along with {nameof(decipherIfNeeded)}");
 
             // Get video info
             string eurl = $"https://youtube.googleapis.com/v/{videoId}".UrlEncode();
@@ -130,18 +127,23 @@ namespace YoutubeExplode
             // Parse player version
             result.PlayerVersion = Parser.ParsePlayerVersionHtml(response);
 
+            // Decipher
+            if (result.NeedsDeciphering)
+            {
+                await DecipherAsync(result);
+            }
+
             // Get additional streams from dash if available
-            if (result.DashMpdUrl.IsNotBlank())
+            if (result.DashManifest != null)
             {
                 // Get
-                response = await _requestService.GetStringAsync(result.DashMpdUrl);
+                response = await _requestService.GetStringAsync(result.DashManifest.Url);
+                if (response.IsBlank())
+                    throw new Exception("Could not get dash manifest");
 
                 // Parse
-                if (response.IsNotBlank()) // doesn't throw because dash streams are not very important
-                {
-                    var dashStreams = Parser.ParseVideoStreamInfosMpd(response);
-                    result.Streams = result.Streams.With(dashStreams).ToArray();
-                }
+                var dashStreams = Parser.ParseVideoStreamInfosMpd(response);
+                result.Streams = result.Streams.With(dashStreams).ToArray();
             }
 
             // Finalize the stream list
@@ -149,17 +151,12 @@ namespace YoutubeExplode
                 .Distinct(s => s.Itag) // only one stream per itag
                 .OrderByDescending(s => s.Quality) // sort by quality
                 .ThenByDescending(s => s.Bitrate) // then by bitrate
+                .ThenByDescending(s => s.FileSize) // then by filesize
                 .ThenByDescending(s => s.Type) // then by type
                 .ToArray();
 
-            // Decipher
-            if (result.NeedsDeciphering && decipherIfNeeded)
-            {
-                await DecipherStreamsAsync(result);
-            }
-
             // Get file size of streams
-            if (getFileSizes)
+            if (ShouldGetVideoFileSizes)
             {
                 foreach (var streamInfo in result.Streams)
                     await GetFileSizeAsync(streamInfo);
@@ -169,25 +166,7 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Deciphers the streams in the given <see cref="VideoInfo"/>
-        /// </summary>
-        public async Task DecipherStreamsAsync(VideoInfo videoInfo)
-        {
-            if (videoInfo == null)
-                throw new ArgumentNullException(nameof(videoInfo));
-            if (!videoInfo.NeedsDeciphering)
-                throw new Exception("Given video info does not need to be deciphered");
-
-            // Get player source
-            var playerSource = await GetPlayerSourceAsync(videoInfo.PlayerVersion);
-
-            // Unscramble
-            UnscrambleVideoInfo(playerSource, videoInfo);
-        }
-
-        /// <summary>
-        /// Gets and populates the total file size of the video, streamed on the given endpoint
-        /// <returns>The file size of the video (in bytes)</returns>
+        /// Gets and populates file size of the given video stream
         /// </summary>
         public async Task<long> GetFileSizeAsync(VideoStreamInfo streamInfo)
         {
@@ -201,7 +180,7 @@ namespace YoutubeExplode
             // Get the headers
             var headers = await _requestService.GetHeadersAsync(streamInfo.Url);
             if (headers == null)
-                throw new Exception("Could not obtain headers (HEAD request failed)");
+                throw new Exception("Could not obtain headers");
 
             // Get file size header
             if (!headers.ContainsKey("Content-Length"))
@@ -209,6 +188,7 @@ namespace YoutubeExplode
 
             return streamInfo.FileSize = headers["Content-Length"].ParseLongOrDefault();
         }
+
 
         /// <summary>
         /// Downloads the given video stream
@@ -263,7 +243,7 @@ namespace YoutubeExplode
                 return false;
 
             // https://www.youtube.com/watch?v=yIVRs6YSbOM
-            string regularMatch = new Regex(@"youtube\..+?/watch\?.*?v=(.+?)(?:&|$)").MatchOrNull(videoUrl, 1);
+            string regularMatch = Regex.Match(videoUrl, @"youtube\..+?/watch\?.*?v=(.+?)(?:&|$)").Groups[1].Value;
             if (regularMatch.IsNotBlank() && ValidateVideoId(regularMatch))
             {
                 videoId = regularMatch;
@@ -271,7 +251,7 @@ namespace YoutubeExplode
             }
 
             // https://youtu.be/yIVRs6YSbOM
-            string shortMatch = new Regex(@"youtu.be/(.+?)(?:&|$)").MatchOrNull(videoUrl, 1);
+            string shortMatch = Regex.Match(videoUrl, @"youtu.be/(.+?)(?:&|$)").Groups[1].Value;
             if (shortMatch.IsNotBlank() && ValidateVideoId(shortMatch))
             {
                 videoId = shortMatch;
