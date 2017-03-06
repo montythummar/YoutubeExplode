@@ -6,12 +6,12 @@
     public class VideoDashManifestInfo
     {
         /// <summary>
-        /// URL of the manifest
+        /// URL for the dash manifest
         /// </summary>
         public string Url { get; internal set; }
 
         /// <summary>
-        /// Signature
+        /// Authorization signature
         /// </summary>
         public string Signature { get; internal set; }
 

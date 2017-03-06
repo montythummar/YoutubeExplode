@@ -3,7 +3,7 @@
 namespace YoutubeExplode.Models
 {
     /// <summary>
-    /// Type of a a video stream
+    /// Defines possible video stream container types
     /// </summary>
     public enum VideoStreamType
     {
@@ -28,12 +28,12 @@ namespace YoutubeExplode.Models
         TGPP,
 
         /// <summary>
-        /// Flash video (.flv) video stream
+        /// Flash (.flv) video stream
         /// </summary>
         FLV,
 
         /// <summary>
-        /// Transport stream video (.ts) video stream
+        /// Transport stream (.ts) video stream
         /// </summary>
         TS
     }

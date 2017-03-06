@@ -24,7 +24,7 @@ namespace YoutubeExplode
         public bool ShouldGetVideoFileSizes { get; set; } = true;
 
         /// <summary>
-        /// Construct with custom services
+        /// Creates an instance of <see cref="YoutubeClient"/> with custom services
         /// </summary>
         public YoutubeClient(IRequestService requestService)
         {
@@ -32,7 +32,7 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Default constructor
+        /// Creates an instance of <see cref="YoutubeClient"/> with default services
         /// </summary>
         public YoutubeClient()
             : this(new DefaultRequestService())
@@ -188,7 +188,7 @@ namespace YoutubeExplode
 
 
         /// <summary>
-        /// Downloads the given video stream
+        /// Gets the content of the given video stream
         /// </summary>
         public async Task<Stream> DownloadVideoAsync(VideoStreamInfo streamInfo)
         {
@@ -217,9 +217,8 @@ namespace YoutubeExplode
     public partial class YoutubeClient
     {
         /// <summary>
-        /// Verifies that the given string is a valid youtube video ID
+        /// Verifies that the given string is syntactically a valid youtube video ID
         /// </summary>
-        /// <returns>True if valid, false otherwise</returns>
         public static bool ValidateVideoId(string videoId)
         {
             if (videoId.IsBlank())
@@ -231,7 +230,6 @@ namespace YoutubeExplode
         /// <summary>
         /// Tries to parse video ID from a youtube video URL
         /// </summary>
-        /// <returns>Whether the execution was successful or not</returns>
         public static bool TryParseVideoId(string videoUrl, out string videoId)
         {
             videoId = default(string);
@@ -261,7 +259,6 @@ namespace YoutubeExplode
         /// <summary>
         /// Parses video ID from a youtube video URL
         /// </summary>
-        /// <returns>Video ID</returns>
         public static string ParseVideoId(string videoUrl)
         {
             if (videoUrl.IsBlank())

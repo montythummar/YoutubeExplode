@@ -1,17 +1,17 @@
 ﻿namespace YoutubeExplode.Models
 {
     /// <summary>
-    /// Youtube video subtitles meta data
+    /// Closed captions meta data
     /// </summary>
     public class VideoCaptionTrackInfo
     {
         /// <summary>
-        /// URL of the caption track manifest file
+        /// URL for the caption track manifest
         /// </summary>
         public string Url { get; internal set; }
 
         /// <summary>
-        /// Language of this caption track
+        /// Caption track language
         /// </summary>
         public string Language { get; internal set; }
 

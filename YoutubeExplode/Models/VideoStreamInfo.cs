@@ -3,22 +3,22 @@
 namespace YoutubeExplode.Models
 {
     /// <summary>
-    /// Youtube video stream meta data
+    /// Video stream meta data
     /// </summary>
     public class VideoStreamInfo
     {
         /// <summary>
-        /// URL of the stream
+        /// URL for the video stream
         /// </summary>
         public string Url { get; internal set; }
 
         /// <summary>
-        /// Signature
+        /// Authorization signature
         /// </summary>
         public string Signature { get; internal set; }
 
         /// <summary>
-        /// Whether the signature needs to be deciphered before manifest can be accessed by URL
+        /// Whether the signature needs to be deciphered before stream can be accessed by URL
         /// </summary>
         public bool NeedsDeciphering { get; internal set; }
 
@@ -33,12 +33,12 @@ namespace YoutubeExplode.Models
         public VideoStreamAdaptiveMode AdaptiveMode => ItagHelper.GetAdaptiveMode(Itag);
 
         /// <summary>
-        /// Type of the video stream
+        /// Container type
         /// </summary>
         public VideoStreamType Type => ItagHelper.GetType(Itag);
 
         /// <summary>
-        /// Quality of the video stream
+        /// Video quality
         /// </summary>
         public VideoStreamQuality Quality => ItagHelper.GetQuality(Itag);
 
@@ -54,24 +54,24 @@ namespace YoutubeExplode.Models
 
         /// <summary>
         /// Video resolution.
-        /// Some streams may not have this property.
+        /// Some streams may not have this property set.
         /// </summary>
         public VideoStreamResolution Resolution { get; internal set; }
 
         /// <summary>
         /// Video bitrate (bits per second).
-        /// Some streams may not have this property.
+        /// Some streams may not have this property set.
         /// </summary>
         public long Bitrate { get; internal set; }
 
         /// <summary>
         /// Frame update frequency of this video.
-        /// Some streams may not have this property.
+        /// Some streams may not have this property set.
         /// </summary>
         public double Fps { get; internal set; }
 
         /// <summary>
-        /// Quality label
+        /// Quality label as seen on Youtube
         /// </summary>
         public string QualityLabel => ItagHelper.GetQualityLabel(Itag);
 
@@ -81,7 +81,8 @@ namespace YoutubeExplode.Models
         public string FileExtension => ItagHelper.GetExtension(Itag);
 
         /// <summary>
-        /// File size (in bytes) of the video
+        /// File size (in bytes) of the video.
+        /// If the file size of this stream was not requested, this property is not set.
         /// </summary>
         public long FileSize { get; internal set; }
 

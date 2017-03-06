@@ -19,7 +19,7 @@ namespace YoutubeExplode.Models
         public string Title { get; internal set; }
 
         /// <summary>
-        /// Video author
+        /// Video author's name
         /// </summary>
         public string Author { get; internal set; }
 
@@ -97,7 +97,7 @@ namespace YoutubeExplode.Models
         public bool IsMuted { get; internal set; }
 
         /// <summary>
-        /// Whether it is allowed to embed this video outside of youtube
+        /// Whether it is allowed to embed this video outside of Youtube
         /// </summary>
         public bool IsEmbeddingAllowed { get; internal set; }
 
@@ -107,12 +107,12 @@ namespace YoutubeExplode.Models
         public bool HasClosedCaptions => CaptionTracks != null && CaptionTracks.Length > 0;
 
         /// <summary>
-        /// Video streams
+        /// Video streams meta data
         /// </summary>
         public VideoStreamInfo[] Streams { get; internal set; }
 
         /// <summary>
-        /// Closed captions
+        /// Closed captions meta data
         /// </summary>
         public VideoCaptionTrackInfo[] CaptionTracks { get; internal set; }
 

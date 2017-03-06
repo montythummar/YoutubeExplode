@@ -9,7 +9,7 @@ using YoutubeExplode.Internal;
 namespace YoutubeExplode.Services
 {
     /// <summary>
-    /// Uses <see cref="_httpClient"/> for handling requests
+    /// Uses <see cref="HttpClient"/> for handling requests
     /// </summary>
     public partial class DefaultRequestService : IRequestService, IDisposable
     {
@@ -31,7 +31,7 @@ namespace YoutubeExplode.Services
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="DefaultRequestService"/> with a custom <see cref="_httpClient"/>
+        /// Creates an instance of <see cref="DefaultRequestService"/> with a custom <see cref="HttpClient"/>
         /// </summary>
         public DefaultRequestService(HttpClient client)
         {

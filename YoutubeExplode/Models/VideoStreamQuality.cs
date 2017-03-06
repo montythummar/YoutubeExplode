@@ -1,7 +1,7 @@
 ﻿namespace YoutubeExplode.Models
 {
     /// <summary>
-    /// QualityString of a video stream
+    /// Defines possible stream quality values
     /// </summary>
     public enum VideoStreamQuality
     {

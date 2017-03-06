@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace YoutubeExplode.Services
 {
     /// <summary>
-    /// Implemented by classes that handle HTTP requests for YoutubeClient
+    /// Service that performs HTTP requests for <see cref="YoutubeClient"/>
     /// </summary>
     public interface IRequestService
     {
