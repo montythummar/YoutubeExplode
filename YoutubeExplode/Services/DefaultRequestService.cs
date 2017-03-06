@@ -62,9 +62,9 @@ namespace YoutubeExplode.Services
 
             try
             {
+                const HttpCompletionOption compl = HttpCompletionOption.ResponseHeadersRead;
                 using (var request = new HttpRequestMessage(HttpMethod.Head, url))
-                using (var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
-                                                       .ConfigureAwait(false))
+                using (var response = await _httpClient.SendAsync(request, compl).ConfigureAwait(false))
                     return NormalizeResponseHeaders(response);
             }
             catch
@@ -81,8 +81,7 @@ namespace YoutubeExplode.Services
 
             try
             {
-                return await _httpClient.GetStreamAsync(url)
-                                        .ConfigureAwait(false);
+                return await _httpClient.GetStreamAsync(url).ConfigureAwait(false);
             }
             catch
             {

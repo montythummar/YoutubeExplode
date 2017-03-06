@@ -100,7 +100,7 @@ namespace YoutubeExplode.Internal
 
             foreach (var xStreamInfo in xStreamInfos)
             {
-                // Skip partial streams (but shoud I? :thinking:)
+                // Skip partial streams // TODO: add support for partial streams
                 string initUrl =
                     xStreamInfo.Descendants(ns + "Initialization").FirstOrDefault()?.Attribute("sourceURL")?.Value;
                 if (initUrl.IsNotBlank() && initUrl.ContainsInvariant("sq/"))
