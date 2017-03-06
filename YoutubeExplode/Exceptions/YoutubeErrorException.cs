@@ -8,7 +8,12 @@ namespace YoutubeExplode.Exceptions
     public class YoutubeErrorException : Exception
     {
         /// <summary>
-        /// Original message, received from Youtube
+        /// Error code
+        /// </summary>
+        public int ErrorCode { get; }
+
+        /// <summary>
+        /// Original error message
         /// </summary>
         public string ErrorMessage { get; }
 
@@ -17,10 +22,11 @@ namespace YoutubeExplode.Exceptions
         /// </summary>
         public override string Message { get; }
 
-        internal YoutubeErrorException(string errorMessage)
+        internal YoutubeErrorException(int errorCode, string errorMessage)
         {
+            ErrorCode = errorCode;
             ErrorMessage = errorMessage;
-            Message = $"Youtube returned an error:{Environment.NewLine}{ErrorMessage}";
+            Message = $"Youtube returned error {ErrorCode}:{Environment.NewLine}{ErrorMessage}";
         }
     }
 }

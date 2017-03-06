@@ -97,7 +97,30 @@ namespace YoutubeExplode
         }
 
         /// <summary>
-        /// Gets video meta data by id
+        /// Checks whether a video with the given ID exists
+        /// </summary>
+        public async Task<bool> CheckVideoExistsAsync(string videoId)
+        {
+            if (videoId.IsBlank())
+                throw new ArgumentNullException(nameof(videoId));
+            if (!ValidateVideoId(videoId))
+                throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
+
+            // Get the video info
+            string url = $"https://www.youtube.com/get_video_info?video_id={videoId}";
+            string response = await _requestService.GetStringAsync(url).ConfigureAwait(false);
+            if (response.IsBlank())
+                throw new Exception("Could not get video info");
+
+            // Parse
+            var dic = Parser.ParseDictionaryUrlEncoded(response);
+            string status = dic.GetOrDefault("status");
+            int errorCode = dic.GetOrDefault("errorcode").ParseIntOrDefault();
+            return !(status.EqualsInvariant("fail") && errorCode == 100);
+        }
+
+        /// <summary>
+        /// Gets video meta data by ID
         /// </summary>
         public async Task<VideoInfo> GetVideoInfoAsync(string videoId)
         {

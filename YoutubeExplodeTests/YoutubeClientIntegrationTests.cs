@@ -22,6 +22,19 @@ namespace YoutubeExplode.Tests
         }
 
         [TestMethod]
+        public async Task CheckVideoExistsAsync_Test()
+        {
+            string existingVideoId = "Te_dGvF6CcE";
+            string nonExistingVideoId = "xxxxxxxxxxx";
+
+            bool existingExists = await _client.CheckVideoExistsAsync(existingVideoId);
+            bool nonExistingExists = await _client.CheckVideoExistsAsync(nonExistingVideoId);
+
+            Assert.IsTrue(existingExists);
+            Assert.IsFalse(nonExistingExists);
+        }
+
+        [TestMethod]
         public async Task GetVideoInfoAsync_UnsignedUnrestrictedNonAdaptive_Test()
         {
             _client.ShouldGetVideoFileSizes = false;

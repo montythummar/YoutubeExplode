@@ -27,7 +27,7 @@ namespace YoutubeExplode.Internal
             if (rawUrlEncoded.IsBlank())
                 throw new ArgumentNullException(nameof(rawUrlEncoded));
 
-            var dic = new Dictionary<string, string>();
+            var dic = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var keyValuePairsRaw = rawUrlEncoded.Split("&");
             foreach (string keyValuePairRaw in keyValuePairsRaw)
             {
@@ -163,8 +163,9 @@ namespace YoutubeExplode.Internal
             // Check the status
             string status = videoInfoEncoded.GetOrDefault("status");
             string reason = videoInfoEncoded.GetOrDefault("reason");
+            int errorCode = videoInfoEncoded.GetOrDefault("errorcode").ParseIntOrDefault();
             if (status.EqualsInvariant("fail"))
-                throw new YoutubeErrorException(reason);
+                throw new YoutubeErrorException(errorCode, reason);
 
             // Prepare result
             var result = new VideoInfo();
