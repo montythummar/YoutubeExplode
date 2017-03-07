@@ -261,7 +261,7 @@ namespace YoutubeExplode
                 return false;
 
             // https://www.youtube.com/watch?v=yIVRs6YSbOM
-            string regularMatch = Regex.Match(videoUrl, @"youtube\..+?/watch\?.*?v=(.+?)(?:&|$)").Groups[1].Value;
+            string regularMatch = Regex.Match(videoUrl, @"youtube\..+?/watch\?.*?v=(.+?)(?:&|/|$)").Groups[1].Value;
             if (regularMatch.IsNotBlank() && ValidateVideoId(regularMatch))
             {
                 videoId = regularMatch;
@@ -269,10 +269,18 @@ namespace YoutubeExplode
             }
 
             // https://youtu.be/yIVRs6YSbOM
-            string shortMatch = Regex.Match(videoUrl, @"youtu.be/(.+?)(?:&|$)").Groups[1].Value;
+            string shortMatch = Regex.Match(videoUrl, @"youtu.be/(.+?)(?:&|/|$)").Groups[1].Value;
             if (shortMatch.IsNotBlank() && ValidateVideoId(shortMatch))
             {
                 videoId = shortMatch;
+                return true;
+            }
+
+            // https://www.youtube.com/embed/yIVRs6YSbOM
+            string embedMatch = Regex.Match(videoUrl, @"youtube\..+?/embed/(.+?)(?:&|/|$)").Groups[1].Value;
+            if (embedMatch.IsNotBlank() && ValidateVideoId(embedMatch))
+            {
+                videoId = embedMatch;
                 return true;
             }
 
