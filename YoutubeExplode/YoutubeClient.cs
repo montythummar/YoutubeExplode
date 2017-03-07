@@ -116,7 +116,7 @@ namespace YoutubeExplode
             var dic = Parser.ParseDictionaryUrlEncoded(response);
             string status = dic.GetOrDefault("status");
             int errorCode = dic.GetOrDefault("errorcode").ParseIntOrDefault();
-            return !(status.EqualsInvariant("fail") && errorCode == 100);
+            return !(status.EqualsInvariant("fail") && errorCode.IsEither(100, 150));
         }
 
         /// <summary>
