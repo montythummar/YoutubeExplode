@@ -18,6 +18,11 @@ namespace YoutubeExplode.Models
         MP4,
 
         /// <summary>
+        /// MPEG-4 Part 14 audio-only (.m4a) video stream
+        /// </summary>
+        M4A,
+
+        /// <summary>
         /// WebM (.webm) video stream
         /// </summary>
         WebM,
