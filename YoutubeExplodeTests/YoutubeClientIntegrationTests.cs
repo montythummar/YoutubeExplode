@@ -64,7 +64,6 @@ namespace YoutubeExplode.Tests
             foreach (var streamInfo in videoInfo.Streams)
             {
                 Assert.IsNotNull(streamInfo.Url);
-                Assert.IsNotNull(streamInfo.FileExtension);
             }
         }
 
@@ -97,8 +96,7 @@ namespace YoutubeExplode.Tests
             Assert.IsTrue(22 <= videoInfo.Streams.Length); // MPD streams are inconsistent
             foreach (var streamInfo in videoInfo.Streams)
             {
-                Assert.IsNotNull(streamInfo.Signature);
-                Assert.IsNotNull(streamInfo.FileExtension);
+                Assert.IsNotNull(streamInfo.Url);
             }
 
             Assert.IsNotNull(videoInfo.CaptionTracks);
@@ -135,7 +133,6 @@ namespace YoutubeExplode.Tests
             foreach (var streamInfo in videoInfo.Streams)
             {
                 Assert.IsNotNull(streamInfo.Url);
-                Assert.IsNotNull(streamInfo.FileExtension);
             }
         }
 

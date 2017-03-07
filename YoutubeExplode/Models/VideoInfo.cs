@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using YoutubeExplode.Internal;
 
 namespace YoutubeExplode.Models
 {
@@ -133,11 +134,6 @@ namespace YoutubeExplode.Models
                     (DashManifest != null && DashManifest.NeedsDeciphering);
             }
         }
-
-        /// <summary>
-        /// Version of the video player, used for this video's playback
-        /// </summary>
-        internal string PlayerVersion { get; set; }
 
         internal VideoInfo() { }
     }

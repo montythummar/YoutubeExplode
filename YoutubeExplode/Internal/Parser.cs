@@ -10,16 +10,27 @@ namespace YoutubeExplode.Internal
 {
     internal static class Parser
     {
-        public static string ParsePlayerVersionHtml(string rawHtml)
+        public static VideoContext ParseVideoContextHtml(string rawHtml)
         {
             if (rawHtml.IsBlank())
                 throw new ArgumentNullException(nameof(rawHtml));
 
-            string version = Regex.Match(rawHtml, @"<script\s*src=""/yts/jsbin/player-(.*?)/base.js", RegexOptions.Multiline).Groups[1].Value;
+            // Player version
+            string version = Regex.Match(rawHtml, @"<script\s*src=""/yts/jsbin/player-(.*?)/base.js").Groups[1].Value;
             if (version.IsBlank())
                 throw new Exception("Could not parse player version");
 
-            return version;
+            // Sts
+            string sts = Regex.Match(rawHtml, @"""sts""\s*:\s*(\d+)").Groups[1].Value;
+            if (sts.IsBlank())
+                throw new Exception("Could not parse sts");
+
+            // Populate data
+            var result = new VideoContext();
+            result.PlayerVersion = version;
+            result.Sts = sts;
+
+            return result;
         }
 
         public static Dictionary<string, string> ParseDictionaryUrlEncoded(string rawUrlEncoded)
@@ -233,16 +244,14 @@ namespace YoutubeExplode.Internal
             // https://github.com/flagbug/YoutubeExtractor/blob/master/YoutubeExtractor/YoutubeExtractor/Decipherer.cs
 
             // Get the name of the function that handles deciphering
-            var funcNameMatch = Regex.Match(rawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(");
-            if (!funcNameMatch.Success)
+            string funcName = Regex.Match(rawJs, @"\""signature"",\s?([a-zA-Z0-9\$]+)\(").Groups[1].Value;
+            if (funcName.IsBlank())
                 throw new Exception("Could not find the entry function for signature deciphering");
-            string funcName = funcNameMatch.Groups[1].Value;
 
             // Get the body of the function
-            var funcBodyMatch = Regex.Match(rawJs, @"(?!h\.)" + Regex.Escape(funcName) + @"=function\(\w+\)\{.*?\}", RegexOptions.Singleline);
-            if (!funcBodyMatch.Success)
+            string funcBody = Regex.Match(rawJs, @"(?!h\.)" + Regex.Escape(funcName) + @"=function\(\w+\)\{.*?\}", RegexOptions.Singleline).Value;
+            if (funcBody.IsBlank())
                 throw new Exception("Could not get the signature decipherer function body");
-            string funcBody = funcBodyMatch.Value;
             var funcLines = funcBody.Split(";").Skip(1).SkipLast(1).ToArray();
 
             // Identify scrambling functions
@@ -286,13 +295,13 @@ namespace YoutubeExplode.Internal
                 // Swap operation
                 if (calledFunctionName == charSwapFuncName)
                 {
-                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseInt();
                     yield return new SwapScramblingOperation(index);
                 }
                 // Slice operation
                 else if (calledFunctionName == sliceFuncName)
                 {
-                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseIntOrDefault();
+                    int index = Regex.Match(line, @"\(\w+,(\d+)\)").Groups[1].Value.ParseInt();
                     yield return new SliceScramblingOperation(index);
                 }
                 // Reverse operation

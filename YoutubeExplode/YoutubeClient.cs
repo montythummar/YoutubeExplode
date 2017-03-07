@@ -67,7 +67,7 @@ namespace YoutubeExplode
             return playerSource;
         }
 
-        private async Task DecipherAsync(VideoInfo videoInfo)
+        private async Task DecipherAsync(VideoInfo videoInfo, string playerVersion)
         {
             if (videoInfo == null)
                 throw new ArgumentNullException(nameof(videoInfo));
@@ -75,7 +75,7 @@ namespace YoutubeExplode
                 throw new Exception("Given video info does not need to be deciphered");
 
             // Get player source
-            var playerSource = await GetPlayerSourceAsync(videoInfo.PlayerVersion).ConfigureAwait(false);
+            var playerSource = await GetPlayerSourceAsync(playerVersion).ConfigureAwait(false);
 
             // Unscramble streams
             foreach (var streamInfo in videoInfo.Streams.Where(s => s.NeedsDeciphering))
@@ -129,28 +129,28 @@ namespace YoutubeExplode
             if (!ValidateVideoId(videoId))
                 throw new ArgumentException("Is not a valid Youtube video ID", nameof(videoId));
 
-            // Get video info
-            string url = $"https://www.youtube.com/get_video_info?video_id={videoId}&sts=17221";
+            // Get video context
+            string url = $"https://www.youtube.com/embed/{videoId}";
             string response = await _requestService.GetStringAsync(url).ConfigureAwait(false);
+            if (response.IsBlank())
+                throw new Exception("Could not get video context");
+
+            // Parse video context
+            var videoContext = Parser.ParseVideoContextHtml(response);
+
+            // Get video info
+            url = $"https://www.youtube.com/get_video_info?video_id={videoId}&sts={videoContext.Sts}";
+            response = await _requestService.GetStringAsync(url).ConfigureAwait(false);
             if (response.IsBlank())
                 throw new Exception("Could not get video info");
 
             // Parse video info
             var result = Parser.ParseVideoInfoUrlEncoded(response);
 
-            // Get player version
-            url = $"https://www.youtube.com/watch?v={videoId}&gl=US&hl=en&has_verified=1&bpctr=9999999999";
-            response = await _requestService.GetStringAsync(url).ConfigureAwait(false);
-            if (response.IsBlank())
-                throw new Exception("Could not get player version");
-
-            // Parse player version
-            result.PlayerVersion = Parser.ParsePlayerVersionHtml(response);
-
             // Decipher
             if (result.NeedsDeciphering)
             {
-                await DecipherAsync(result).ConfigureAwait(false);
+                await DecipherAsync(result, videoContext.PlayerVersion).ConfigureAwait(false);
             }
 
             // Get additional streams from dash if available
@@ -200,7 +200,7 @@ namespace YoutubeExplode
             // Get the headers
             var headers = await _requestService.GetHeadersAsync(streamInfo.Url).ConfigureAwait(false);
             if (headers == null)
-                throw new Exception("Could not obtain headers");
+                throw new Exception("Could not get headers");
 
             // Get file size header
             if (!headers.ContainsKey("Content-Length"))
