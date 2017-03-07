@@ -117,9 +117,14 @@ namespace YoutubeExplode.Models
         public VideoCaptionTrackInfo[] CaptionTracks { get; internal set; }
 
         /// <summary>
+        /// Dash manifest meta data
+        /// </summary>
+        public VideoDashManifestInfo DashManifest { get; internal set; }
+
+        /// <summary>
         /// Whether this video uses an encrypted signature for its streams that needs to be deciphered before the streams can be accessed
         /// </summary>
-        public bool NeedsDeciphering
+        internal bool NeedsDeciphering
         {
             get
             {
@@ -133,11 +138,6 @@ namespace YoutubeExplode.Models
         /// Version of the video player, used for this video's playback
         /// </summary>
         internal string PlayerVersion { get; set; }
-
-        /// <summary>
-        /// Dash manifest meta data
-        /// </summary>
-        internal VideoDashManifestInfo DashManifest { get; set; }
 
         internal VideoInfo() { }
     }

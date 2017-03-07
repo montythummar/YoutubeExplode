@@ -13,12 +13,12 @@
         /// <summary>
         /// Authorization signature
         /// </summary>
-        public string Signature { get; internal set; }
+        internal string Signature { get; set; }
 
         /// <summary>
         /// Whether the signature needs to be deciphered before manifest can be accessed by URL
         /// </summary>
-        public bool NeedsDeciphering { get; internal set; }
+        internal bool NeedsDeciphering { get; set; }
 
         internal VideoDashManifestInfo()
         {

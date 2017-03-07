@@ -13,21 +13,6 @@ namespace YoutubeExplode.Models
         public string Url { get; internal set; }
 
         /// <summary>
-        /// Authorization signature
-        /// </summary>
-        public string Signature { get; internal set; }
-
-        /// <summary>
-        /// Whether the signature needs to be deciphered before stream can be accessed by URL
-        /// </summary>
-        public bool NeedsDeciphering { get; internal set; }
-
-        /// <summary>
-        /// Internal type id
-        /// </summary>
-        public int Itag { get; internal set; }
-
-        /// <summary>
         /// Adaptive mode
         /// </summary>
         public VideoStreamAdaptiveMode AdaptiveMode => ItagHelper.GetAdaptiveMode(Itag);
@@ -85,6 +70,21 @@ namespace YoutubeExplode.Models
         /// If the file size of this stream was not requested, this property is not set.
         /// </summary>
         public long FileSize { get; internal set; }
+
+        /// <summary>
+        /// Authorization signature
+        /// </summary>
+        internal string Signature { get; set; }
+
+        /// <summary>
+        /// Whether the signature needs to be deciphered before stream can be accessed by URL
+        /// </summary>
+        internal bool NeedsDeciphering { get; set; }
+
+        /// <summary>
+        /// Internal type id
+        /// </summary>
+        internal int Itag { get; set; }
 
         internal VideoStreamInfo() { }
 
