@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using YoutubeExplode.Internal;
 
 namespace YoutubeExplode.Models
 {
